@@ -20,6 +20,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/tasks/tasks-page').then((m) => m.default),
   },
   {
+    path: 'notes',
+    title: 'Notes | Demo 01',
+    data: {
+      label: 'Notas',
+    },
+    loadComponent: () => import('./features/notes/notes-page').then((m) => m.default),
+  },
+  {
     path: 'about',
     title: 'About | Demo 01',
     data: {
@@ -39,15 +47,6 @@ export const routes: Routes = [
       label: 'Dashboard',
     },
     loadComponent: () => import('./features/dashboard/dashboard-page').then((m) => m.default),
-  },
-
-  {
-    path: 'notes',
-    title: 'Notes | Demo 01',
-    data: {
-      label: 'Notas',
-    },
-    loadComponent: () => import('./features/notes/notes-page').then((m) => m.default),
   },
   {
     path: 'products',
