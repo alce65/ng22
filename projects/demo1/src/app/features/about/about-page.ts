@@ -4,7 +4,7 @@ import { Logo } from './components/logo/logo';
 import { Separator } from './components/separator/separator';
 
 @Component({
-  selector: 'alc-angular-page',
+  selector: 'alc-about-page',
   imports: [Logo, Separator, Pills],
   template: `
     <alc-logo />
@@ -15,6 +15,6 @@ import { Separator } from './components/separator/separator';
   `,
   styles: ``,
 })
-export class AngularPage {
+export default class AboutPage {
   protected readonly title = signal('ng22');
 }
