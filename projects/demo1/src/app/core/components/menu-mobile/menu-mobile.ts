@@ -5,7 +5,7 @@ import { Component, output, signal } from '@angular/core';
   imports: [],
   template: `
     <nav>
-      <a href="#" id="menu-icon" (click)="toggleMenu()">
+      <a href="" id="menu-icon" (click)="toggleMenu($event)">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 640 640"
@@ -33,7 +33,8 @@ export class MenuMobile {
 
   protected readonly openEvent = output<void>();
 
-  toggleMenu() {
+  toggleMenu(event: Event) {
+    event.preventDefault();
     this.openEvent.emit();
   }
 }

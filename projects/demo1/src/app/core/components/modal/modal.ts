@@ -20,7 +20,9 @@ import { Component, effect, ElementRef, input, output, viewChild } from '@angula
           </svg>
         </button>
       </div>
-      <ng-content />
+      <div (click)="emitClose()">
+        <ng-content />
+      </div>
     </dialog>
   `,
   styles: `
@@ -31,7 +33,7 @@ import { Component, effect, ElementRef, input, output, viewChild } from '@angula
         background: none;
         border: none;
         cursor: pointer;
-        color: var(--color-primary);
+         color: var(--color-primary);
       }
     }
 
@@ -44,6 +46,7 @@ import { Component, effect, ElementRef, input, output, viewChild } from '@angula
       margin: 0;
       height: 100%;
       max-height: 100vh;
+      color: var(--color-primary);
       background-color: var(--color-background-primary);
 
     }
