@@ -1,16 +1,22 @@
-import { Component, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { Component, TemplateRef, input, signal } from '@angular/core';
 import { LogoCoders } from '../logo-coders/logo-coders';
 import { LogoNg } from '../logo-angular/logo-ng';
 import { MenuMobile } from '../menu-mobile/menu-mobile';
 import { Toggle } from '../toggle/toggle';
 import { Separator } from '../separator/separator';
 import { User } from '../user/user';
-import { Modal } from "../modal/modal";
+import { Modal } from '../modal/modal';
+
+type MenuTemplateContext = {
+  isVertical: boolean;
+};
 
 @Component({
   selector: 'alc-header',
-  imports: [LogoCoders, LogoNg, MenuMobile, User, Toggle, Separator, Modal],
+  imports: [LogoCoders, LogoNg, MenuMobile, User, Toggle, Separator, Modal, NgTemplateOutlet],
   template: `
+    @let menu = menuTemplate();
     <header class="container">
       <alc-logo-coders />
       <hgroup>
@@ -20,21 +26,26 @@ import { Modal } from "../modal/modal";
       <div class="right-side">
         <div class="icons">
           <alc-user />
-          <alc-menu-mobile (openEvent)="toggleModal(true)"/>
+          <alc-menu-mobile (openEvent)="toggleModal(true)" />
         </div>
         <alc-toggle />
       </div>
       <div class="bottom-side">
         <p>{{ subtitle() }}</p>
         <div class="desktop-only">
-          <!-- <ng-content /> -->
+          <ng-container
+            [ngTemplateOutlet]="menu"
+            [ngTemplateOutletContext]="desktopMenuContext"
+          ></ng-container>
         </div>
       </div>
     </header>
     <alc-separator />
-    <alc-modal [isOpen]="isModalOpen()"
-    (closeEvent)="toggleModal(false)">
-      <ng-content />
+    <alc-modal [isOpen]="isModalOpen()" (closeEvent)="toggleModal(false)">
+      <ng-container
+        [ngTemplateOutlet]="menu"
+        [ngTemplateOutletContext]="mobileMenuContext"
+      ></ng-container>
     </alc-modal>
   `,
   styles: [
@@ -115,10 +126,12 @@ export class Header {
   protected readonly subtitle = signal('Aprende a desarrollar aplicaciones con Angular');
 
   protected readonly isModalOpen = signal(false);
+  readonly menuTemplate = input<TemplateRef<MenuTemplateContext>>();
+  protected readonly desktopMenuContext: MenuTemplateContext = { isVertical: false };
+  protected readonly mobileMenuContext: MenuTemplateContext = { isVertical: true };
 
   toggleModal(isOpen: boolean) {
     console.log('Toggling modal:', isOpen);
     this.isModalOpen.set(isOpen);
   }
-
 }

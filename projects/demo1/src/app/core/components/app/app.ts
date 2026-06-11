@@ -9,14 +9,10 @@ import { TaskForm } from '../../../features/tasks/components/task-form/task-form
   imports: [RouterOutlet, Layout, Menu, TaskForm],
   template: `
     <alc-layout>
-      <alc-menu class="main-menu" />
-      <!-- <alc-menu class="main-menu v" [isVertical]="true" /> -->
-
+      <ng-template #mainMenu let-isVertical="isVertical">
+        <alc-menu class="main-menu" [isVertical]="isVertical" />
+      </ng-template>
       <router-outlet />
-      <!-- Páginas
-      <alc-angular-page />
-       -->
-      <alc-task-form />
     </alc-layout>
   `,
   styles: ``,

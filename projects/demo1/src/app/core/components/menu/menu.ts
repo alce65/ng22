@@ -1,14 +1,19 @@
 import { Component, input, signal } from '@angular/core';
 import { MenuOption } from '../../types/menu.option';
+import { getRoutes } from '../../../app.routes';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'alc-menu',
+  imports: [RouterLink, RouterLinkActive],
   template: `
     <nav>
       <ul [class.vertical]="isVertical()">
         @for (option of options(); track option.path) {
           <li>
-            <a [href]="option.path">{{ option.label }}</a>
+            <a [routerLink]="option.path" [routerLinkActive]="'active'">
+              {{ option.label }}
+            </a>
           </li>
         }
       </ul>
@@ -26,6 +31,9 @@ import { MenuOption } from '../../types/menu.option';
 
       .vertical {
         flex-direction: column;
+        a {
+          font-size: 1.8rem;
+        }
       }
 
       a {
@@ -34,13 +42,14 @@ import { MenuOption } from '../../types/menu.option';
         font-weight: bold;
       }
     }
+
+    .active {
+      color: var(--color-primary-hot);
+      border-bottom: 2px solid var(--color-primary-hot);
+    }
   `,
 })
 export class Menu {
-
   readonly isVertical = input(false);
-  protected readonly options = signal<MenuOption[]>([
-    { path: 'home', label: 'Home' },
-    { path: 'about', label: 'Acerca de' },
-  ]);
+  protected readonly options = signal<MenuOption[]>(getRoutes());
 }

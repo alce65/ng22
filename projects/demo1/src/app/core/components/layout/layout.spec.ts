@@ -11,7 +11,7 @@ const MAIN_MENU = 'main-menu';
 @Component({
   imports: [Layout],
   template: `<alc-layout>
-    <div class="main-menu">{{ menu }}</div>
+    <ng-template #mainMenu>{{ menu }}</ng-template>
     {{ text }}
   </alc-layout>`,
 })

@@ -1,14 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef, contentChild } from '@angular/core';
 import { Header } from '../header/header';
 import { Footer } from '../footer/footer';
+
+type MenuTemplateContext = {
+  isVertical: boolean;
+};
 
 @Component({
   selector: 'alc-layout',
   imports: [Header, Footer],
   template: `
-    <alc-header>
-      <ng-content select=".main-menu" />
-    </alc-header>
+    <alc-header [menuTemplate]="mainMenu()" />
     <main class="container">
       <ng-content />
     </main>
@@ -35,4 +37,7 @@ import { Footer } from '../footer/footer';
     }
   `,
 })
-export class Layout {}
+export class Layout {
+  protected readonly mainMenu =
+  contentChild<TemplateRef<MenuTemplateContext>>('mainMenu');
+}
