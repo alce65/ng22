@@ -1,17 +1,18 @@
-import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, DestroyRef, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { Note, NoteDTO } from '../../types/note';
 import { JsonPipe } from '@angular/common';
 import { NoteForm } from '../note-form/note-form';
 import { NoteItem } from '../note-item/note-item';
 import { RepositoryRx } from '../../../../core/types/repository-rx';
-import { NotesLocalRxRepo } from '../../services/notes-local-rx-repo';
+// import { NotesLocalRxRepo } from '../../services/notes-local-rx-repo';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NotesApiRepo } from '../../services/notes-api-repo';
 
 @Component({
   selector: 'alc-note-list',
   imports: [JsonPipe, NoteForm, NoteItem],
   template: `
-    <p>Note List Rx</p>
+    <p>Note List Rx / httpClient API Repo</p>
     <details #details>
       <summary>Add Note</summary>
       <alc-note-form (addEvent)="addNote($event)" />
@@ -48,7 +49,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   `,
 })
 export class NoteList {
-  private readonly repo: RepositoryRx<Note, NoteDTO> = inject(NotesLocalRxRepo);
+  private readonly repo: RepositoryRx<Note, NoteDTO> = inject(NotesApiRepo);
+  // inject(NotesLocalRxRepo);
+
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly notes = signal<Note[]>([]);
   protected readonly details = viewChild<ElementRef<HTMLDetailsElement>>('details');
@@ -61,9 +65,10 @@ export class NoteList {
     // Simulación de carga de tareas desde una API
     this.repo
       .getAll()
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (notes) => {
+          console.log('Notes loaded:', notes.length);
           this.notes.set(notes);
         },
         error: (error) => {
@@ -74,15 +79,13 @@ export class NoteList {
   }
 
   protected addNote(noteData: NoteDTO) {
-    console.log('Add new note:', noteData);
-
     // Asyncrona -> servicio Repo
-
     this.repo
       .create(noteData)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (newNote) => {
+          console.log('Add new note:', noteData);
           // Sincrona -> State local (Signal)
           this.notes.update((notes) => [...notes, newNote]);
           // Cerrar el detalle después de agregar la tarea
@@ -98,7 +101,7 @@ export class NoteList {
     console.log('Delete note with id:', noteId);
     this.repo
       .delete(noteId)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.notes.update((notes) => notes.filter((note) => note.id !== noteId));
@@ -110,13 +113,12 @@ export class NoteList {
   }
 
   protected updateNote(note: Note) {
-    console.log('Update note with id:', note.id);
-
     this.repo
       .update(note.id, note)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (updatedNote) => {
+          console.log('Update note with id:', note.id);
           this.notes.update((notes) => {
             return notes.map((n) => (n.id === updatedNote.id ? updatedNote : n));
           });
