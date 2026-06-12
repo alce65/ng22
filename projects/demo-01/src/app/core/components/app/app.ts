@@ -26,7 +26,7 @@ import { Menu } from '../menu/menu';
       margin: 0;
       padding: 0;
     }
-    main {
+    main.container {
       padding: 1rem 2rem;
       width: 100%;
       min-height: 90%;

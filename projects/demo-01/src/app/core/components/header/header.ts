@@ -1,9 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common';
-import { Component, TemplateRef, input, signal } from '@angular/core';
-
-type MenuTemplateContext = {
-  isVertical: boolean;
-};
+import { Component, signal } from '@angular/core';
 
 @Component({
   selector: 'alc-header',
@@ -25,7 +20,7 @@ type MenuTemplateContext = {
         </div> -->
         <!-- <alc-toggle /> -->
       </div>
-      <div class="bottom-side">
+      <div class="bottom-row">
         <p>{{ subtitle() }}</p>
         <div class="desktop-only">
           <ng-content></ng-content>
@@ -81,7 +76,7 @@ type MenuTemplateContext = {
         }
       }
 
-      .bottom-side {
+      .bottom-row {
         grid-column: span 3;
         margin-top: 0.6rem;
 
@@ -102,7 +97,7 @@ type MenuTemplateContext = {
         alc-menu-mobile {
           display: none;
         }
-        .bottom-side {
+        .bottom-row {
           .desktop-only {
             display: block;
             margin-top: 1rem;
