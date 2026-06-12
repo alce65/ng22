@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NoteList } from './components/note-list-rx/note-list';
+import { NoteList } from './components/note-list-rx/note-list-res';
 import { Card } from '../../core/components/card/card';
 
 @Component({
