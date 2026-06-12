@@ -3,17 +3,20 @@ import { RouterOutlet } from '@angular/router';
 import { Header } from '../header/header';
 import { Footer } from '../footer/footer';
 import { Menu } from '../menu/menu';
+import { Card } from '../card/card';
 
 @Component({
   selector: 'alc-root',
-  imports: [RouterOutlet, Header, Footer, Menu],
+  imports: [RouterOutlet, Header, Footer, Menu, Card],
   template: `
     <alc-header>
       <alc-menu />
     </alc-header>
     <main class="container">
       <router-outlet />
-      <p>Páginas de la aplicación</p>
+      <alc-card>
+        <p>Páginas de la aplicación</p>
+      </alc-card>
     </main>
     <alc-footer />
   `,
