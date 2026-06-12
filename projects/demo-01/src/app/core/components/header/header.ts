@@ -1,17 +1,20 @@
 import { Component, signal } from '@angular/core';
 import { MenuMobile } from '../menu-mobile/menu-mobile';
+import { Separator } from '../separator/separator';
+import { LogoNg } from '../logo-angular/logo-ng';
+import { LogoCoders } from '../logo-coders/logo-coders';
 
 @Component({
   selector: 'alc-header',
-  imports: [MenuMobile],
+  imports: [MenuMobile, Separator, LogoNg, LogoCoders],
   template: `
     <!-- @let menu = menuTemplate(); -->
     <header class="container">
       <div class="left-side">
-        <!-- <alc-logo-coders /> -->
+        <alc-logo-coders />
       </div>
       <hgroup>
-        <!-- <alc-logo-ng /> -->
+        <alc-logo-ng />
         <h1>{{ title() }}</h1>
       </hgroup>
       <div class="right-side">
@@ -29,6 +32,7 @@ import { MenuMobile } from '../menu-mobile/menu-mobile';
         </div>
       </div>
     </header>
+    <alc-separator />
   `,
   styles: [
     `
