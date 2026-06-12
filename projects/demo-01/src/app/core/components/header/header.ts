@@ -3,12 +3,13 @@ import { MenuMobile } from '../menu-mobile/menu-mobile';
 import { Separator } from '../separator/separator';
 import { LogoNg } from '../logo-angular/logo-ng';
 import { LogoCoders } from '../logo-coders/logo-coders';
+import { User } from '../user/user';
+import { Toggle } from '../toggle/toggle';
 
 @Component({
   selector: 'alc-header',
-  imports: [MenuMobile, Separator, LogoNg, LogoCoders],
+  imports: [MenuMobile, Separator, LogoNg, LogoCoders, User, Toggle],
   template: `
-    <!-- @let menu = menuTemplate(); -->
     <header class="container">
       <div class="left-side">
         <alc-logo-coders />
@@ -18,12 +19,14 @@ import { LogoCoders } from '../logo-coders/logo-coders';
         <h1>{{ title() }}</h1>
       </hgroup>
       <div class="right-side">
-        <alc-menu-mobile />
-        <!-- <div class="icons">
+        <div class="icons">
+          <alc-menu-mobile />
+          <!--
+            <alc-menu-mobile (openEvent)="toggleModal(true)" />
+            -->
           <alc-user />
-          <alc-menu-mobile (openEvent)="toggleModal(true)" />
-        </div> -->
-        <!-- <alc-toggle /> -->
+        </div>
+        <alc-toggle />
       </div>
       <div class="bottom-row">
         <p>{{ subtitle() }}</p>
