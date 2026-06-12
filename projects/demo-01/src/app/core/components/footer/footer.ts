@@ -1,16 +1,16 @@
 import { Component, signal } from '@angular/core';
-// import { Socials } from '../socials/socials';
+import { Socials } from '../socials/socials';
 
 @Component({
   selector: 'alc-footer',
-  // imports: [Socials],
+  imports: [Socials],
   template: `
     <footer>
       <address>
         <p>{{ autor() }}</p>
         <p>{{ brand() }} © {{ today().getFullYear() }}</p>
       </address>
-      <!-- <alc-socials /> -->
+      <alc-socials />
     </footer>
   `,
   styles: `
