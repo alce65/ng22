@@ -1,8 +1,9 @@
 import { Component, signal } from '@angular/core';
+import { MenuMobile } from '../menu-mobile/menu-mobile';
 
 @Component({
   selector: 'alc-header',
-  imports: [],
+  imports: [MenuMobile],
   template: `
     <!-- @let menu = menuTemplate(); -->
     <header class="container">
@@ -14,6 +15,7 @@ import { Component, signal } from '@angular/core';
         <h1>{{ title() }}</h1>
       </hgroup>
       <div class="right-side">
+        <alc-menu-mobile />
         <!-- <div class="icons">
           <alc-user />
           <alc-menu-mobile (openEvent)="toggleModal(true)" />
