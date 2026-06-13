@@ -1,19 +1,34 @@
 import { Component, signal } from '@angular/core';
-// import { Pills } from './components/pills/pills';
-// import { Logo } from './components/logo/logo';
-// import { Separator } from './components/separator/separator';
+import { Pills } from './components/pills/pills';
+import { SeparatorRwd } from './components/separator-rwd/separator-rwd';
+import { LogoNg } from '../../core/components/logo-angular/logo-ng';
 
 @Component({
   selector: 'alc-about-page',
-  // imports: [Logo, Separator, Pills],
+  imports: [LogoNg, SeparatorRwd, Pills],
   template: `
-    <!-- <alc-logo /> -->
-    <h2>{{ pageTitle() }}</h2>
-    <!-- 
-    <alc-separator2 />
-    <alc-pills /> -->
+    <div>
+      <alc-logo-ng />
+      <h2>{{ pageTitle() }}</h2>
+    </div>
+    <alc-separator-rwd />
+    <alc-pills />
   `,
-  styles: ``,
+  styles: `
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+    @media (width > 800px) {
+      :host {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 3rem;
+      }
+    }
+  `,
 })
 export default class AboutPage {
   protected readonly pageTitle = signal('About ng22');

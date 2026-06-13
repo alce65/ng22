@@ -23,7 +23,7 @@ import AboutPage from '../../../features/about/about-page';
       <alc-card>
         <alc-dashboard-page id="dashboard" />
       </alc-card>
-      <alc-card>
+      <alc-card class="wide">
         <alc-about-page id="about" />
       </alc-card>
     </main>
@@ -48,6 +48,12 @@ import AboutPage from '../../../features/about/about-page';
       align-items: center;
       padding: 1rem;
       position: relative;
+    }
+    @media (width > 800px) {
+      .wide {
+        align-self: stretch;
+        margin-inline: 5rem;
+      }
     }
   `,
 })
