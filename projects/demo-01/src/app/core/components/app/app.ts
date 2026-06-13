@@ -51,7 +51,7 @@ import { MENU_OPTIONS } from '../../../app.routes';
       padding: 1rem;
       position: relative;
     }
-    @media (width > 800px) {
+    @media (width > 600px) {
       .wide {
         align-self: stretch;
         margin-inline: 5rem;
