@@ -34,7 +34,8 @@ export class MenuMobile {
   // protected readonly openEvent = output<void>();
 
   toggleMenu(event: Event) {
-  //   event.preventDefault();
-  //   this.openEvent.emit();
+    console.log('Abriendo menú mobile');
+    //   event.preventDefault();
+    //   this.openEvent.emit();
   }
 }

@@ -5,7 +5,7 @@ import { Component, signal } from '@angular/core';
   imports: [],
   template: `
     <nav>
-      <a href="#" id="menu-icon" (click)="toggleMenu()">
+      <a href="#" id="menu-icon" (click)="toggleUser()">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 640 640"
@@ -26,7 +26,7 @@ import { Component, signal } from '@angular/core';
 export class User {
   protected readonly size = signal('3rem');
 
-  toggleMenu() {
+  toggleUser() {
     console.log('User Login');
   }
 }
