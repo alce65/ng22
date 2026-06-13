@@ -14,6 +14,7 @@ import { LogoNg } from '../../core/components/logo-angular/logo-ng';
     <alc-separator-rwd />
     <alc-pills />
   `,
+  styleUrls: ['../pages.css'],
   styles: `
     :host {
       display: flex;

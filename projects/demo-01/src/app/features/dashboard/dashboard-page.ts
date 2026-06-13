@@ -1,13 +1,14 @@
 import { Component, signal } from '@angular/core';
-// import { CountersList } from './components/counters-list/counters-list';
+import { CountersList } from './components/counters-list/counters-list';
 
 @Component({
   selector: 'alc-dashboard-page',
-  // imports: [CountersList],
+  imports: [CountersList],
   template: `
     <h2>{{ pageTitle() }}</h2>
-    <!-- <alc-counters-list /> -->
+    <alc-counters-list />
   `,
+  styleUrls: ['../pages.css'],
   styles: `
     :host {
       display: block;
@@ -17,5 +18,5 @@ import { Component, signal } from '@angular/core';
   `,
 })
 export default class DashboardPage {
-    protected readonly pageTitle = signal('Dashboard');
+  protected readonly pageTitle = signal('Dashboard');
 }
