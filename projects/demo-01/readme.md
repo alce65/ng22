@@ -41,8 +41,12 @@
     - [Página about (Angular)](#página-about-angular)
     - [Resultados: Páginas iniciales (sin router)](#resultados-páginas-iniciales-sin-router)
   - [Comunicación entre componentes: inputs](#comunicación-entre-componentes-inputs)
-  - [](#)
-  - [Core - Components de utilidad en el core: modal](#core---components-de-utilidad-en-el-core-modal)
+  - [Dashboard: counters](#dashboard-counters)
+    - [1. `alc-counter`: contador inicial](#1-alc-counter-contador-inicial)
+    - [2. `alc-counter`: contador mejorado](#2-alc-counter-contador-mejorado)
+    - [2.  `alc-counters-list`: lista de contadores](#2--alc-counters-list-lista-de-contadores)
+    - [Resultados: Páginas dashboard con contadores](#resultados-páginas-dashboard-con-contadores)
+  - [Core - Componentes modal y menu mobile](#core---componentes-modal-y-menu-mobile)
 
 
 ```shell
@@ -287,7 +291,7 @@ En estos componentes vemos
 
 Incluye en su template los componentes `alc-header` y `alc-footer`, junto con la etiqueta <main> envolviendo el `router-outlet`. El `alc-header` contiene el `alc-menu`, proyectándolo en el componente header mediante content projection. 
 
-```ts alc-app.ts
+```ts app.ts
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Header } from '../header/header';
@@ -336,7 +340,7 @@ export class App {}
 La primera incluye un dos divs, clases `right-side` y `left-side`, para colocar logos e iconos, junto con un hgroup en el centro, para el heading `h1`.
 La segunda fila incluye un párrafo con el subtítulo y un div con clase `desktop-only` para proyectar el menú en la versión de escritorio.
 
-```ts alc-header.ts
+```ts header.ts
 import { Component, signal } from '@angular/core';
 
 @Component({
@@ -458,7 +462,7 @@ En los estilos vemos como se puede incorporar una media-query a nivel de compone
 
 Contiene un párrafo con el texto "Copyright 2024" (más adelante añadiremos el componente `alc-socials` para mostrar los iconos de redes sociales).
 
-```ts alc-footer.ts
+```ts footer.ts
 import { Component, signal } from '@angular/core';
 
 @Component({
@@ -558,7 +562,7 @@ const MENU_OPTIONS: MenuOption[]   = [
 
 En el componente se crea una señal que contiene las opciones del menú, y se itera sobre ellas en el template para mostrar cada opción como un enlace de navegación:
 
-```ts alc-menu.ts
+```ts menu.ts
 import { Component, signal } from '@angular/core';
 import { MenuOption } from '../../types/menu.option';
 import { MENU_OPTIONS } from '../../../app.routes';
@@ -715,7 +719,7 @@ En estos componentes vemos
 
 Es un componente que muestra una línea horizontal de separación entre el header y el contenido principal. Se limita a aplicar en un div un gradiente definido en el css utilizando la paleta de colores de la aplicación.
 
-```ts alc-separator.ts
+```ts separator.ts
 import { Component } from '@angular/core';
 
 @Component({
@@ -783,7 +787,7 @@ Como en este caso no se modifica el SVG, este puede utilizarse directamente com 
 </svg>
 ```
 
-```ts alc-logo-ng.ts
+```ts logo-angular.ts
 import { Component } from '@angular/core';
 
 @Component({
@@ -827,7 +831,7 @@ En el svg se utiliza attr para vincular los atributos de tamaño y color con las
 
 Además en uno de los paths se añade un evento de click para manejar la interacción con el logo, lo que permitirá más adelante mostrar un modal con información sobre la aplicación al hacer click en una parte concreta del logo.
 
-```ts alc-logo-coders.ts
+```ts logo-coders.ts
 import { Component } from '@angular/core';
 
 @Component({
@@ -859,7 +863,7 @@ El componente `alc-logo-coders` se incorpora en el `alc-header`, en el div con l
 
 Es un componente de utilidad para mostrar contenido en formato de tarjeta, con estilos predefinidos para el fondo, los bordes, las sombras y el padding. Este componente se utilizará más adelante para mostrar el contenido de las páginas de la aplicación.
 
-```ts alc-card.ts
+```ts card.ts
 import { Component } from '@angular/core';
 
 @Component({
@@ -1034,7 +1038,7 @@ Versión alternativa del componente `alc-search`, que utiliza referencias locale
 - el ngModel del input se vincula a la referencia local, lo que permite que el valor del input se refleje automáticamente en la vista.
 - en respuesta al click del botón reset se modifica directamente el valor de la referencia local, asignándole un string vacío.
 
-```ts alc-search-ref.ts
+```ts search-ref.ts
 import { Component, viewChild, ElementRef, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -1358,6 +1362,7 @@ import { Component, signal } from '@angular/core';
   template: `
     <h2>{{ pageTitle() }}</h2>
   `,
+  styleUrls: ['../pages.css'],
   styles: ``,
 })
 export default class HomePage {
@@ -1372,8 +1377,8 @@ import { Component, signal } from '@angular/core';
   selector: 'alc-dashboard-page',
   template: `
     <h2>{{ pageTitle() }}</h2>
-    <!-- <alc-counters-list /> -->
   `,
+  styleUrls: ['../pages.css'],
   styles: `
     :host {
       display: block;
@@ -1395,6 +1400,7 @@ import { Component, signal } from '@angular/core';
   template: `
     <h2>{{ pageTitle() }}</h2>
   `,
+  styleUrls: ['../pages.css'],
   styles: ``,
 })
 export default class AboutPage {
@@ -1402,7 +1408,37 @@ export default class AboutPage {
 }
 ```
 
+Todas las páginas comparten un archivo de estilos `pages.css` que define estilos comunes para todas ellas, como el color de los encabezados.
+
 Por el momento, hasta disponer de un router, se incorporan las páginas en app, una tras otra, para mostrar el contenido de cada una de ellas, añadiéndoles un id y envolviendo cada una en un `alc-card`.
+
+```ts app.ts
+@Component({
+  selector: 'alc-root',
+  imports: [RouterOutlet, Header, Footer, Menu, Card, HomePage, DashboardPage, AboutPage],
+  template: `
+    <alc-header />
+      <alc-menu />
+    </alc-header>
+    <main class="container">
+      <router-outlet />
+      <alc-card>
+        <alc-home-page id="home" />
+      </alc-card>
+      <alc-card>
+        <alc-dashboard-page id="dashboard" />
+      </alc-card>
+      <alc-card class="wide">
+        <alc-about-page id="about" />
+      </alc-card>
+    </main>
+    <alc-footer />
+  `,
+  styles: `...`
+})
+export class App {}
+```
+
 
 Se modifican las opciones de menú definidas en `app.routes.ts` para que correspondan a las tres páginas creadas
 
@@ -1577,17 +1613,370 @@ export class Pills {
 
 ## Comunicación entre componentes: inputs
 
-Utilizando la capacidad de comunicación entre los componentes mediante inputSignals
+Utilizando la capacidad de comunicación entre los componentes mediante inputSignals, se puede pasar información desde un componente padre a un componente hijo. 
 
-- título en app
+Esto permite un mejor reparto de responsabilidades:
+
+- el componente padre se encarga de gestionar la información y el estado de la aplicación
+- el componente hijo se encarga de mostrar la información y manejar la interacción con el usuario.
+
+En nuestro primer ejemplo, el componente app es responsable de los valores del estado de la aplicación: 
+
+- título y subtítulo en app
 - opciones de menu en app
 
+Mediante inputs estos valores llegan al componente responsable de mostrar el header, que a su vez los pasa a los componentes hijos que se encargan de mostrar el logo, el menu y el título.
 
-## 
+```ts app.ts
+@Component({
+  selector: 'alc-root',
+  imports: [RouterOutlet, Header, Footer, Menu, Card, ...],
+  template: `
+    <alc-header [title]="title()" [subtitle]="subtitle()">
+      <alc-menu [options]="menuOptions()" />
+    </alc-header>
+    <main class="container">
+      <router-outlet />
+      ...
+    </main>
+    <alc-footer />
+  `,
+  styles: `...`
+})
+export class App {
+  protected readonly title = signal('Curso de Angular 22');
+  protected readonly subtitle = signal('Aprende a desarrollar aplicaciones con Angular');
+  protected readonly menuOptions = signal<MenuOption[]>(MENU_OPTIONS);
+}
+```
 
-- multiples contadores
+En los componentes hijo solo cambia la forma en que se recibe valor en los propiedades, mientras que su uso es completamente igual.
 
-## Core - Components de utilidad en el core: modal
+Al definir los inputs como required, se asegura que el componente hijo no pueda ser utilizado sin recibir los valores necesarios desde el componente padre, lo que ayuda a evitar errores y a mantener la consistencia de la aplicación.
+
+```ts header.ts
+@Component({
+  selector: 'alc-header',
+  imports: [MenuMobile, Separator, LogoNg, LogoCoders, User, Toggle, Search, SearchRef],
+  template: `...`,
+  styles: `...` 
+  ],
+})
+export class Header {
+  readonly title = input.required<string>();
+  readonly subtitle = input.required<string>();
+}
+```
+
+```ts menu.ts
+@Component({
+  selector: 'alc-menu',
+  imports: [],
+  template: `...`,
+  styles: `...`,
+})
+export class Menu {
+  readonly options = input.required<MenuOption[]>();
+}
+```
+Esto también permite personalizar el comportamiento y la apariencia del componente hijo según las necesidades del componente padre, como veremos más adelante.
+
+## Dashboard: counters
+
+Creamos los componentes correspondientes a un contador de tres botones y una lista de contadores
+
+```shell
+  ng g c features/dashboard/components/counter
+  ng g c features/dashboard/components/counters-list
+```
+
+- `alc-counters-list`
+  - `alc-counter`
+  - `alc-counter`
+  - `alc-counter`
+
+El componente `alc-counters-list` se incorpora a la página `dashboard-page`, para mostrar una lista de contadores, cada uno con su propio estado y funcionalidad. En el se incluyen tres contadores.
+
+### 1. `alc-counter`: contador inicial
+
+En el componente `alc-ounter` se implementa un contador con tres botones: incrementar, decrementar y resetear.
+
+- En la clase de define el estado con propiedades de tipo signal: sus cambios se reflejan en la vista 
+  
+  ```ts
+  protected readonly clicks = signal(0);
+  protected readonly count = signal(0);
+  ```
+
+- En la vista podemos definir la respuesta a los eventos con el operador () 
+
+```ts
+<div>
+  <button (click)="changeCount(1)" title="Increment">➕</button>
+  <button (click)="changeCount(-1)" title="Decrement">➖</button>
+  <button (click)="resetCount()" title="Reset">🟣</button>
+  <button (click)="changeCountAsync()" title="Increment Async">➕ Async</button>
+</div>
+```
+
+- En esa respuesta podemos hacer directamente cambios en el estado,
+que automáticamente actualizaran la vista 
+
+  ```ts
+  changeCount(delta: number) {
+    this.clicks.update((value) => value + 1);
+    this.count.update((value) => value + delta);
+  }
+
+  resetCount() {
+    this.clicks.set(0);
+    this.count.set(0);
+  }
+  changeCountAsync() {
+    setTimeout(() => {
+      this.changeCount(1);
+      console.log(`Clicks: ${this.clicks}`);
+    }, 1000);
+  }
+  ```
+
+El método asíncrono nos permite comprobar como las operaciones asíncronas se gestionan correctamente si usamos signal(). 
+
+Si la variable no es reactiva en un proyecto ZoneLess y con la estrategia de detección del cambio OnPush, cuando su valor cambia desde un callback asíncrono, la vista no se actualiza automáticamente. 
+
+### 2. `alc-counter`: contador mejorado
+
+El atributo [class] se puede utilizar para aplicar una clase de css de forma condicional. Creamos una clase `.negative` que se aplica cuando el valor del contador es negativo, para cambiar el color del texto.
+
+El atributo [class] se vincular con un objeto en el que
+
+- los nombres de las propiedades corresponden a clases CSS
+- su valor boolean determina si se aplican
+
+```ts
+<output [class]="{'negative': counter < 0}">{{counter()}}</output>
+```
+Alternativamente, se puede utilizar el atributo [class.nombre] con lo que el nombre de la clase se especifica directamente en el atributo y su valor boolean determina si se aplica.
+
+```ts
+<output [class.negative]="counter < 0">{{counter}}</output>
+```
+
+En versiones anteriores de Angular de usaban directivas de atributo como ngClass, que permitían aplicar clases de forma condicional, pero en la guía de estilo de Angular actual se recomienda **evitar** el uso de directivas de atributo como ngClass y ngStyle en favor del uso directo de los atributos del DOM con el operador [].
+
+Si definimos como límites -5 y 5 almacenadolo en una propiedad del componente de tipo signal, podemos deshabilitar el botón que ya no es valido dando al atributo disable un valor booleano. Vemos de nuevo como el operador [] permite vincular un atributo a una expresión
+
+```html
+<div>
+  <button (click)="changeCount(1)" [disabled]="count() >= limit()" title="Increment">
+    ➕
+  </button>
+  <button (click)="changeCount(-1)" [disabled]="count() <= -limit()" title="Decrement">
+    ➖
+  </button>
+  <button (click)="resetCount()" [disabled]="count() === 0" title="Reset">
+    🟣
+  </button>
+  <button (click)="changeCountAsync()" [disabled]="count() >= limit()" title="Increment Async">
+    ➕ Async
+  </button>
+</div>
+```
+
+Pero ademas, podemos añadir información al usuario que se renderizará condicionalmente
+Para ello tenemos también un nuevo flow control, @if, que viene a sustituir a la directiva estructural ng-if
+
+```html
+@if (count() >= limit()) {
+  <p class="limit-reached">Alcanzaste el límite de {{ limit() }}</p>
+} @else if (count() <= -limit()) {
+  <p class="limit-reached">Alcanzaste el límite de -{{ limit() }}</p>
+} @else {
+  <p class="limit-reached">&nbsp;</p>
+}
+```
+
+La última condición reserva el espacio cuando no hay mensajes, para evitar un salto en la pantalla cuando aparece alguno de aquellos
+
+### 2.  `alc-counters-list`: lista de contadores
+
+El componente `alc-counters-list` se encarga de mostrar una lista de contadores, cada uno con su propio estado y funcionalidad.
+
+- permitirá que cada contador se identifique con un id, que se pasa como input al componente `alc-counter`
+- permitirá definir el valor inicial de cada uno de los contadores
+- llevara la cuentas del número total de clicks y del valor total acumulado en todos los contadores
+
+Para ello, se define un array de contadores, cada uno con su id y su valor inicial, que se itera en el template para crear un componente `alc-counter` por cada elemento del array.
+
+```ts
+
+interface CounterState {
+  id: number;
+  value: number;
+}
+
+const COUNTERS: CounterState[] = [
+  { id: 1, value: 0 },
+  { id: 2, value: 0 },
+  { id: 3, value: 0 },
+];
+@Component({
+  selector: 'alc-counters-list',
+  imports: [Counter, Card],
+  template: `
+    <p>Total: {{ total() }}</p>
+    <p>Total Clicks: {{ totalClicks() }}</p>
+    <div>
+      @for (item of counters(); track $index) {
+        <alc-card>
+          <alc-counter [id]="item.id" (clickEvent)="handleClicks($event)" />
+        </alc-card>
+      }
+    </div>
+  `,
+  styles: `
+    div {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+      gap: 1rem;
+    }
+  `,
+})
+export class CountersList {
+ protected readonly counters = signal<CounterState[]>(COUNTERS);
+}
+```
+
+Para actualizar el estado de los totales se define el manejador del evento clickEvent que se emite desde cada contador, que actualiza el total de clicks y el total acumulado.
+
+```ts
+handleClicks(delta: number) {
+  this.totalClicks.update((value) => value + 1);
+  this.total.update((value) => value + delta);
+}
+```
+
+De acuerdo con el modelo asíncrono de comunicación entre componentes que implementa Angular
+
+- el componente padre define el estado y lo pasa a los componentes hijos mediante inputs
+- los componentes hijos emiten eventos cuando su estado cambia, que son manejados por el componente padre para actualizar su propio estado y reflejar los cambios en la vista.
+
+En el contador creamos una output-signal (`OutputEmitterRef<number>`) `clickEvent` que emite el valor del cambio en el contador
+
+```ts
+protected readonly clickEvent = output<number>();
+```
+
+En cada cambio de valor del contador, se emite el evento con el valor del cambio (delta) que se recibe en el manejador del evento en el componente padre.
+
+```ts
+this.clickEvent.emit(delta);
+```
+
+El resultado final del componente counter sería el siguiente
+
+```ts  
+import { Component, input, output, signal } from '@angular/core';
+
+@Component({
+  selector: 'alc-counter',
+  imports: [],
+  template: `
+    <h3>Counter {{ id() }}</h3>
+    <p>
+      Clicks: <output class="clicks">{{ clicks() }}</output>
+    </p>
+    <!-- <p>Value: <output [class]="count() < 0 ? 'negative' : ''" class="value">{{ count() }}</output></p> -->
+    <!-- <p>Value: <output [class]="{negative: count() < 0}" class="value">{{ count() }}</output></p> -->
+    <p>
+      Value: <output [class.negative]="count() < 0" class="value">{{ count() }}</output>
+    </p>
+
+    @if (count() >= limit()) {
+      <p class="limit-reached">Alcanzaste el límite de {{ limit() }}</p>
+    } @else if (count() <= -limit()) {
+      <p class="limit-reached">Alcanzaste el límite de -{{ limit() }}</p>
+    } @else {
+      <p class="limit-reached">&nbsp;</p>
+    }
+
+    <div>
+      <button (click)="changeCount(1)" [disabled]="count() >= limit()" title="Increment">➕</button>
+      <button (click)="changeCount(-1)" [disabled]="count() <= -limit()" title="Decrement">
+        ➖
+      </button>
+      <button (click)="resetCount()" [disabled]="count() === 0" title="Reset">🟣</button>
+      <button (click)="changeCountAsync()" [disabled]="count() >= limit()" title="Increment Async">
+        ➕ Async
+      </button>
+    </div>
+  `,
+  styles: `
+    div {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .limit-reached {
+      color: var(--color-primary-hot);
+    }
+
+    .negative {
+      color: var(--color-tertiary-hot);
+    }
+  `,
+})
+export class Counter {
+  readonly id = input.required<number>();
+  readonly initialValue = input<number>(0, { alias: 'value' });
+
+  protected readonly clickEvent = output<number>();
+
+  protected readonly limit = signal(5);
+  protected readonly clicks = signal(0);
+  protected readonly count = signal(0);
+
+  // GETTER de la signal
+  // this.clicks()
+  // SETTERS de la signal
+  // this.clicks.set()
+  // this.clicks.update()
+
+  changeCount(delta: number) {
+    this.clicks.update((value) => value + 1);
+    this.clickEvent.emit(delta);
+    if (delta > 0 && this.count() >= this.limit()) {
+      return;
+    }
+    if (delta < 0 && this.count() <= -this.limit()) {
+      return;
+    }
+    this.count.update((value) => value + delta);
+  }
+
+  resetCount() {
+    const delta = -this.count();
+    this.clickEvent.emit(delta);
+    this.clicks.set(0);
+    this.count.set(0);
+  }
+  changeCountAsync() {
+    setTimeout(() => {
+      this.changeCount(1);
+      console.log(`Clicks: ${this.clicks}`);
+    }, 1000);
+  }
+}
+```
+
+### Resultados: Páginas dashboard con contadores
+
+![Página de Dashboard en la versión Mobile](./assets/pages-dashboard-mobile.png)
+![Página de Dashboard en la versión Desktop](./assets/pages-dashboard-desktop.png)
+ 
+## Core - Componentes modal y menu mobile
 
 - `alc-modal`
   
