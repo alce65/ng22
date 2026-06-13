@@ -4,10 +4,13 @@ import { Header } from '../header/header';
 import { Footer } from '../footer/footer';
 import { Menu } from '../menu/menu';
 import { Card } from '../card/card';
+import HomePage from '../../../features/home/home-page';
+import DashboardPage from '../../../features/dashboard/dashboard-page';
+import AboutPage from '../../../features/about/about-page';
 
 @Component({
   selector: 'alc-root',
-  imports: [RouterOutlet, Header, Footer, Menu, Card],
+  imports: [RouterOutlet, Header, Footer, Menu, Card, HomePage, DashboardPage, AboutPage],
   template: `
     <alc-header>
       <alc-menu />
@@ -15,7 +18,13 @@ import { Card } from '../card/card';
     <main class="container">
       <router-outlet />
       <alc-card>
-        <p>Páginas de la aplicación</p>
+        <alc-home-page id="home" />
+      </alc-card>
+      <alc-card>
+        <alc-dashboard-page id="dashboard" />
+      </alc-card>
+      <alc-card>
+        <alc-about-page id="about" />
       </alc-card>
     </main>
     <alc-footer />
@@ -34,6 +43,7 @@ import { Card } from '../card/card';
       width: 100%;
       min-height: 90%;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       padding: 1rem;
