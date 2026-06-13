@@ -5,10 +5,12 @@ import { LogoNg } from '../logo-angular/logo-ng';
 import { LogoCoders } from '../logo-coders/logo-coders';
 import { User } from '../user/user';
 import { Toggle } from '../toggle/toggle';
+import { Search } from '../search/search';
+import { SearchRef } from '../search/search-ref';
 
 @Component({
   selector: 'alc-header',
-  imports: [MenuMobile, Separator, LogoNg, LogoCoders, User, Toggle],
+  imports: [MenuMobile, Separator, LogoNg, LogoCoders, User, Toggle, Search, SearchRef],
   template: `
     <header class="container">
       <div class="left-side">
@@ -30,8 +32,11 @@ import { Toggle } from '../toggle/toggle';
       </div>
       <div class="bottom-row">
         <p>{{ subtitle() }}</p>
+        <alc-search class="mobile-only" />
+
         <div class="desktop-only">
           <ng-content></ng-content>
+          <alc-search-ref />
         </div>
       </div>
     </header>
@@ -88,6 +93,9 @@ import { Toggle } from '../toggle/toggle';
       .bottom-row {
         grid-column: span 3;
         margin-top: 0.6rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
 
         .desktop-only {
           display: none;
@@ -103,12 +111,18 @@ import { Toggle } from '../toggle/toggle';
           max-width: none;
         }
 
-        alc-menu-mobile {
+        alc-menu-mobile,
+        .mobile-only {
           display: none;
         }
         .bottom-row {
+          width: 100%;
+          display: block;
           .desktop-only {
-            display: block;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
             margin-top: 1rem;
           }
         }
