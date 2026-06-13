@@ -1,5 +1,45 @@
 # Demo 01
 
+- [Demo 01](#demo-01)
+  - [Estilos](#estilos)
+    - [Variables CSS](#variables-css)
+    - [Reset de estilos](#reset-de-estilos)
+  - [Scaffolding y Reubicación de app](#scaffolding-y-reubicación-de-app)
+  - [Core - Componentes del layout](#core---componentes-del-layout)
+    - [Elementos de Angular en los componentes del layout](#elementos-de-angular-en-los-componentes-del-layout)
+    - [1. `alc-app`](#1-alc-app)
+    - [2. `alc-header`: contiene un grid con dos filas](#2-alc-header-contiene-un-grid-con-dos-filas)
+    - [3. `alc-footer`](#3-alc-footer)
+    - [4. Otros componentes](#4-otros-componentes)
+    - [Resultados: Componentes del layout](#resultados-componentes-del-layout)
+  - [Core - Componentes de navegación (Menu, Menu Mobile, Socials)](#core---componentes-de-navegación-menu-menu-mobile-socials)
+    - [Elementos de Angular en los componentes de navegación](#elementos-de-angular-en-los-componentes-de-navegación)
+    - [Tipos y datos para el menú](#tipos-y-datos-para-el-menú)
+    - [1. `alc-menu`: muestra las opciones de navegación.](#1-alc-menu-muestra-las-opciones-de-navegación)
+    - [2. `alc-menu-mobile`](#2-alc-menu-mobile)
+    - [3. `alc-socials`](#3-alc-socials)
+    - [Resultados: Componentes de navegación](#resultados-componentes-de-navegación)
+  - [Core - Componentes gráficos](#core---componentes-gráficos)
+    - [Elementos de Angular en los componentes gráficos](#elementos-de-angular-en-los-componentes-gráficos)
+    - [1. `alc-separator`](#1-alc-separator)
+    - [2. `alc-logo-angular`](#2-alc-logo-angular)
+    - [3. `alc-logo-coders`](#3-alc-logo-coders)
+    - [4. `alc-card`](#4-alc-card)
+    - [Resultados: Componentes gráficos](#resultados-componentes-gráficos)
+  - [Core - Componentes de funcionalidad (right-side del header)](#core---componentes-de-funcionalidad-right-side-del-header)
+    - [Elementos de Angular en los componentes de funcionalidad](#elementos-de-angular-en-los-componentes-de-funcionalidad)
+    - [1. `alc-search`](#1-alc-search)
+    - [2. `alc-search-ref`](#2-alc-search-ref)
+    - [3. `alc-user`](#3-alc-user)
+    - [4. `alc-toggle`](#4-alc-toggle)
+    - [Resultados: Componentes de funcionalidad](#resultados-componentes-de-funcionalidad)
+  - [Core - versión final](#core---versión-final)
+    - [Components en la versión final](#components-en-la-versión-final)
+    - [Elementos de Angular utilizados](#elementos-de-angular-utilizados)
+  - [Comunicación entre componentes](#comunicación-entre-componentes)
+  - [Core - Components de utilidad en el core: modal](#core---components-de-utilidad-en-el-core-modal)
+
+
 ```shell
 ng g app demo-01 --style css --ssr false -p alc -t -s 
 ```
@@ -17,7 +57,7 @@ No se experimenta con ellos pero también se dan por conocidos:
 - change detection
 - lifecycle hooks 
 
-Nota: no se utilizan en este proyecto, inputs, outputs, 
+Al final del proyecto se aborda la comunicación entre componentes, usando inputs y outputs.
 
 ## Estilos
 
@@ -182,11 +222,37 @@ p {
 }
 ```
 
-## Reubicación de app
+## Scaffolding y Reubicación de app
+
+Utilizando un **enfoque basado en características (features) o dominios**, los archivos se organizan según las características o dominios de la aplicación.  
+
+Se crean carpetas para cada característica principal de la aplicación y para recalcar la separación entre el core y las características, 
+se agrupan todas las últimas en una carpeta
+
+  - src
+    - app
+      - core (elementos comunes a toda la aplicación)
+      - features
+        - usuarios
+        - productos
+        - pedidos
+
+Dentro de cada carpeta tendríamos los componentes, servicios, tipos o modelos y otros elementos relacionados con esa característica, agrupados en subcarpetas para cada tipo de archivo dentro de la carpeta de la característica. 
+
+ - src
+    - app
+      - core 
+        - components
+        - services
+        - types
+
+Este enfoque puede ser más escalable y facilitar la navegación en proyectos grandes, ya que agrupa todo lo relacionado con una característica en un solo lugar. Entre otras versiones, suele relacionarse este enfoque con la arquitectura **Vertical Slice** o incluso con el **Domain-Driven Design (DDD)**.
 
 Se reubica el componente raíz `App` a `core/components/app` para que sirva como contenedor principal de la aplicación, manteniendo el mismo scaffolding que el resto de los componentes del core
 
-## Core - Layout Components
+## Core - Componentes del layout
+
+Creamos los componentes de layout que se utilizarán en toda la aplicación, como el header, el footer y el menú de navegación.
 
 ```shell
 ng g c core/components/header --project demo-01
@@ -194,14 +260,27 @@ ng g c core/components/footer  --project demo-01
 ng g c core/components/menu  --project demo-01
 ```
 
+La relación entre estos componentes y el componente raíz `alc-app` se puede representar en un diagrama de árbol:
+
 - `alc-app`
   - `alc-header`
     - `alc-menu`
   - `router-outlet` 
   - `alc-footer`
-  
-  
-1. `alc-app`: incluye en su template los componentes `alc-header` y `alc-footer`, junto con la etiqueta <main> envolviendo el `router-outlet`. El `alc-header` contiene el `alc-menu`, proyectándolo en el componente header mediante content projection. 
+
+### Elementos de Angular en los componentes del layout
+
+En estos componentes vemos 
+
+- el **binding de expresiones JS** en el template, usando `{{ }}` para mostrar el título y el subtítulo del header, y para mostrar el año actual en el footer.
+- el uso de **signals** para definir propiedades reactivas en los componentes, incluso cuando no este previsto que cambien, como el título y el subtítulo del header, y el año actual en el footer.
+- el uso de la **proyección de contenido** (content projection) para proyectar el menú dentro del header
+- el uso de `router-outlet` que más adelante servirá para mostrar las páginas de la aplicación
+- los **estilos** de cada componente, usando displays de CSS (grid, flex) y media queries para adaptar el diseño a diferentes tamaños de pantalla.
+
+### 1. `alc-app`
+
+Incluye en su template los componentes `alc-header` y `alc-footer`, junto con la etiqueta <main> envolviendo el `router-outlet`. El `alc-header` contiene el `alc-menu`, proyectándolo en el componente header mediante content projection. 
 
 ```ts alc-app.ts
 import { Component } from '@angular/core';
@@ -247,8 +326,8 @@ import { Menu } from '../menu/menu';
 export class App {}
 ```
 
+### 2. `alc-header`: contiene un grid con dos filas
 
-2. `alc-header`: contiene un grid con dos filas
 La primera incluye un dos divs, clases `right-side` y `left-side`, para colocar logos e iconos, junto con un hgroup en el centro, para el heading `h1`.
 La segunda fila incluye un párrafo con el subtítulo y un div con clase `desktop-only` para proyectar el menú en la versión de escritorio.
 
@@ -370,7 +449,9 @@ export class Header {
 
 En los estilos vemos como se puede incorporar una media-query a nivel de componente usando la nueva sintaxis de media queries: `@media (width > 800px)`. Con ella hacemos que el menú móvil se oculte y el menú de escritorio se muestre a partir de un ancho de 800px. 
 
-3. `alc-footer`: contiene un párrafo con el texto "Copyright 2024" (más adelante añadiremos el componente `alc-socials` para mostrar los iconos de redes sociales).
+### 3. `alc-footer`
+
+Contiene un párrafo con el texto "Copyright 2024" (más adelante añadiremos el componente `alc-socials` para mostrar los iconos de redes sociales).
 
 ```ts alc-footer.ts
 import { Component, signal } from '@angular/core';
@@ -412,24 +493,42 @@ export class Footer {
 }
 ```
 
-4. `alc-menu`: contiene las opciones de navegación para la versión de escritorio.
+### 4. Otros componentes
+
+1. `alc-menu`: contiene las opciones de navegación para la versión de escritorio.
+
+2. Añadir aquí el componente Card, mencionado más adelante
+
+### Resultados: Componentes del layout
 
 ![Primera versión para mobile](./assets/initial-mobile.png)
 
 ![Primera versión para desktop](./assets/initial-desktop.png)
 
-5. Añadir aquí el componente Card, mencionado más adelante
+## Core - Componentes de navegación (Menu, Menu Mobile, Socials)
 
-## Core - Navigation Components (Menu, Menu Mobile, Socials)
-
-- `alc-menu` (ya creado)
-- `alc-socials`
-- `alc-menu-mobile`
+Creamos los componentes de navegación que se utilizarán en toda la aplicación, como el menú de navegación (ya creado), el menú móvil y los iconos de redes sociales.
 
 ```shell
 ng g c core/components/menu-mobile  --project demo-01
 ng g c core/components/socials  --project demo-01
 ```
+
+- `alc-menu` (ya creado)
+- `alc-socials`
+- `alc-menu-mobile`
+
+### Elementos de Angular en los componentes de navegación
+
+En estos componentes vemos
+
+- la creación de **interfaces** para definir **datos** útiles para la aplicación, como las opciones de menú y las opciones de redes sociales.
+- **iteración** sobre arrays de datos en el template, usando **`@for`** para mostrar cada opción como un enlace de navegación.
+- uso de **svg** dentro del template, personalizándolos con propiedades y atributos vinculados a propiedades del componente, como el color, el tamaño y el evento de click.
+- **vinculación (binding) de eventos** de click a métodos del componente, que más adelante se utilizará para abrir un modal con el menú de navegación en la versión móvil.
+- el uso de **`@switch`** en el template para mostrar el icono correspondiente a cada red social según su nombre.
+
+### Tipos y datos para el menú
 
 Definimos un tipo para las opciones del menú:
 
@@ -450,7 +549,9 @@ const MENU_OPTIONS: MenuOption[]   = [
 ];
 ```
 
-1. En el componente se crea una señal que contiene las opciones del menú, y se itera sobre ellas en el template para mostrar cada opción como un enlace de navegación:
+### 1. `alc-menu`: muestra las opciones de navegación.
+
+En el componente se crea una señal que contiene las opciones del menú, y se itera sobre ellas en el template para mostrar cada opción como un enlace de navegación:
 
 ```ts alc-menu.ts
 import { Component, signal } from '@angular/core';
@@ -498,7 +599,9 @@ export class Menu {
 
 De momento la etiquetas anchor (<a>) utilizan `href` y referencias internas (`#`) para navegar dentro de una misma página haciendo scroll, pero más adelante se cambiará a `routerLink` para aprovechar el enrutamiento de Angular.
 
-2. `alc-menu-mobile`: contiene el icono de hamburguesa característico en los diseños mobile.
+### 2. `alc-menu-mobile` 
+
+Contiene el icono de hamburguesa característico en los diseños mobile.
 
 El icono en formato SVG se puede obtener de [fontawesome](https://fontawesome.com/icons/bars?s=solid), [svgrepo](https://www.svgrepo.com/svg/5125/hamburger-menu) o cualquier otra fuente de SVGs.
 
@@ -541,16 +644,19 @@ export class MenuMobile {
   protected readonly size = signal('3rem');
 
   toggleMenu(event: Event) {
+    console.log('Abriendo menú mobile');
   }
 }
 ```
 
-El componente se se incorpora en el `alc-header`, en el div con la clase `right-side`, y se muestra u oculta según el ancho de la pantalla, usando media queries en los estilos del componente `alc-header`. 
-
+El evento click del icono de hamburguesa está vinculado al método `toggleMenu`, que recibe el evento y lo previene para evitar que el enlace navegue a otra página.
 De momento el método de respuesta al click no tiene ninguna funcionalidad, pero más adelante se añadirá un evento de click para abrir un modal con el menú de navegación.
 
+El componente se se incorpora en el `alc-header`, en el div con la clase `right-side`, y se muestra u oculta según el ancho de la pantalla, usando media queries en los estilos del componente `alc-header`. 
 
-3. `alc-socials`: contiene los iconos de redes sociales para mostrar en el footer. 
+### 3. `alc-socials`
+
+Contiene los iconos de redes sociales para mostrar en el footer. 
 
 Por una parte definimos un tipo para las opciones de redes sociales, con una etiqueta, una url y el svg correspondiente:
 
@@ -566,18 +672,15 @@ El componente `alc-socials` declara como signal un array de opciones de redes so
 
 Por otro lado obtenemos los iconos en formato SVG, en alguna de las fuentes ya citadas y se incorporan al template dentro de un @switch, mostrando el icono correspondiente a cada red social según su nombre. Para asignarle el color del contenedor, se utiliza el valor `currentColor` en el atributo `fill` del svg, lo que hace que herede el color del contenedor padre.
 
+### Resultados: Componentes de navegación
 
 ![Navegación en la versión mobile](./assets/nav-mobile.png)
 
 ![Navegación en la versión desktop](./assets/nav-desktop.png)
 
-## Core - Components gráficos en el core
+## Core - Componentes gráficos
 
-- `alc-separator`
-- `alc-logo-angular`
-- `alc-logo-coders`
-- `alc-card`
-
+Creamos los componentes gráficos que se utilizarán en toda la aplicación, como el separador, los logos de Angular y Coders y el componente de tarjeta.
 
 ```shell
 ng g c core/components/separator --project demo-01
@@ -586,11 +689,26 @@ ng g c core/components/logo-coders --project demo-01
 ng g c core/components/card --project demo-01
 ```
 
+- `alc-separator`
+- `alc-logo-angular`
+- `alc-logo-coders`
+- `alc-card`
+
 Los primeros componentes de este bloque son componentes gráficos que se utilizan en el header y la aplicación, para mostrar los logos de Angular y Coders, así como un separador entre el header y el contenido principal.
 
 El último de ellos, `alc-card`, es un componente de utilidad para mostrar contenido en formato de tarjeta, con estilos predefinidos para el fondo, los bordes, las sombras y el padding. Este componente se utilizará más adelante para mostrar el contenido de las páginas de la aplicación.
 
-1. `alc-separator`: es un componente que muestra una línea horizontal de separación entre el header y el contenido principal. Se limita a aplicar en un div un gradiente definido en el css utilizando la paleta de colores de la aplicación.
+### Elementos de Angular en los componentes gráficos
+
+En estos componentes vemos
+
+- **componentes de presentación** (presentational components) o componentes gráficos mínimos, que no tienen lógica de negocio ni estado propio, y que se limitan a mostrar contenido  **encapsulando estilos CSS** apartando semántica y homogeneidad de los elementos de la aplicación, siendo todos componentes
+- uso de **ficheros svg como template**, con la posibilidad de aplicar en ellos todos los elementos de Angular, como binding de propiedades y eventos
+- componentes de **utilidad** (utility components) o del **sistema de diseño** (design system), como `alc-card`, que se pueden reutilizar en toda la aplicación para mostrar contenido en formato de tarjeta, con estilos predefinidos para el fondo, los bordes, las sombras y el padding.
+
+### 1. `alc-separator`
+
+Es un componente que muestra una línea horizontal de separación entre el header y el contenido principal. Se limita a aplicar en un div un gradiente definido en el css utilizando la paleta de colores de la aplicación.
 
 ```ts alc-separator.ts
 import { Component } from '@angular/core';
@@ -613,7 +731,9 @@ export class Separator {}
 
 El componente `alc-separator` se incorpora en el `alc-header`, justo debajo del <header>, para separar visualmente el header del contenido principal de la aplicación.
 
-2. - `alc-logo-angular` es un componente que muestra el logo de Angular junto con el nombre del framework en formato SVG, tal como se incluye en la aplicación ejemplo incluida en la instalación completa de Angular (workspace y project al tiempo)
+### 2. `alc-logo-angular`
+
+Es un componente que muestra el logo de Angular junto con el nombre del framework en formato SVG, tal como se incluye en la aplicación ejemplo incluida en la instalación completa de Angular (workspace y project al tiempo)
 
 Como en este caso no se modifica el SVG, este puede utilizarse directamente com template, vinculándolo a la propiedad templateURL del decorador @Component, lo que permite mantener el código del componente más limpio y separado del código del SVG.
 
@@ -678,7 +798,9 @@ export class LogoNg {}
 
 El componente `alc-logo-ng` se incorpora en el `alc-header`, en el `hgroup`, para mostrar el logo de Angular junto con el nombre del framework integrado en el "título" de la app.
 
-3. `alc-logo-coders` es un componente que muestra el logo de "Coders" como logo de la aplicación, en formato SVG. Como en el caso anterior, el SVG es un fichero independiente que se vincula como template del componente.
+### 3. `alc-logo-coders`
+
+Es un componente que muestra el logo de "Coders" como logo de la aplicación, en formato SVG. Como en el caso anterior, el SVG es un fichero independiente que se vincula como template del componente.
 
 ```svg logo-coders.svg
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
@@ -728,7 +850,9 @@ En el componente se definen las propiedades para el tamaño y los colores del lo
 
 El componente `alc-logo-coders` se incorpora en el `alc-header`, en el div con la clase `left-side`, que asegura su posición a la izquierda.
 
-4. `alc-card` es un componente de utilidad para mostrar contenido en formato de tarjeta, con estilos predefinidos para el fondo, los bordes, las sombras y el padding. Este componente se utilizará más adelante para mostrar el contenido de las páginas de la aplicación.
+### 4. `alc-card`
+
+Es un componente de utilidad para mostrar contenido en formato de tarjeta, con estilos predefinidos para el fondo, los bordes, las sombras y el padding. Este componente se utilizará más adelante para mostrar el contenido de las páginas de la aplicación.
 
 ```ts alc-card.ts
 import { Component } from '@angular/core';
@@ -771,27 +895,238 @@ Como ejemplo, podemos utilizar Card en el componente App para envolver el mensaj
   `,
 ```
 
+### Resultados: Componentes gráficos
+
 ![Elementos gráficos en la versión mobile](./assets/logos-mobile.png)
 
 ![Elementos gráficos en la versión desktop](./assets/logos-desktop.png)
 
-## Core - Components de funcionalidad en el core (right-side del header)
+## Core - Componentes de funcionalidad (right-side del header)
 
+- `alc-search` / `alc-search-ref`
 - `alc-user` 
 - `alc-toggle`
 
 ```shell
+ng g c core/components/search --project demo-01
 ng g c core/components/user --project demo-01
 ng g c core/components/toggle --project demo-01
 ```
 
-En el lado derecho del header se añaden dos componetes de distinta funcionalidad: `alc-user` y `alc-toggle`. 
+En la fila inferior del header se añade el componente `alc-search`, que incorpora un input de búsqueda y un botón para resetear el valor del input.
 
-El primero es un componente que muestra un icono de usuario, que se utilizará para mostrar información sobre el inicio de sesión del usuario o para acceder a opciones relacionadas con la cuenta. 
+En el lado derecho del header se añaden dos componentes de distinta funcionalidad: `alc-user` y `alc-toggle`. 
 
-El segundo es un componente que muestra un toggle para cambiar entre el modo claro y oscuro de la aplicación, lo que permitirá a los usuarios personalizar la apariencia de la aplicación según sus preferencias.
+### Elementos de Angular en los componentes de funcionalidad
 
-1. `alc-user` incorpora nuevamente un icon svg, obtenido igual que los anteriores. En este case se añade al template, dentro de una etiqueta <a>, ya que en principio navegará a la página de gestión del usuario. Como en casos anteriores se vinculan atributos del svg con prppiedadees del componente para permitir su personalización desde el componente padre.
+En estos componentes vemos
+
+- la **vinculación en dos sentidos** (two-way binding) utilizando `[(ngModel)]`, que permite que los cambios en el componente se reflejen en la vista y viceversa. 
+- las **referencias locales** que permiten manipular valores directamente desde el template, sin necesidad de vincularlos a propiedades del componente.
+- el acceso desde el componente a las referencias locales, utilizando una **signal query**, `viewChild()`, para obtener una signal del `ElementRef`, que da acceso al `nativeElement` del input
+- el uso de los **efectos de las signals**, `effect()`, que se ejecutara cuando cambie el `ElementRef`, ara permitirnos mostrarlo por consola
+- un uso más realista de la **signal query**, `viewChild()`, para poder monipular el DOM, por ejemplo para darle el foco a un elemento cuando se hace click en un botón, utilizando el `nativeElement` del `ElementRef` para acceder al input y llamar a su método `focus()`.
+- de nuevo el uso de **svg** como parte de un template, con atributos vinculados a propiedades del componente
+- **widgets** basados en css puro, como el toggle, que no necesitan JS para parte de su funcionalidad, pero que se encapsulan en un componente Angular para poder reutilizarlos y personalizarlos desde el componente padre.
+- el uso de **signal** para definir propiedades reactivas que se vinculan al svg o al html del template, permitiendo que los cambios en estas propiedades se reflejen automáticamente en la vista.
+
+### 1. `alc-search`
+
+Incorpora un input de búsqueda, aunque sin implementar esta funcionalidad, para demostrar el funcionamiento de la vinculación en dos direcciones (propiedades y eventos) en Angular. 
+
+- El input se vincula a una propiedad signal utilizando `[(ngModel)]`.
+- Junto a el se muestra el valor que se esta escribiendo, indicando que se esta usando en la búsqueda (que no existe)
+- Un botón reset permite vaciar de valor la signal, lo que se reflejará automáticamente en el input y en el valor mostrado. 
+
+Para el botón se utiliza un svg, como ya hemos hecho en otras ocasiones, con atributos vinculados a propiedades del componente para permitir su personalización desde el componente padre.
+
+Por último, se crea una referencia local al input de búsqueda, `#searchInput`, y se utiliza una signal query, `viewChild()`, para obtener el `ElementRef` del input, lo que permite darle el foco cuando se hace click en el botón reset.
+
+```ts search.ts
+import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'alc-search',
+  imports: [FormsModule],
+  template: `
+    <!-- <input type="text" placeholder="Search..."
+    [value]="text()" (input)="text.set($event.target.value)"/> -->
+
+    <input type="text" #searchInput placeholder="Search..." name="text" [(ngModel)]="text" />
+    <span class="form-result">{{
+      text() === '' ? 'Esperando' : 'Buscando ' + text()
+    }}</span>
+    <button (click)="resetSearch()" title="Reset" aria-label="Reset">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 640 640"
+        [attr.width]="size()"
+        [attr.height]="size()"
+        fill="currentColor"
+      >
+        <path
+          d="M320 128C263.2 128 212.1 152.7 176.9 192L224 192C241.7 192 256 206.3 256 224C256 241.7 241.7 256 224 256L96 256C78.3 256 64 241.7 64 224L64 96C64 78.3 78.3 64 96 64C113.7 64 128 78.3 128 96L128 150.7C174.9 97.6 243.5 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C233 576 156.1 532.6 109.9 466.3C99.8 451.8 103.3 431.9 117.8 421.7C132.3 411.5 152.2 415.1 162.4 429.6C197.2 479.4 254.8 511.9 320 511.9C426 511.9 512 425.9 512 319.9C512 213.9 426 128 320 128z"
+        />
+      </svg>
+    </button>
+  `,
+  styles: `
+    :host {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      height: 2rem;
+    }
+    .form-result {
+      font-size: 0.8rem;
+      color: var(--color-primary-hot);
+      width: min-content;
+    }
+    button {
+      color: var(--color-primary-hot);
+      background-color: var(--color-background-primary);
+      border: 1px solid var(--color-primary-hot);
+      border: none;
+    }
+    input {
+      color: var(--color-primary-hot);
+      background-color: var(--color-background-primary);
+      border: 1px solid var(--color-primary-hot);
+      border-radius: 0.5rem;
+      padding: 0.3rem;
+
+      &:focus-visible {
+        outline: var(--color-primary) auto 1px;
+        background-color: var(--color-background);
+      }
+    }
+  `,
+})
+export class Search {
+  protected readonly searchInputElement = viewChild<ElementRef>('searchInput');
+  protected readonly size = signal('1rem');
+  protected readonly text = signal('');
+
+  resetSearch() {
+    console.log(this.searchInputElement());
+    console.dir(this.searchInputElement()?.nativeElement);
+    this.searchInputElement()?.nativeElement.focus();
+    this.text.set('');
+  }
+}
+```
+
+El componente se debería incorporar en dos posiciones del `alc-header`, en la fila inferior, marcadas con classes que determinan su aparición en el modo mobile o desktop, para mostrar el input de búsqueda en ambas versiones en distintas ubicaciones.
+
+En este caso, en la posición correspondiente al desktop, incorporamos una versión alternativa del componente, basada en referencias locales, que aparece a continuación
+
+### 2. `alc-search-ref`
+
+Versión alternativa del componente `alc-search`, que utiliza referencias locales para manejar el valor del input de búsqueda, en lugar de vincularlo a una propiedad signal.
+
+- el input se marca como referencia local con `#searchInput`, lo que permite acceder a su valor directamente desde el template.
+- el ngModel del input se vincula a la referencia local, lo que permite que el valor del input se refleje automáticamente en la vista.
+- en respuesta al click del botón reset se modifica directamente el valor de la referencia local, asignándole un string vacío.
+
+```ts alc-search-ref.ts
+import { Component, viewChild, ElementRef, effect } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'alc-search-ref',
+  imports: [FormsModule],
+  template: `
+    <input
+      type="text"
+      placeholder="Search..."
+      id="searchInput"
+      #searchInput
+      [(ngModel)]="searchInput.value"
+    />
+
+    <p class="form-result">{{ searchInput.value === '' ? 'Esperando' : 'Buscando ' + searchInput.value }}</p>
+    <button (click)="searchInput.value = ''; searchInput.focus()" title="Reset" aria-label="Reset">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 640 640"
+        [attr.width]="'1rem'"
+        [attr.height]="'1rem'"
+        fill="currentColor"
+      >
+        <path
+          d="M320 128C263.2 128 212.1 152.7 176.9 192L224 192C241.7 192 256 206.3 256 224C256 241.7 241.7 256 224 256L96 256C78.3 256 64 241.7 64 224L64 96C64 78.3 78.3 64 96 64C113.7 64 128 78.3 128 96L128 150.7C174.9 97.6 243.5 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C233 576 156.1 532.6 109.9 466.3C99.8 451.8 103.3 431.9 117.8 421.7C132.3 411.5 152.2 415.1 162.4 429.6C197.2 479.4 254.8 511.9 320 511.9C426 511.9 512 425.9 512 319.9C512 213.9 426 128 320 128z"
+        />
+      </svg>
+    </button>
+    <span>Ref</span>
+  `,
+  styles: `
+    :host {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      height: 2rem;
+    }
+    .form-result {
+      font-size: 0.8rem;
+      color: var(--color-primary-hot);
+      width: min-content;
+    }
+    button {
+      color: var(--color-primary-hot);
+      background-color: var(--color-background-primary);
+      border: 1px solid var(--color-primary-hot);
+      border: none;
+    }
+    input {
+      color: var(--color-primary-hot);
+      background-color: var(--color-background-primary);
+      border: 1px solid var(--color-primary-hot);
+      border-radius: 0.5rem;
+      padding: 0.3rem;
+
+      &:focus-visible {
+        outline: var(--color-primary) auto 1px;
+        background-color: var(--color-background);
+      }
+    }
+  `,
+})
+export class SearchRef {
+  protected readonly searchInputElement = viewChild<ElementRef>('searchInput');
+
+  constructor() {
+    console.log('Constructor');
+    console.log(this.searchInputElement());
+
+    effect(() => {
+      console.log('Effect');
+      console.log(this.searchInputElement());
+      console.dir(this.searchInputElement()?.nativeElement);
+    });
+  }
+
+  // ngOnInit() {
+  //   console.log('OnInit');
+  //   console.log(this.searchInputElement());
+  //   console.dir(this.searchInputElement()?.nativeElement);
+  // }
+}
+```
+
+Para acceder a la referencia local desde el componente, se utiliza `viewChild` para obtener una referencia de tipo ElementRef, cuya propiedad `nativeElement` apunta al elemento del DOM correspondiente al input de búsqueda. Esto permite acceder a su valor directamente desde el componente y manejarlo según sea necesario.
+
+Para mostrarlo, tradicionalmente usaría el hook `ngOnInit`,ya que si se hace en el constructor, la referencia local aún no está disponible. Se introduce así el concepto del **ciclo de vida** de los componentes en Angular, que permite ejecutar código en distintos momentos del ciclo de vida del componente, como la inicialización, la actualización o la destrucción. 
+
+Una alternativa utilizar un `effect`, que se ejecuta automáticamente cuando cambian las propiedades reactivas del componente. Si en el effect se utiliza la propiedad searchInputElement, una signal correspondiente al ElementRef, el effect se ejecutará cada vez que cambie el valor de la referencia local, lo que permite reaccionar a los cambios en el input de búsqueda sin necesidad de utilizar un hook del ciclo de vida.
+
+
+### 3. `alc-user`
+
+Componente que muestra un icono de usuario, que se utilizará en el futuro para mostrar información sobre el inicio de sesión del usuario o para acceder a opciones relacionadas con la cuenta. 
+
+Incorpora nuevamente un icon svg, obtenido igual que los anteriores. En este case se añade al template, dentro de una etiqueta <a>, ya que en principio navegará a la página de gestión del usuario. Como en casos anteriores se vinculan atributos del svg con propiedades del componente para permitir su personalización desde el componente padre.
 
 ```ts user.ts
 import { Component, signal } from '@angular/core';
@@ -801,7 +1136,7 @@ import { Component, signal } from '@angular/core';
   imports: [],
   template: `
     <nav>
-      <a href="#" id="menu-icon" (click)="toggleMenu()">
+      <a href="#" id="menu-icon" (click)="toggleUser()">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 640 640"
@@ -822,20 +1157,26 @@ import { Component, signal } from '@angular/core';
 export class User {
   protected readonly size = signal('3rem');
 
-  toggleMenu() {
+  toggleUser() {
     console.log('User Login');
   }
 }
 ```
 
+El evento de click en el icono de usuario se maneja con un método que por ahora solo muestra un mensaje en la consola, pero que más adelante se utilizará para mostrar un modal con información sobre el usuario o para iniciar sesión.
+
 El componente se incorpora en el `alc-header`, en el div con la clase `right-side`, para mostrar el icono de usuario a la derecha del header.
 
-2. `alc-toggle` es un widget para cambiar entre el modo claro y oscuro de la aplicación básicamente creado en CSS a partir de un input de tipo checkbox y encapsulado en un componente Angular.
+### 4. `alc-toggle`
+
+Componente que muestra un toggle para cambiar entre el modo claro y oscuro de la aplicación, lo que permitirá a los usuarios personalizar la apariencia de la aplicación según sus preferencias.
+
+Es un widget básicamente creado en CSS a partir de un input de tipo checkbox y encapsulado en un componente Angular.
 
 Gracias a las modificaciones recientes de CSS no necesita JS para su funcionalidad. 
 - El checkbox con `id` "theme-toggle" cambia su estado a chequeado o no 
   `<input type="checkbox" id="theme-toggle" [(ngModel)]="isChecked" />` 
-- los estilos a nivesl de HTML dependen de ese estado gracias a la función has()  
+- los estilos a nivel de HTML dependen de ese estado gracias a la función has()  
   ```css
   html:has(#theme-toggle:checked) {
     color-scheme: dark;
@@ -938,7 +1279,11 @@ export class Toggle {
 }
 ```
 
-El componete se incorpora en el `alc-header`, en el div con la clase `right-side`, para mostrar el toggle a la derecha del header, debajo de los iconos de usuario y del menu mobile (si se muestra).
+El componente se incorpora en el `alc-header`, en el div con la clase `right-side`, para mostrar el toggle a la derecha del header, debajo de los iconos de usuario y del menu mobile (si se muestra).
+
+### Resultados: Componentes de funcionalidad
+
+[ToDo] Actualizar imágenes
 
 ![Modo claro en la versión Mobile](./assets/theme-ligth-mobile.png)
 ![Modo oscuro en la versión Mobile](./assets/theme-dark-mobile.png)
@@ -946,15 +1291,11 @@ El componete se incorpora en el `alc-header`, en el div con la clase `right-side
 ![Modo claro en la versión Desktop](./assets/theme-light-desktop.png)
 ![Modo oscuro en la versión Desktop](./assets/theme-dark-desktop.png)
 
-## Core - Components de utilidad en el core: modal
+![alt text](image.png)
 
-- `alc-modal`
-  
-```shell
-ng g c core/components/modal --project demo-01
-```
+## Core - versión final  
 
-## Core - Components en la versión final  
+### Components en la versión final
 
 - `alc-app`
   - `alc-header`
@@ -964,9 +1305,42 @@ ng g c core/components/modal --project demo-01
     - `alc-toggle`
     - `alc-user` 
     - `alc-menu`
-    - `alc-modal`
     - `alc-separator`
   - `router-outlet` 
   - `alc-footer`
     - `alc-socials`
   - `alc-card`
+
+### Elementos de Angular utilizados
+
+- creación de componentes. Definición mediante el decorador `@Component` y la clase del componente.
+- uso de signals para definir propiedades reactivas.
+- vinculación de propiedades al template mediante la sintaxis de Angular: 
+  - vinculación de expresiones con `{{expresión}}`
+  - vinculación de atributos con `[attr.nombre]`
+  - vinculación de propiedades con `[propiedad]` 
+  - vinculación de clases con `[class.nombre]="expresión"`
+  - vinculación de eventos con `(evento)="método()"`
+  - vinculación en dos sentidos con `[(ngModel)]="propiedad"`
+- referencias locales para acceder a elementos del DOM desde el template.
+  - signal query para acceder a referencias locales desde el componente.
+- uso de efectos para reaccionar a cambios en propiedades reactivas.
+- proyección de contenido con `ng-content` para permitir que el contenido de un componente sea dinámico y se pueda personalizar desde el componente padre.
+- uso de SVG como parte de un template, con atributos vinculados a propiedades del componente para permitir su personalización desde el componente padre.
+- use de ficheros svg independientes como templates de componentes
+- uso de CSS para crear widgets interactivos, como el toggle, que no necesitan JS para parte de su funcionalidad, pero que se encapsulan en un componente Angular para poder reutilizarlos y personalizarlos desde el componente padre.
+
+## Comunicación entre componentes
+
+- título en app
+- opciones de menu en app
+- multiples contadores
+
+## Core - Components de utilidad en el core: modal
+
+- `alc-modal`
+  
+```shell
+ng g c core/components/modal --project demo-01
+```
+
