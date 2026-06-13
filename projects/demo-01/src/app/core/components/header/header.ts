@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { MenuMobile } from '../menu-mobile/menu-mobile';
 import { Separator } from '../separator/separator';
 import { LogoNg } from '../logo-angular/logo-ng';
@@ -131,8 +131,8 @@ import { SearchRef } from '../search/search-ref';
   ],
 })
 export class Header {
-  protected readonly title = signal('Curso de Angular 22');
-  protected readonly subtitle = signal('Aprende a desarrollar aplicaciones con Angular');
+  readonly title = input.required<string>();
+  readonly subtitle = input.required<string>();
 
   // protected readonly isModalOpen = signal(false);
   // readonly menuTemplate = input<TemplateRef<MenuTemplateContext>>();

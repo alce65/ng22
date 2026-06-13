@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { MenuOption } from '../../types/menu.option';
-import { MENU_OPTIONS } from '../../../app.routes';
+
 
 @Component({
   selector: 'alc-menu',
@@ -45,5 +45,5 @@ import { MENU_OPTIONS } from '../../../app.routes';
   `,
 })
 export class Menu {
-  protected readonly options = signal<MenuOption[]>(MENU_OPTIONS);
+  readonly options = input.required<MenuOption[]>();
 }
