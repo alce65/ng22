@@ -1,12 +1,13 @@
 import { Component, computed, input, output } from '@angular/core';
-import { HEROES } from '../../data/heros';
+import { HEROES } from '../../data/heroes';
 import { Hero, PowerStat } from '../../types/hero';
 import { Card } from '../../../../core/components/card/card';
 import { PowerStatsChangeEvent } from '../../types/power-stats-change.event';
+import { KeyValuePipe, TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'alc-hero-item',
-  imports: [Card],
+  imports: [Card, KeyValuePipe, TitleCasePipe],
   template: `
     <alc-card class="hero-item" [class]="isHeroVillain() ? 'hero-item hero-villain' : 'hero-item '">
       <div class="image">
@@ -15,8 +16,44 @@ import { PowerStatsChangeEvent } from '../../types/power-stats-change.event';
       <div class="details">
         <div class="hero-name">
           {{ hero().name }}
+          @if (isHeroVillain()) {
+            <span> 🦹</span>
+          } @else {
+            <span> 🦸</span>
+          }
         </div>
-        <section>
+
+        @for (item of hero().powerStats | keyvalue; track $index) {
+          <div class="hero-power-stats">
+            <span
+              >{{ item.key | titlecase }}:
+              {{ item.value }}
+            </span>
+            <div class="hero-powerStats-buttons">
+              <button
+                [disabled]="hero().powerStats[item.key] === 0"
+                (click)="changePowerStats(item.key , -1)"
+              >
+                ➖
+              </button>
+              <button
+                [disabled]="hero().powerStats[item.key] === 100"
+                (click)="changePowerStats(item.key)"
+              >
+                ➕
+              </button>
+               <button
+                [disabled]="hero().powerStats[item.key] === 0"
+                (click)="changePowerStats(item.key, 0)"
+                [title]="'Reset ' + (item.key | titlecase) + ' to 0'"
+              >
+                🔄️
+              </button>
+            </div>
+          </div>
+        }
+
+        <section hidden>
           <div class="hero-power-stats">
             <span
               >Intelligence:
@@ -176,11 +213,11 @@ export class HeroItem {
   changePowerStats(powerStat: PowerStat, delta = 1): void {
     const value = this.hero().powerStats[powerStat];
 
-    if (delta === 1 && value < 100 || delta === -1 && value > 0) {
+    if ((delta === 1 && value < 100) || (delta === -1 && value > 0) || (delta === 0 && value !== 0)) {
       this.powerStatsChangeEvent.emit({
         hero: this.hero(),
         powerStat,
-        value: value + delta,
+        delta,
       });
     }
   }
