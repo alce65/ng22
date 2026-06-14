@@ -12,12 +12,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/home/home-page').then((m) => m.default),
   },
   {
-    path: 'tasks',
-    title: 'Tasks | Demo 01',
+    path: 'heroes',
+    title: 'Heroes | Demo 01',
     data: {
-      label: 'Tareas',
+      label: 'Heroes',
     },
-    loadComponent: () => import('./features/tasks/tasks-page').then((m) => m.default),
+    loadComponent: () => import('./features/heroes/heroes-page').then((m) => m.default),
   },
   {
     path: 'notes',
