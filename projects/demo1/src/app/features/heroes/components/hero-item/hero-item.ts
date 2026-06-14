@@ -1,7 +1,8 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { HEROES } from '../../data/heros';
 import { Hero, PowerStat } from '../../types/hero';
 import { Card } from '../../../../core/components/card/card';
+import { PowerStatsChangeEvent } from '../../types/power-stats-change.event';
 
 @Component({
   selector: 'alc-hero-item',
@@ -170,23 +171,17 @@ export class HeroItem {
   readonly hero = input<Hero>(HEROES[0]);
   protected readonly isHeroVillain = computed(() => this.hero().alignment === 'bad');
 
+  protected readonly powerStatsChangeEvent = output<PowerStatsChangeEvent>();
+
   changePowerStats(powerStat: PowerStat, delta = 1): void {
     const value = this.hero().powerStats[powerStat];
-    if (value > 0) {
-      // Aunque hero es una signal, sus propiedades no lo son.
-      // Por eso, de momento, podemos modificar una propiedad de hero,
-      // pero el cambio ne sera completamente reactivo.
-      // Si fuera asíncrono, el cambio no se reflejaría en la UI.
 
-      this.hero().powerStats[powerStat] = this.hero().powerStats[powerStat] + delta;
-
-      // this.hero.update((hero) => ({
-      //   ...hero,
-      //   powerStats: {
-      //     ...hero.powerStats,
-      //     [powerStat]: hero.powerStats[powerStat] + delta,
-      //   },
-      // }));
+    if (delta === 1 && value < 100 || delta === -1 && value > 0) {
+      this.powerStatsChangeEvent.emit({
+        hero: this.hero(),
+        powerStat,
+        value: value + delta,
+      });
     }
   }
 }

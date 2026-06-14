@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { HeroItem } from '../hero-item/hero-item';
 import { HEROES } from '../../data/heros';
 import { Hero } from '../../types/hero';
+import { PowerStatsChangeEvent } from '../../types/power-stats-change.event';
 
 @Component({
   selector: 'alc-hero-list',
@@ -10,7 +11,7 @@ import { Hero } from '../../types/hero';
     <ul>
       @for (hero of heroes(); track hero.id) {
         <li>
-          <alc-hero-item [hero]="hero"></alc-hero-item>
+          <alc-hero-item [hero]="hero" (powerStatsChangeEvent)="heroListChangeEvent($event)"></alc-hero-item>
         </li>
       }
     </ul>
@@ -27,4 +28,22 @@ import { Hero } from '../../types/hero';
 })
 export class HeroList {
   protected readonly heroes = signal<Hero[]>(HEROES);
+
+
+
+  protected heroListChangeEvent(event: PowerStatsChangeEvent ) {
+
+    const heroIndex = this.heroes().findIndex((hero) => hero.id === event.hero.id);
+    if (heroIndex !== -1) {
+      const updatedHeroes = [...this.heroes()];
+      updatedHeroes[heroIndex] = {
+        ...updatedHeroes[heroIndex],
+        powerStats: {
+          ...updatedHeroes[heroIndex].powerStats,
+          [event.powerStat]: event.value,
+        },
+      };
+      this.heroes.set(updatedHeroes);
+    }
+  }
 }
