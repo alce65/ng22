@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TaskForm } from './task-form';
+import { SignalForm } from '../signal-form/signal-form';
 
-describe('TaskForm', () => {
-  let component: TaskForm;
-  let fixture: ComponentFixture<TaskForm>;
+describe('SignalForm', () => {
+  let component: SignalForm;
+  let fixture: ComponentFixture<SignalForm>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TaskForm],
+      imports: [SignalForm],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TaskForm);
+    fixture = TestBed.createComponent(SignalForm);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -9,7 +9,7 @@ type TaskFormState = {
 };
 
 @Component({
-  selector: 'alc-task-form',
+  selector: 'alc-signal-form',
   imports: [FormField, JsonPipe],
   template: `<form>
       <label for="title" class="form-control">
@@ -84,7 +84,7 @@ type TaskFormState = {
     }
   `,
 })
-export class TaskForm {
+export class SignalForm {
   // Signal based forms
 
   // SIgnal representing the form state
