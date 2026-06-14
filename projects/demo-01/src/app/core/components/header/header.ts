@@ -7,10 +7,11 @@ import { User } from '../user/user';
 import { Toggle } from '../toggle/toggle';
 import { Search } from '../search/search';
 import { SearchRef } from '../search/search-ref';
+import { Modal } from '../modal/modal';
 
 @Component({
   selector: 'alc-header',
-  imports: [MenuMobile, Separator, LogoNg, LogoCoders, User, Toggle, Search, SearchRef],
+  imports: [MenuMobile, Separator, LogoNg, LogoCoders, User, Toggle, Search, SearchRef, Modal],
   template: `
     <header class="container">
       <div class="left-side">
@@ -22,10 +23,7 @@ import { SearchRef } from '../search/search-ref';
       </hgroup>
       <div class="right-side">
         <div class="icons">
-          <alc-menu-mobile />
-          <!--
-            <alc-menu-mobile (openEvent)="toggleModal(true)" />
-            -->
+          <alc-menu-mobile (openEvent)="toggleModal(true)" />
           <alc-user />
         </div>
         <alc-toggle />
@@ -33,7 +31,6 @@ import { SearchRef } from '../search/search-ref';
       <div class="bottom-row">
         <p>{{ subtitle() }}</p>
         <alc-search class="mobile-only" />
-
         <div class="desktop-only">
           <ng-content></ng-content>
           <alc-search-ref />
@@ -41,6 +38,9 @@ import { SearchRef } from '../search/search-ref';
       </div>
     </header>
     <alc-separator />
+     <alc-modal [isOpen]="isModalOpen()" (closeEvent)="toggleModal(false)">
+      <ng-content select="[isVertical]"></ng-content>
+     </alc-modal>
   `,
   styles: [
     `
@@ -134,13 +134,13 @@ export class Header {
   readonly title = input.required<string>();
   readonly subtitle = input.required<string>();
 
-  // protected readonly isModalOpen = signal(false);
+  protected readonly isModalOpen = signal(false);
   // readonly menuTemplate = input<TemplateRef<MenuTemplateContext>>();
   // protected readonly desktopMenuContext: MenuTemplateContext = { isVertical: false };
   // protected readonly mobileMenuContext: MenuTemplateContext = { isVertical: true };
 
-  // toggleModal(isOpen: boolean) {
-  //   console.log('Toggling modal:', isOpen);
-  //   this.isModalOpen.set(isOpen);
-  // }
+  toggleModal(isOpen: boolean) {
+    console.log('Toggling modal:', isOpen);
+    this.isModalOpen.set(isOpen);
+  }
 }

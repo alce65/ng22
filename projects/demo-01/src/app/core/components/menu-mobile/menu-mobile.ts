@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, output, signal } from '@angular/core';
 
 @Component({
   selector: 'alc-menu-mobile',
@@ -31,11 +31,11 @@ import { Component, signal } from '@angular/core';
 export class MenuMobile {
   protected readonly size = signal('3rem');
 
-  // protected readonly openEvent = output<void>();
+  protected readonly openEvent = output<void>();
 
   toggleMenu(event: Event) {
     console.log('Abriendo menú mobile');
-    //   event.preventDefault();
-    //   this.openEvent.emit();
+      event.preventDefault();
+      this.openEvent.emit();
   }
 }

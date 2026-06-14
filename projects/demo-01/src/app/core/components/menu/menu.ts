@@ -1,14 +1,12 @@
 import { Component, input, signal } from '@angular/core';
 import { MenuOption } from '../../types/menu.option';
 
-
 @Component({
   selector: 'alc-menu',
   imports: [],
   template: `
     <nav>
-      <!-- <ul [class.vertical]="isVertical()"> -->
-      <ul>
+      <ul [class.vertical]="isVertical()">
         @for (option of options(); track option.path) {
           <li>
             <a href="{{ option.path }}">
@@ -29,12 +27,12 @@ import { MenuOption } from '../../types/menu.option';
         gap: 1rem;
       }
 
-      /* .vertical {
+      .vertical {
         flex-direction: column;
         a {
           font-size: 1.8rem;
         }
-      } */
+      }
 
       a {
         color: inherit;
@@ -46,4 +44,5 @@ import { MenuOption } from '../../types/menu.option';
 })
 export class Menu {
   readonly options = input.required<MenuOption[]>();
+  readonly isVertical = input(false);
 }
