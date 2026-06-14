@@ -12,7 +12,8 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve",
+    "lib": ["ES2025", "ESNext.Temporal", "DOM"],
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
