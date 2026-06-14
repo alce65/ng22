@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 import { HEROES } from '../../data/heros';
 import { Hero, PowerStat } from '../../types/hero';
 import { Card } from '../../../../core/components/card/card';
@@ -130,7 +130,6 @@ import { Card } from '../../../../core/components/card/card';
   styles: `
     .hero-item {
       padding: 10px;
-      display: inline-block;
 
       .image {
         img {
@@ -145,6 +144,7 @@ import { Card } from '../../../../core/components/card/card';
 
       &.hero-villain {
         background-color: var(--color-primary);
+        color: var(--color-background);
       }
 
       .hero-name {
@@ -167,19 +167,26 @@ import { Card } from '../../../../core/components/card/card';
   `,
 })
 export class HeroItem {
-  protected readonly hero = signal<Hero>(HEROES[0]);
+  readonly hero = input<Hero>(HEROES[0]);
   protected readonly isHeroVillain = computed(() => this.hero().alignment === 'bad');
 
   changePowerStats(powerStat: PowerStat, delta = 1): void {
     const value = this.hero().powerStats[powerStat];
     if (value > 0) {
-      this.hero.update((hero) => ({
-        ...hero,
-        powerStats: {
-          ...hero.powerStats,
-          [powerStat]: hero.powerStats[powerStat] + delta,
-        },
-      }));
+      // Aunque hero es una signal, sus propiedades no lo son.
+      // Por eso, de momento, podemos modificar una propiedad de hero,
+      // pero el cambio ne sera completamente reactivo.
+      // Si fuera asíncrono, el cambio no se reflejaría en la UI.
+
+      this.hero().powerStats[powerStat] = this.hero().powerStats[powerStat] + delta;
+
+      // this.hero.update((hero) => ({
+      //   ...hero,
+      //   powerStats: {
+      //     ...hero.powerStats,
+      //     [powerStat]: hero.powerStats[powerStat] + delta,
+      //   },
+      // }));
     }
   }
 }

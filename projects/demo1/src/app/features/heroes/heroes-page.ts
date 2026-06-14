@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { Card } from '../../core/components/card/card';
-import { HeroItem } from './components/hero-item/hero-item';
+import { HeroList } from "./components/hero-list/hero-list";
 
 @Component({
   selector: 'ind-heroes-page',
-  imports: [Card, HeroItem],
+  imports: [Card, HeroList],
   template: `
     <alc-card>
       <h2>Heroes</h2>
     </alc-card>
-    <alc-hero-item />
+    <alc-hero-list />
   `,
   styles: `
     :host {
