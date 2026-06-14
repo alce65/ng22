@@ -47,6 +47,11 @@
     - [2.  `alc-counters-list`: lista de contadores](#2--alc-counters-list-lista-de-contadores)
     - [Resultados: Páginas dashboard con contadores](#resultados-páginas-dashboard-con-contadores)
   - [Core - Componentes modal y menu mobile](#core---componentes-modal-y-menu-mobile)
+    - [El componente modal](#el-componente-modal)
+    - [El header](#el-header)
+    - [En alc-menu-mobile: el icono burger del menú](#en-alc-menu-mobile-el-icono-burger-del-menú)
+    - [Incorporación del menú vertical en el modal](#incorporación-del-menú-vertical-en-el-modal)
+    - [Resultados: Despliegue del menu mobile](#resultados-despliegue-del-menu-mobile)
 
 
 ```shell
@@ -1978,9 +1983,166 @@ export class Counter {
  
 ## Core - Componentes modal y menu mobile
 
-- `alc-modal`
-  
+Creamos el componente modal
+
 ```shell
 ng g c core/components/modal --project demo-01
 ```
 
+- `alc-modal`
+  
+### El componente modal 
+
+Es un wrapper de la etiqueta nativa de html <dialog> cuya función es permitir la creación de cuadros de  dialog y modales en la web.
+
+Un cuadro de dialogo no bloquea las interacciones con la página, mientras que un modal si lo hace, obligando al usuario a interactuar con el modal antes de poder volver a la página.
+
+Su comportamiento va a depender de las relaciones entre tres componentes
+
+- el componente padre, `alc-header`, 
+- el componente hijo, `alc-modal`, que incluye el icono de cierre
+- el componente hijo `alc-menu-mobile`, que incluye el icono burger que abre el modal 
+
+[!Esquema de los componentes implicados en el modal del menu mobile](./assets/menu-mobile.svg)
+
+- mediante la **signal query** `viewChild()` acedemos al DOM para poder manipular el elemento <dialog> que proporciona com nativas las funciones showModal(), show() y close() 
+
+- creamos una **inputSignal** `isOpen` que permite al componente padre controlar el estado del modal (abierto o cerrado) y un **outputSignal** `closeEvent` que permite al componente hijo notificar al componente padre cuando el modal se cierra.
+
+- el manejador del evento de click del icono de cierre del modal, `emitCLose()` emite el evento que notifica al componente padre que el modal se ha cerrado, para que este pueda actualizar su estado y reflejar el cambio en la vista.
+
+- finalmente el modal incluye un effect en resuelta a cambios en la propiedad input `isOpen`, para abrir o cerrar el modal según el valor de la propiedad.
+
+### El header
+
+1. Definimos una señal que refleje el estado del modal (abierto o cerrado)
+
+```ts
+protected readonly isModalOpen = signal(false);
+```
+
+Sera el valor de esta señal la que pasará como input al modal
+
+2. Definimos el método para alternar el estado del modal
+
+```ts
+toggleModal(isOpen: boolean) {
+  this.isModalOpen.set(isOpen);
+}
+```
+
+3. Añadimos al final de alc-header el componente modal, pasando la señal como input y el método toggleModal como manejador del evento closeEvent
+
+```ts
+alc-modal [isOpen]="isModalOpen()" (closeEvent)="toggleModal(false)">
+```
+
+### En alc-menu-mobile: el icono burger del menú
+
+1. Completamos el manejador del click del icono
+
+```ts
+protected readonly openEvent = output<void>();
+
+toggleMenu(event: Event) {
+  console.log('Abriendo menú mobile');
+    event.preventDefault();
+    this.openEvent.emit();
+}
+```
+
+2. En el header, añadimos enlace entre el evento del icono burger y el método toggleModal del header, para que al hacer click en el icono se abra el modal.
+
+```ts
+<alc-menu-mobile (openEvent)="toggleModal(true)" />
+```
+
+### Incorporación del menú vertical en el modal
+
+En Angular hay un problema para proyectar un mismo contenido varias veces en lel compnente destino. La solución mas sofisticada pasa por convertir el elemnto a proyectar en un template y manejarlo con `ngTemplateOutlet` y `ngTemplateOutletContext`. Pero en nuestro caso, como el contenido a proyectar es un menú, podemos duplicar los elementos declarados en el componente origen, en este caso app.
+
+```ts app.ts
+<alc-header [title]="title()" [subtitle]="subtitle()">
+  <alc-menu [options]="menuOptions()" />
+  <alc-menu [options]="menuOptions()" [isVertical]="true" />
+</alc-header>
+``` 
+
+En el menu añadiremos una inputsignal `isVertical` que permitirá al componente menu mostrar el menú en horizontal o vertical según el valor de la propiedad.
+
+```ts menu.ts
+import { Component, input, signal } from '@angular/core';
+import { MenuOption } from '../../types/menu.option';
+
+@Component({
+  selector: 'alc-menu',
+  imports: [],
+  template: `
+    <nav>
+      <ul [class.vertical]="isVertical()">
+        @for (option of options(); track option.path) {
+          <li>
+            <a href="{{ option.path }}">
+              {{ option.label }}
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+  `,
+  styles: `
+    nav {
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        gap: 1rem;
+      }
+
+      .vertical {
+        flex-direction: column;
+        a {
+          font-size: 1.8rem;
+        }
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+        font-weight: bold;
+      }
+    }
+  `,
+})
+export class Menu {
+  readonly options = input.required<MenuOption[]>();
+  readonly isVertical = input(false);
+}
+```
+
+El mismo atributo `[isVertical]` servirá como selector para diferenciar los dos componentes y proyectarlos en distintos puntos del componente `alc-header`.
+
+```ts header.ts
+template: `
+  <header class="container">
+    ...
+    <div class="bottom-row">
+      <p>{{ subtitle() }}</p>
+      <alc-search class="mobile-only" />
+      <div class="desktop-only">
+        <ng-content></ng-content>
+        <alc-search-ref />
+      </div>
+    </div>
+  </header>
+  <alc-separator />
+    <alc-modal [isOpen]="isModalOpen()" (closeEvent)="toggleModal(false)">
+    <ng-content select="[isVertical]"></ng-content>
+  </alc-modal>
+`
+```
+ 
+### Resultados: Despliegue del menu mobile
+
+![Menu mobile desplegado](./assets/open-mobile-menu.png)
