@@ -69,6 +69,7 @@ import { Modal } from '../modal/modal';
         h1 {
           color: var(--color-primary);
           font-family: var(--font-family-heading);
+          font-optical-sizing: auto;
           font-size: 3.125rem;
           font-weight: 500;
           line-height: 100%;
