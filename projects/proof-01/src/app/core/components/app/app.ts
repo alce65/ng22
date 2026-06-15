@@ -18,15 +18,12 @@ import { Time, TimeOld } from '../../services/time';
   styles: ``,
 })
 export class App {
-  //protected readonly title = signal('demo1');
+  //protected readonly title = signal('proof-01');
   private readonly timeOld = inject(TimeOld);
   private readonly time = inject(Time);
 
   constructor() {
     console.log('TimeOld:', this.timeOld.getTime());
     console.log('Time:', this.time.getTime());
-
   }
-
-
 }

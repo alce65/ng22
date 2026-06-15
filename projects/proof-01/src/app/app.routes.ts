@@ -5,7 +5,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   {
     path: 'home',
-    title: 'Home | Demo 01',
+    title: 'Home | Proof 01',
     data: {
       label: 'Inicio',
     },
@@ -13,15 +13,27 @@ export const routes: Routes = [
   },
   {
     path: 'heroes',
-    title: 'Heroes | Demo 01',
+    title: 'Heroes | Proof 01',
     data: {
       label: 'Heroes',
     },
     loadComponent: () => import('./features/heroes/heroes-page').then((m) => m.default),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/heroes/components/hero-list/hero-list').then((m) => m.HeroList),
+      },
+      {
+        path: 'add',
+        loadComponent: () =>
+          import('./features/heroes/components/hero-form/hero-form').then((m) => m.HeroForm),
+      },
+    ],
   },
   {
     path: 'notes',
-    title: 'Notes | Demo 01',
+    title: 'Notes | Proof 01',
     data: {
       label: 'Notas',
     },
@@ -29,7 +41,7 @@ export const routes: Routes = [
   },
   {
     path: 'about',
-    title: 'About | Demo 01',
+    title: 'About | Proof 01',
     data: {
       label: 'Nosotros',
     },
@@ -42,7 +54,7 @@ export const routes: Routes = [
   },
   /* {
     path: 'dashboard',
-    title: 'Dashboard | Demo 01',
+    title: 'Dashboard | Proof 01',
     data: {
       label: 'Dashboard',
     },
@@ -50,7 +62,7 @@ export const routes: Routes = [
   },
   {
     path: 'products',
-    title: 'Products | Demo 01',
+    title: 'Products | Proof 01',
     data: {
       label: 'Productos',
     },

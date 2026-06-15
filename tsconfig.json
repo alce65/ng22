@@ -13,7 +13,7 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
-    "lib": ["ES2025", "ESNext.Temporal", "DOM"],
+    "lib": ["ES2025", "ESNext.Temporal", "DOM"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -23,10 +23,10 @@
   "files": [],
   "references": [
     {
-      "path": "./projects/demo1/tsconfig.app.json"
+      "path": "./projects/proof-01/tsconfig.app.json"
     },
     {
-      "path": "./projects/demo1/tsconfig.spec.json"
+      "path": "./projects/proof-01/tsconfig.spec.json"
     },
     {
       "path": "./projects/demo-01/tsconfig.app.json"

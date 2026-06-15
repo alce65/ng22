@@ -8,7 +8,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "demo1": {
+    "proof-01": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -16,22 +16,22 @@
           "inlineStyle": true
         }
       },
-      "root": "projects/demo1",
-      "sourceRoot": "projects/demo1/src",
+      "root": "projects/proof-01",
+      "sourceRoot": "projects/proof-01/src",
       "prefix": "alc",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "projects/demo1/src/main.ts",
-            "tsConfig": "projects/demo1/tsconfig.app.json",
+            "browser": "projects/proof-01/src/main.ts",
+            "tsConfig": "projects/proof-01/tsconfig.app.json",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/demo1/public"
+                "input": "projects/proof-01/public"
               }
             ],
-            "styles": ["projects/demo1/src/styles.css"]
+            "styles": ["projects/proof-01/src/styles.css"]
           },
           "configurations": {
             "production": {
@@ -61,10 +61,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "demo1:build:production"
+              "buildTarget": "proof-01:build:production"
             },
             "development": {
-              "buildTarget": "demo1:build:development"
+              "buildTarget": "proof-01:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -75,8 +75,8 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/demo1/**/*.ts", "projects/demo1/**/*.html"],
-            "eslintConfig": "projects/demo1/eslint.config.js"
+            "lintFilePatterns": ["projects/proof-01/**/*.ts", "projects/proof-01/**/*.html"],
+            "eslintConfig": "projects/proof-01/eslint.config.js"
           }
         },
         "e2e": {
