@@ -31,6 +31,26 @@ export const routes: Routes = [
       },
     ],
   },
+   {
+    path: 'super-heroes',
+    title: 'Super Heroes | Proof 01',
+    data: {
+      label: 'Super Heroes',
+    },
+    loadComponent: () => import('./features/super-heroes/super-heroes-page').then((m) => m.default),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/super-heroes/components/hero-list/hero-list').then((m) => m.HeroList),
+      },
+      {
+        path: 'add',
+        loadComponent: () =>
+          import('./features/super-heroes/components/hero-form/hero-form').then((m) => m.HeroForm),
+      },
+    ],
+  },
   {
     path: 'notes',
     title: 'Notes | Proof 01',
