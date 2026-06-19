@@ -2,6 +2,38 @@ import { Service } from '@angular/core';
 import { Hero, PowerStat } from '../types/hero';
 import { HEROES } from '../data/heroes';
 
+const randomId = () => Math.floor(Math.random() * 10000) + 1000;
+
+const DEFAULT_HERO: Hero = {
+  id: randomId(),
+  name: 'Joker',
+  image: 'https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/370-joker.jpg',
+  alignment: 'bad',
+  powerStats: {
+    intelligence: 100,
+    strength: 10,
+    speed: 12,
+    durability: 60,
+    power: 43,
+    combat: 70,
+  },
+};
+
+const NULL_HERO: Hero = {
+  id: randomId(),
+  name: 'Not Found',
+  image: './assets/img/hero-not-found.png',
+  alignment: 'bad',
+  powerStats: {
+    intelligence: -1,
+    strength: -1,
+    speed: -1,
+    durability: -1,
+    power: -1,
+    combat: -1,
+  },
+};
+
 // El estado no es una signal,
 // El componente lista incorpora los datos a una signal
 // y la renderiza
@@ -9,6 +41,16 @@ import { HEROES } from '../data/heroes';
 @Service()
 export class HeroesState {
   public heroes: Hero[] = HEROES;
+
+  readonly defaultHero: Hero = DEFAULT_HERO;
+  readonly NullHero: Hero = NULL_HERO;
+
+  isDefaultHero(hero: Hero): boolean {
+    return hero.id === this.defaultHero.id;
+  }
+  isNullHero(hero: Hero): boolean {
+    return hero.id === this.NullHero.id;
+  }
 
   findAll(): Hero[] {
     console.log('findAll() called');
@@ -19,12 +61,30 @@ export class HeroesState {
     // se refleje en la lista de héroes renderizada como señal.
   }
 
+  findById(id: number): Hero | undefined {
+    console.log(`findById(${id}) called`);
+    return this.heroes.find((hero) => hero.id === id) || this.NullHero;
+  }
+
   add(hero: Hero) {
     console.log(`Adding hero: ${hero.name}`);
     this.heroes.push(hero);
   }
 
-  update(hero: Hero, powerStat: PowerStat, delta: number) {
+  update(updatedHero: Hero) {
+    console.log(`Updating updatedHero: ${updatedHero.name}`);
+    const index = this.heroes.findIndex((hero) => hero.id === updatedHero.id);
+    if (index !== -1) {
+      this.heroes[index] = updatedHero;
+    }
+  }
+
+  delete(hero: Hero) {
+    console.log(`Deleting hero: ${hero.name}`);
+    this.heroes = this.heroes.filter((h) => h.id !== hero.id);
+  }
+
+  updatePowerStas(hero: Hero, powerStat: PowerStat, delta: number) {
     console.log(`Updating hero: ${hero.name}`);
     hero.powerStats[powerStat] += delta;
 
