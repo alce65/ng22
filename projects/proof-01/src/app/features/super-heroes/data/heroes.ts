@@ -2,7 +2,7 @@ import { Hero } from '../types/hero';
 
 export const HEROES: Hero[] = [
   {
-    id: 620,
+    id: 6250,
     name: 'Spider-Man',
     powerStats: {
       intelligence: 90,
@@ -17,7 +17,7 @@ export const HEROES: Hero[] = [
     alignment: 'good',
   },
   {
-    id: 225,
+    id: 2245,
     name: 'Doctor Octopus',
     powerStats: {
       intelligence: 94,
@@ -32,7 +32,7 @@ export const HEROES: Hero[] = [
     alignment: 'bad',
   },
   {
-    id: 70,
+    id: 370,
     name: 'Batman',
     powerStats: {
       intelligence: 100,

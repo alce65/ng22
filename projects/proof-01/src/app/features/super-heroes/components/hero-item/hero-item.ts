@@ -11,7 +11,7 @@ import { RouterLink } from '@angular/router';
   imports: [Card, KeyValuePipe, TitleCasePipe, RouterLink],
   template: `
     <alc-card class="hero-item" [class]="isHeroVillain() ? 'hero-item hero-villain' : 'hero-item '">
-      <div class="image">
+      <div class="image" title="{{ hero().id }} ">
         <img [src]="hero().image" />
       </div>
       <div class="details">

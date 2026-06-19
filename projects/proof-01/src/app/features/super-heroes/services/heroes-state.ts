@@ -42,14 +42,22 @@ const NULL_HERO: Hero = {
 export class HeroesState {
   public heroes: Hero[] = HEROES;
 
-  readonly defaultHero: Hero = DEFAULT_HERO;
-  readonly NullHero: Hero = NULL_HERO;
+  readonly #defaultHero: Hero = DEFAULT_HERO;
+  readonly #nullHero: Hero = NULL_HERO;
+
+  get defaultHero(): Hero {
+    return this.#defaultHero;
+  }
+
+  get nullHero(): Hero {
+    return this.#nullHero;
+  }
 
   isDefaultHero(hero: Hero): boolean {
-    return hero.id === this.defaultHero.id;
+    return hero.id === this.#defaultHero.id;
   }
   isNullHero(hero: Hero): boolean {
-    return hero.id === this.NullHero.id;
+    return hero.id === this.#nullHero.id;
   }
 
   findAll(): Hero[] {
@@ -63,7 +71,7 @@ export class HeroesState {
 
   findById(id: number): Hero | undefined {
     console.log(`findById(${id}) called`);
-    return this.heroes.find((hero) => hero.id === id) || this.NullHero;
+    return this.heroes.find((hero) => hero.id === id) || this.nullHero;
   }
 
   add(hero: Hero) {

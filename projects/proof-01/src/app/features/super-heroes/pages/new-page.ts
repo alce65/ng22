@@ -14,33 +14,23 @@ import { Card } from '../../../core/components/card/card';
         <h2>Añadir un Super Héroe</h2>
       </alc-card>
     </header>
-    <alc-hero-form (addHeroEvent)="addHero($event)" />
+    <alc-hero-form
+    (addHeroEvent)="addHero($event)" />
   `,
   styles: ``,
 })
 export default class NewPage {
-  readonly router = inject(Router);
+  protected readonly router = inject(Router);
   readonly #heroService = inject(HeroesState);
 
   // Método en respuesta a un evento del formulario
-  addHero(newHeroData: Omit<Hero, 'id'> | null) {
+  addHero(newHeroData: Hero) {
     if (!newHeroData) {
       this.router.navigate(['/super-heroes']);
       return;
     }
-
-    const hero: Hero = {
-      // Generate a random four-digit ID for the new hero
-      id: Math.floor(1000 + Math.random() * 999),
-      ...newHeroData,
-      powerStats: {
-        ...newHeroData.powerStats,
-      },
-    };
-
-    console.log('NewPage addHero', hero);
-    this.#heroService.add(hero);
-
+    console.log('Creating new hero:', newHeroData);
+    this.#heroService.add(newHeroData);
     this.router.navigate(['/super-heroes']);
   }
 }

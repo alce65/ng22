@@ -1,9 +1,9 @@
 import { JsonPipe, TitleCasePipe } from '@angular/common';
-import { Component, inject, output, signal } from '@angular/core';
+import { Component, computed, inject, input, output, Signal, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NavigationExtras, Router } from '@angular/router';
 import { Hero, PowerStat } from '../../types/hero';
 import { heroNameAsyncValidator } from '../../validators/hero-name';
+import { HeroesState } from '../../services/heroes-state';
 
 type ImageOptions = {
   name: string;
@@ -40,23 +40,24 @@ const IMAGES: ImageOptions[] = [
     <div>
       <h4 class="error">{{ message() }}</h4>
       <!-- <form  [formGroup]="heroForm"> -->
-      <form [formGroup]="heroForm" (ngSubmit)="addHero($event)" (reset)="reset()">
+      <form [formGroup]="heroForm()" (ngSubmit)="addHero($event)" (reset)="reset()">
         <label for="name" class="control-group">
           <span>Name:</span>
           <input type="text" id="name" placeholder="Name" formControlName="name" />
         </label>
 
         @if (
-          this.heroForm.get('name')?.dirty || (this.message() && this.heroForm.get('name')?.invalid)
+          this.heroForm().get('name')?.dirty ||
+          (this.message() && this.heroForm().get('name')?.invalid)
         ) {
           <div class="error">
-            @if (this.heroForm.get('name')?.getError('heroNameValid')) {
+            @if (this.heroForm().get('name')?.getError('heroNameValid')) {
               <p>* Hero name must be a valid name</p>
             }
-            @if (this.heroForm.get('name')?.getError('required')) {
+            @if (this.heroForm().get('name')?.getError('required')) {
               <p>* Hero name is required</p>
             }
-            @if (this.heroForm.get('name')?.getError('minlength')) {
+            @if (this.heroForm().get('name')?.getError('minlength')) {
               <p>* Hero name must be at least 3 characters long</p>
             }
           </div>
@@ -97,65 +98,41 @@ const IMAGES: ImageOptions[] = [
                 this.heroForm.get('powerStats')?.get('combat')?.invalid) { -->
 
             @if (
-              this.heroForm.get('powerStats.' + powerStat)?.dirty ||
-              (this.message() && this.heroForm.get('powerStats.' + powerStat)?.invalid)
+              this.heroForm().get('powerStats.' + powerStat)?.dirty ||
+              (this.message() && this.heroForm().get('powerStats.' + powerStat)?.invalid)
             ) {
               <div class="error">
-                @if (this.heroForm.get('powerStats')?.get(powerStat)?.getError('required')) {
+                @if (this.heroForm().get('powerStats')?.get(powerStat)?.getError('required')) {
                   <p>* {{ powerStat | titlecase }} is required</p>
                 }
-                @if (this.heroForm.get('powerStats')?.get(powerStat)?.getError('min')) {
+                @if (this.heroForm().get('powerStats')?.get(powerStat)?.getError('min')) {
                   <p>* {{ powerStat | titlecase }} must be at least 0</p>
                 }
-                @if (this.heroForm.get('powerStats')?.get(powerStat)?.getError('max')) {
+                @if (this.heroForm().get('powerStats')?.get(powerStat)?.getError('max')) {
                   <p>* {{ powerStat | titlecase }} must be at most 100</p>
                 }
               </div>
             }
           }
-          <!-- <label for="durability" class="control-group">
-            <span>Durability:</span>
-            <input
-              type="number"
-              id="durability"
-              placeholder="Durability"
-              formControlName="durability"
-            />
-          </label>
-          <label for="intelligence" class="control-group">
-            <span>Intelligence:</span>
-            <input
-              type="number"
-              id="intelligence"
-              placeholder="Intelligence"
-              formControlName="intelligence"
-            />
-          </label>
-          <label for="power" class="control-group">
-            <span>Power:</span>
-            <input type="number" id="power" placeholder="Power" formControlName="power" />
-          </label>
-          <label for="speed" class="control-group">
-            <span>Speed:</span>
-            <input type="number" id="speed" placeholder="Speed" formControlName="speed" />
-          </label>
-          <label for="strength" class="control-group">
-            <span>Strength:</span>
-            <input type="number" id="strength" placeholder="Strength" formControlName="strength" />
-          </label> -->
         </fieldset>
 
         <div class="control-group">
-          <button type="submit">Create</button>
+          <button type="submit">
+            <!-- @if (this.heroService.isDefaultHero(this.initialHero())) {
+              Create
+            } @else {
+              Update
+            } -->
+            {{ textButton() }}
+          </button>
           <button type="reset">Cancel</button>
         </div>
       </form>
     </div>
-    <pre>{{ heroForm.value | json }}</pre>
-    <pre>{{ 'State valid: ' + heroForm.valid }}</pre>
+    <pre>{{ heroForm().value | json }}</pre>
+    <pre>{{ 'State valid: ' + heroForm().valid }}</pre>
   `,
   styles: `
-
     form,
     fieldset {
       display: flex;
@@ -200,7 +177,6 @@ const IMAGES: ImageOptions[] = [
         }
       }
 
-
       button {
         padding: 1rem;
         background: var(--color-primary);
@@ -224,25 +200,53 @@ const IMAGES: ImageOptions[] = [
   `,
 })
 export class HeroForm {
-  readonly addHeroEvent = output<Omit<Hero, 'id'> | null>();
+  private readonly fb = inject(FormBuilder);
+  protected readonly heroService = inject(HeroesState);
+  readonly initialHero = input<Hero>(this.heroService.defaultHero);
+  readonly addHeroEvent = output<Hero>();
 
-  readonly fb = inject(FormBuilder);
-  // readonly router = inject(Router);
+  protected readonly textButton = computed(() => {
+    return this.heroService.isDefaultHero(this.initialHero()) ? 'Create' : 'Update';
+  });
 
   // Al hacer explicito el tipo creamos un FormGroup con tipado fuerte,
   // lo que nos permite tener autocompletado y validación de tipos en el formulario.
-  heroForm: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(3)], [heroNameAsyncValidator]],
-    image: ['', [Validators.required]],
-    alignment: ['good', [Validators.required]],
-    powerStats: this.fb.group({
-      combat: [90, [Validators.required, Validators.min(0), Validators.max(100)]],
-      durability: [10, [Validators.required, Validators.min(0), Validators.max(100)]],
-      intelligence: [20, [Validators.required, Validators.min(0), Validators.max(100)]],
-      power: [60, [Validators.required, Validators.min(0), Validators.max(100)]],
-      speed: [50, [Validators.required, Validators.min(0), Validators.max(100)]],
-      strength: [40, [Validators.required, Validators.min(0), Validators.max(100)]],
-    }),
+  heroForm: Signal<FormGroup> = computed(() => {
+    return this.fb.group({
+      name: [
+        this.initialHero().name,
+        [Validators.required, Validators.minLength(3)],
+        [heroNameAsyncValidator],
+      ],
+      image: [this.initialHero().image, [Validators.required]],
+      alignment: [this.initialHero().alignment, [Validators.required]],
+      powerStats: this.fb.group({
+        combat: [
+          this.initialHero().powerStats.combat,
+          [Validators.required, Validators.min(0), Validators.max(100)],
+        ],
+        durability: [
+          this.initialHero().powerStats.durability,
+          [Validators.required, Validators.min(0), Validators.max(100)],
+        ],
+        intelligence: [
+          this.initialHero().powerStats.intelligence,
+          [Validators.required, Validators.min(0), Validators.max(100)],
+        ],
+        power: [
+          this.initialHero().powerStats.power,
+          [Validators.required, Validators.min(0), Validators.max(100)],
+        ],
+        speed: [
+          this.initialHero().powerStats.speed,
+          [Validators.required, Validators.min(0), Validators.max(100)],
+        ],
+        strength: [
+          this.initialHero().powerStats.strength,
+          [Validators.required, Validators.min(0), Validators.max(100)],
+        ],
+      }),
+    });
   });
 
   protected readonly powerStats = signal<PowerStat[]>([
@@ -262,24 +266,19 @@ export class HeroForm {
 
   addHero(event: Event) {
     event.preventDefault();
-    if (this.heroForm.invalid) {
+    if (this.heroForm().invalid) {
       this.message.set('Form is invalid. Please check the fields.');
       return;
     }
 
-    // Emitir evento para añadir super-hero
-    this.addHeroEvent.emit(this.heroForm.value);
-    // const navigationExtras: NavigationExtras = {
-    //   state: {
-    //     hero,
-    //   },
-    // };
+    const heroData = this.heroForm().value as Omit<Hero, 'id'>;
 
-    // this.router.navigate(['/super-heroes'], navigationExtras);
+    // Emitir evento para añadir/actualizar super-hero
+    this.addHeroEvent.emit({ ...heroData, id: this.initialHero().id });
   }
 
   reset() {
-    this.heroForm.reset({
+    this.heroForm().reset({
       name: '',
       image: '',
       alignment: 'good',
@@ -293,6 +292,6 @@ export class HeroForm {
       },
     });
     this.message.set('');
-    this.addHeroEvent.emit(null);
+    this.addHeroEvent.emit(this.heroService.nullHero);
   }
 }

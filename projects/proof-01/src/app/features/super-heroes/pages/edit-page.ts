@@ -14,7 +14,9 @@ import { JsonPipe } from '@angular/common';
         <h2>Editar un Super Héroe</h2>
       </alc-card>
     </header>
-    <alc-hero-form (addHeroEvent)="updateHero($event)" />
+    <alc-hero-form
+    [initialHero]="hero()"
+    (addHeroEvent)="updateHero($event)" />
       <pre>{{ hero() | json }}</pre>
   `,
   styles: ``,
@@ -28,13 +30,7 @@ export default class EditPage {
 
   updateHero(hero: any): void {
     console.log('Updating hero:', hero);
-    // Aquí puedes agregar la lógica para actualizar el héroe en tu servicio o estado global
-    // Por ejemplo, podrías llamar a un método de un servicio que maneje la actualización del héroe
-    // this.heroService.updateHero(hero).subscribe(updatedHero => {
-    //   console.log('Hero updated successfully:', updatedHero);
-    // });
-
-    // this.#heroService.updateHero(hero);
+    this.#heroService.update(hero);
     this.router.navigate(['/super-heroes']);
   }
 }
