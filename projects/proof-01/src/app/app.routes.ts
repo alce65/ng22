@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { MenuOption } from './core/types/menu.option';
+import { heroResolver } from './features/super-heroes/routes/hero-resolver';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -37,17 +38,33 @@ export const routes: Routes = [
     data: {
       label: 'Super Heroes',
     },
-    loadComponent: () => import('./features/super-heroes/super-heroes-page'),
     children: [
       {
         path: '',
-        loadComponent: () =>
-          import('./features/super-heroes/components/hero-list/hero-list').then((m) => m.HeroList),
+        loadComponent: () => import('./features/super-heroes/super-heroes-page'),
+        // loadComponent: () =>
+        //   import('./features/super-heroes/components/hero-list/hero-list').then((m) => m.HeroList),
       },
       {
         path: 'add',
-        loadComponent: () =>
-          import('./features/super-heroes/components/hero-form/hero-form').then((m) => m.HeroForm),
+        loadComponent: () => import('./features/super-heroes/pages/new-page'),
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () => import('./features/super-heroes/pages/edit-page'),
+        resolve: {
+          // superHero: () => import('./features/super-heroes/routes/hero-resolver').then((m) => m.heroResolver),
+          superHero: heroResolver,
+        },
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./features/super-heroes/pages/details-page'),
+        resolve: {
+          // superHero: () =>
+          //   import('./features/super-heroes/routes/hero-resolver').then((m) => m.heroResolver),
+          superHero: heroResolver,
+        },
       },
     ],
   },

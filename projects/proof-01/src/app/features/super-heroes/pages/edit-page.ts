@@ -1,12 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Card } from '../../../core/components/card/card';
 import { HeroForm } from '../components/hero-form/hero-form';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HeroesState } from '../services/heroes-state';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'alc-edit-page',
-  imports: [Card, HeroForm],
+  imports: [Card, HeroForm, JsonPipe],
   template: `
     <header>
       <alc-card>
@@ -14,11 +15,15 @@ import { HeroesState } from '../services/heroes-state';
       </alc-card>
     </header>
     <alc-hero-form (addHeroEvent)="updateHero($event)" />
+      <pre>{{ hero() | json }}</pre>
   `,
   styles: ``,
 })
 export default class EditPage {
   readonly router = inject(Router);
+  protected activateRoute = inject(ActivatedRoute);
+  protected hero = signal(this.activateRoute.snapshot.data['superHero']);
+
   readonly #heroService = inject(HeroesState);
 
   updateHero(hero: any): void {
