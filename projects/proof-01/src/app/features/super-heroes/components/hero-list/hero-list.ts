@@ -9,11 +9,8 @@ import { HeroesState } from '../../services/heroes-state';
 
 @Component({
   selector: 'alc-hero-list',
-  imports: [HeroItem, Card, RouterLink],
+  imports: [HeroItem, Card],
   template: `
-    <div class="add-hero-button">
-      <button [routerLink]="['./add']">Add Super Hero</button>
-    </div>
     @if (heroes().length === 0) {
       <alc-card class="no-heroes">
         <p>Aún no hay super heroes</p>
@@ -49,28 +46,29 @@ import { HeroesState } from '../../services/heroes-state';
 })
 export class HeroList {
   protected readonly heroes = signal<Hero[]>([]);
-  readonly router = inject(Router);
-  readonly destroyRef = inject(DestroyRef);
-  readonly #heroRepo = inject(HeroesState);
+  readonly #heroService = inject(HeroesState);
+
+  // readonly router = inject(Router);
+  // readonly destroyRef = inject(DestroyRef);
 
   constructor() {
-    this.heroes.set(this.#heroRepo.findAll());
+    this.heroes.set(this.#heroService.findAll());
 
-    this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        const url = event.urlAfterRedirects;
-        if (url === '/super-heroes') {
-          const newHero: Hero = history.state['hero'];
-          console.log('Router event:', event);
-          console.log('State', newHero);
-          //this.heroes.update(() => [...this.heroes(), newHero]);
-          this.#heroRepo.add(newHero);
-        }
-      }
-    });
+    // this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
+    //   if (event instanceof NavigationEnd) {
+    //     const url = event.urlAfterRedirects;
+    //     if (url === '/super-heroes') {
+    //       const newHero: Hero = history.state['hero'];
+    //       console.log('Router event:', event);
+    //       console.log('State', newHero);
+    //       //this.heroes.updatePowerStas(() => [...this.heroes(), newHero]);
+    //       this.#heroService.add(newHero);
+    //     }
+    //   }
+    // });
   }
 
   protected heroListChangeEvent(event: PowerStatsChangeEvent) {
-    this.#heroRepo.update(event.hero, event.powerStat, event.delta);
+    this.#heroService.updatePowerStas(event.hero, event.powerStat, event.delta);
   }
 }

@@ -4,10 +4,11 @@ import { Hero, PowerStat } from '../../types/hero';
 import { Card } from '../../../../core/components/card/card';
 import { PowerStatsChangeEvent } from '../../types/power-stats-change.event';
 import { KeyValuePipe, TitleCasePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'alc-hero-item',
-  imports: [Card, KeyValuePipe, TitleCasePipe],
+  imports: [Card, KeyValuePipe, TitleCasePipe, RouterLink],
   template: `
     <alc-card class="hero-item" [class]="isHeroVillain() ? 'hero-item hero-villain' : 'hero-item '">
       <div class="image">
@@ -32,7 +33,7 @@ import { KeyValuePipe, TitleCasePipe } from '@angular/common';
             <div class="hero-powerStats-buttons">
               <button
                 [disabled]="hero().powerStats[item.key] === 0"
-                (click)="changePowerStats(item.key , -1)"
+                (click)="changePowerStats(item.key, -1)"
               >
                 ➖
               </button>
@@ -42,7 +43,7 @@ import { KeyValuePipe, TitleCasePipe } from '@angular/common';
               >
                 ➕
               </button>
-               <button
+              <button
                 [disabled]="hero().powerStats[item.key] === 0"
                 (click)="changePowerStats(item.key, 0)"
                 [title]="'Reset ' + (item.key | titlecase) + ' to 0'"
@@ -52,116 +53,12 @@ import { KeyValuePipe, TitleCasePipe } from '@angular/common';
             </div>
           </div>
         }
+      </div>
 
-        <section hidden>
-          <div class="hero-power-stats">
-            <span
-              >Intelligence:
-              {{ hero().powerStats.intelligence }}
-            </span>
-            <div class="hero-powerStats-buttons">
-              <button
-                [disabled]="hero().powerStats.intelligence === 0"
-                (click)="changePowerStats('intelligence', -1)"
-              >
-                ➖
-              </button>
-              <button
-                [disabled]="hero().powerStats.intelligence === 100"
-                (click)="changePowerStats('intelligence')"
-              >
-                ➕
-              </button>
-            </div>
-          </div>
-          <div class="hero-power-stats">
-            <span>Strength: {{ hero().powerStats.strength }}</span>
-            <div class="hero-powerStats-buttons">
-              <button
-                [disabled]="hero().powerStats.strength === 0"
-                (click)="changePowerStats('strength', -1)"
-              >
-                ➖
-              </button>
-              <button
-                [disabled]="hero().powerStats.strength === 100"
-                (click)="changePowerStats('strength')"
-              >
-                ➕
-              </button>
-            </div>
-          </div>
-          <div class="hero-power-stats">
-            <span> Speed: {{ hero().powerStats.speed }}</span>
-            <div class="hero-powerStats-buttons">
-              <button
-                [disabled]="hero().powerStats.speed === 0"
-                (click)="changePowerStats('speed', -1)"
-              >
-                ➖
-              </button>
-              <button
-                [disabled]="hero().powerStats.speed === 100"
-                (click)="changePowerStats('speed')"
-              >
-                ➕
-              </button>
-            </div>
-          </div>
-          <div class="hero-power-stats">
-            <span>Durability: {{ hero().powerStats.durability }}</span>
-            <div class="hero-powerStats-buttons">
-              <button
-                [disabled]="hero().powerStats.durability === 0"
-                (click)="changePowerStats('durability', -1)"
-              >
-                ➖
-              </button>
-              <button
-                [disabled]="hero().powerStats.durability === 100"
-                (click)="changePowerStats('durability')"
-              >
-                ➕
-              </button>
-            </div>
-          </div>
-          <div class="hero-power-stats">
-            <span>Power: {{ hero().powerStats.power }}</span>
-            <div class="hero-powerStats-buttons">
-              <button
-                [disabled]="hero().powerStats.power === 0"
-                (click)="changePowerStats('power', -1)"
-              >
-                ➖
-              </button>
-              <button
-                [disabled]="hero().powerStats.power === 100"
-                (click)="changePowerStats('power')"
-              >
-                ➕
-              </button>
-            </div>
-          </div>
-          <div class="hero-power-stats">
-            <!-- TODO 106: Same as TODO 103 but for combat -->
-            <span>Combat: {{ hero().powerStats.combat }}</span>
-            <div class="hero-powerStats-buttons">
-              <!-- TODO 106: Same as TODO 105 but for combat -->
-              <button
-                [disabled]="hero().powerStats.combat === 0"
-                (click)="changePowerStats('combat', -1)"
-              >
-                ➖
-              </button>
-              <button
-                [disabled]="hero().powerStats.combat === 100"
-                (click)="changePowerStats('combat')"
-              >
-                ➕
-              </button>
-            </div>
-          </div>
-        </section>
+      <div class="buttons">
+        <button [routerLink]="[hero().id]">Detalles</button>
+        <button [routerLink]="['edit', hero().id]">Editar</button>
+        <button (click)="deleteHero()">Eliminar</button>
       </div>
     </alc-card>
   `,
@@ -202,6 +99,40 @@ import { KeyValuePipe, TitleCasePipe } from '@angular/common';
         }
       }
     }
+    .buttons {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 1rem;
+      button {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        background-color: var(--color-primary);
+        color: var(--color-background);
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: var(--color-primary-hot);
+          transform: scale(1.05);
+          transition: all 0.3s ease, transform 0.3s ease;
+        }
+      }
+    }
+
+    .hero-villain {
+      .buttons {
+        button {
+          background-color: var(--color-background);
+          color: var(--color-primary);
+
+          &:hover {
+            color: var(--color-primary-hot);
+          }
+        }
+      }
+    }
   `,
 })
 export class HeroItem {
@@ -213,12 +144,20 @@ export class HeroItem {
   changePowerStats(powerStat: PowerStat, delta = 1): void {
     const value = this.hero().powerStats[powerStat];
 
-    if ((delta === 1 && value < 100) || (delta === -1 && value > 0) || (delta === 0 && value !== 0)) {
+    if (
+      (delta === 1 && value < 100) ||
+      (delta === -1 && value > 0) ||
+      (delta === 0 && value !== 0)
+    ) {
       this.powerStatsChangeEvent.emit({
         hero: this.hero(),
         powerStat,
         delta,
       });
     }
+  }
+
+  deleteHero(): void {
+    console.log(`Deleting hero: ${this.hero().name}`);
   }
 }

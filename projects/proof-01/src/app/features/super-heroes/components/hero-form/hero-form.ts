@@ -37,11 +37,10 @@ const IMAGES: ImageOptions[] = [
   selector: 'alc-hero-form',
   imports: [ReactiveFormsModule, JsonPipe, TitleCasePipe],
   template: `
-    <h3>Add a Super Hero!</h3>
     <div>
       <h4 class="error">{{ message() }}</h4>
       <!-- <form  [formGroup]="heroForm"> -->
-      <form (ngSubmit)="addHero($event)" [formGroup]="heroForm">
+      <form [formGroup]="heroForm" (ngSubmit)="addHero($event)" (reset)="reset()">
         <label for="name" class="control-group">
           <span>Name:</span>
           <input type="text" id="name" placeholder="Name" formControlName="name" />
@@ -146,18 +145,16 @@ const IMAGES: ImageOptions[] = [
           </label> -->
         </fieldset>
 
-        <div>
+        <div class="control-group">
           <button type="submit">Create</button>
+          <button type="reset">Cancel</button>
         </div>
       </form>
     </div>
     <pre>{{ heroForm.value | json }}</pre>
-    <pre>{{ 'State valid: ' + heroForm.valid  }}</pre>
+    <pre>{{ 'State valid: ' + heroForm.valid }}</pre>
   `,
   styles: `
-    h3 {
-      text-align: center;
-    }
 
     form,
     fieldset {
@@ -176,6 +173,7 @@ const IMAGES: ImageOptions[] = [
       .control-group {
         display: flex;
         align-items: flex-end;
+        gap: 1rem;
 
         span {
           flex: 1 1 20%;
@@ -202,6 +200,7 @@ const IMAGES: ImageOptions[] = [
         }
       }
 
+
       button {
         padding: 1rem;
         background: var(--color-primary);
@@ -225,8 +224,10 @@ const IMAGES: ImageOptions[] = [
   `,
 })
 export class HeroForm {
+  readonly addHeroEvent = output<Omit<Hero, 'id'> | null>();
+
   readonly fb = inject(FormBuilder);
-  readonly router = inject(Router);
+  // readonly router = inject(Router);
 
   // Al hacer explicito el tipo creamos un FormGroup con tipado fuerte,
   // lo que nos permite tener autocompletado y validación de tipos en el formulario.
@@ -265,21 +266,33 @@ export class HeroForm {
       this.message.set('Form is invalid. Please check the fields.');
       return;
     }
-    const hero: Hero = {
-      // Generate a random four-digit ID for the new hero
-      id: Math.floor(1000 + Math.random() * 999),
-      ...this.heroForm.value,
+
+    // Emitir evento para añadir super-hero
+    this.addHeroEvent.emit(this.heroForm.value);
+    // const navigationExtras: NavigationExtras = {
+    //   state: {
+    //     hero,
+    //   },
+    // };
+
+    // this.router.navigate(['/super-heroes'], navigationExtras);
+  }
+
+  reset() {
+    this.heroForm.reset({
+      name: '',
+      image: '',
+      alignment: 'good',
       powerStats: {
-        ...this.heroForm.value.powerStats,
+        combat: 90,
+        durability: 10,
+        intelligence: 20,
+        power: 60,
+        speed: 50,
+        strength: 40,
       },
-    };
-
-    const navigationExtras: NavigationExtras = {
-      state: {
-        hero,
-      },
-    };
-
-    this.router.navigate(['/super-heroes'], navigationExtras);
+    });
+    this.message.set('');
+    this.addHeroEvent.emit(null);
   }
 }
