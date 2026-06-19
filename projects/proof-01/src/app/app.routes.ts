@@ -9,7 +9,7 @@ export const routes: Routes = [
     data: {
       label: 'Inicio',
     },
-    loadComponent: () => import('./features/home/home-page').then((m) => m.default),
+    loadComponent: () => import('./features/home/home-page'),
   },
   {
     path: 'heroes',
@@ -17,7 +17,7 @@ export const routes: Routes = [
     data: {
       label: 'Heroes',
     },
-    loadComponent: () => import('./features/heroes/heroes-page').then((m) => m.default),
+    loadComponent: () => import('./features/heroes/heroes-page'),
     children: [
       {
         path: '',
@@ -31,13 +31,13 @@ export const routes: Routes = [
       },
     ],
   },
-   {
+  {
     path: 'super-heroes',
     title: 'Super Heroes | Proof 01',
     data: {
       label: 'Super Heroes',
     },
-    loadComponent: () => import('./features/super-heroes/super-heroes-page').then((m) => m.default),
+    loadComponent: () => import('./features/super-heroes/super-heroes-page'),
     children: [
       {
         path: '',
@@ -57,7 +57,31 @@ export const routes: Routes = [
     data: {
       label: 'Notas',
     },
-    loadComponent: () => import('./features/notes/notes-page').then((m) => m.default),
+    loadComponent: () => import('./features/notes/notes-page'),
+  },
+  {
+    path: 'auth',
+    title: 'Auth | Proof 01',
+    loadComponent: () => import('./features/auth/auth-page'),
+    children: [
+      {
+        path: 'login',
+        title: 'Login | Proof 01',
+        data: {
+          label: 'Login',
+        },
+        loadComponent: () => import('./features/auth/components/login/login').then((m) => m.Login),
+      },
+      {
+        path: 'register',
+        title: 'Register | Proof 01',
+        data: {
+          label: 'Registro',
+        },
+        loadComponent: () =>
+          import('./features/auth/components/register/register').then((m) => m.Register),
+      },
+    ],
   },
   {
     path: 'about',
@@ -65,7 +89,7 @@ export const routes: Routes = [
     data: {
       label: 'Nosotros',
     },
-    loadComponent: () => import('./features/about/about-page').then((m) => m.default),
+    loadComponent: () => import('./features/about/about-page'),
   },
 
   {
@@ -78,7 +102,7 @@ export const routes: Routes = [
     data: {
       label: 'Dashboard',
     },
-    loadComponent: () => import('./features/dashboard/dashboard-page').then((m) => m.default),
+    loadComponent: () => import('./features/dashboard/dashboard-page'),
   },
   {
     path: 'products',
@@ -86,16 +110,22 @@ export const routes: Routes = [
     data: {
       label: 'Productos',
     },
-    loadComponent: () => import('./features/products/products-page').then((m) => m.default),
+    loadComponent: () => import('./features/products/products-page'),
     providers: [TimeOld],
   }, */
 ];
 
 export const getRoutes = (): MenuOption[] => {
-  return routes
-    .filter((route) => route.data?.['label'] && route.path)
-    .map((route) => ({
-      label: route.data?.['label'] as string,
-      path: route.path as string,
-    }));
+  return [
+    ...routes
+      .filter((route) => route.data?.['label'] && route.path)
+      .map((route) => ({
+        label: route.data?.['label'] as string,
+        path: route.path as string,
+      })),
+    {
+      label: 'Login',
+      path: 'auth/login',
+    },
+  ];
 };
