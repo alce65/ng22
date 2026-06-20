@@ -52,11 +52,18 @@ export abstract class HeroesStateAbstract {
   }
 
   abstract load(): Observable<APIResponse>;
+  
+  // De momento no utilizan el valor devuelto por la API, 
   abstract add(hero: Hero): Observable<Hero>;
+  abstract update(updatedHero: Hero): Observable<Hero>;
 
-  abstract findAll(): Hero[];
-  abstract findById(id: number): Hero;
-  abstract update(updatedHero: Hero): void;
-  abstract delete(hero: Hero): void;
+  
+  // Usado en rutas con :id, 
+  // en el resolver o el inputSignal del componente
+  abstract findById(id: number): Observable<Hero>;
   abstract updatePowerStats(hero: Hero, powerStat: keyof Hero['powerStats'], delta: number): void;
+  
+  
+  abstract findAll(): Hero[];
+  abstract delete(hero: Hero): void;
 }

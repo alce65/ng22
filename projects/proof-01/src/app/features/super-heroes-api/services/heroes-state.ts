@@ -59,9 +59,11 @@ export class HeroesState extends HeroesStateAbstract {
     // se refleje en la lista de héroes renderizada como señal.
   }
 
-  findById(id: number): Hero {
+  findById(id: number): Observable<Hero> {
     console.log(`findById(${id}) called`);
-    return this.heroes.find((hero) => hero.id === id) || this.nullHero;
+    // return this.heroes.find((hero) => hero.id === id) || this.nullHero;
+    const url = `${this.HERO_API_URL}/${id}`;
+    return this.#http.get<Hero>(url);
   }
 
   add(hero: Hero) {
@@ -81,10 +83,19 @@ export class HeroesState extends HeroesStateAbstract {
 
   update(updatedHero: Hero) {
     console.log(`Updating updatedHero: ${updatedHero.name}`);
-    const index = this.heroes.findIndex((hero) => hero.id === updatedHero.id);
-    if (index !== -1) {
-      this.heroes[index] = updatedHero;
-    }
+    // const index = this.heroes.findIndex((hero) => hero.id === updatedHero.id);
+    // if (index !== -1) {
+    //   this.heroes[index] = updatedHero;
+    // }
+
+    const url = `${this.HERO_API_URL}/${updatedHero.id}`;
+    return this.#http.put<Hero>(url, updatedHero)
+    .pipe(
+      catchError((error) => {
+        console.error('Error updating hero:', error);
+        return of(this.nullHero);
+      }),
+    );
   }
 
   delete(hero: Hero) {
