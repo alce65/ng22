@@ -1,4 +1,4 @@
-import { inject } from '@angular/core';
+import { inject, input } from '@angular/core';
 import { ResolveFn } from '@angular/router';
 import { HeroesState } from '../services/heroes-state';
 import { Hero } from '../types/hero';
