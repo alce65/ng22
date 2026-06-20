@@ -20,14 +20,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styles: ``,
 })
 export default class NewPage {
-  protected readonly router = inject(Router);
-  readonly #heroService = inject(HeroesState);
+  readonly #router = inject(Router);
   readonly #destroyRef = inject(DestroyRef);
+  readonly #heroService = inject(HeroesState);
 
   // Método en respuesta a un evento del formulario
   addHero(newHeroData: Hero) {
     if (!newHeroData || this.#heroService.isNullHero(newHeroData)) {
-      this.router.navigate(['/super-heroes-api']);
+      this.#router.navigate(['/super-heroes-api']);
       return;
     }
     console.log('Creating new hero:', newHeroData);
@@ -37,17 +37,19 @@ export default class NewPage {
       .subscribe({
         next: (createdHero) => {
           console.log('Hero created successfully:', createdHero);
-          this.router.navigate(['/super-heroes-api']);
+          
+          
+          // AL navegar se carga de nuevo la lista de héroes,
+          // que invoca el método load() del servicio,
+          // que ahora incluirá el nuevo héroe.
+          this.#router.navigate(['/super-heroes-api']);
         },
         error: (error) => {
           console.error('Error creating hero:', error);
           // Handle the error, e.g., show a notification to the user
+          // this.#router.navigate(['/super-heroes-api']);
         },
       });
 
-    // AL navegar se carga de nuevo la lista de héroes,
-    // que invoca el método load() del servicio,
-    // que ahora incluirá el nuevo héroe.
-    this.router.navigate(['/super-heroes-api']);
   }
 }
