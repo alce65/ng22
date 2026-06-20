@@ -1,9 +1,9 @@
-import { inject, input } from '@angular/core';
+import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
 import { HeroesState } from '../services/heroes-state';
 import { Hero } from '../types/hero';
 
-export const heroResolver: ResolveFn<Hero | undefined> = (route, state) => {
+export const heroAPIResolver: ResolveFn<Hero | undefined> = (route, state) => {
   const heroState = inject(HeroesState);
 
   // const id = route.params['id'] || '0';

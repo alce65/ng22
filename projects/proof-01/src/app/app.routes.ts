@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { MenuOption } from './core/types/menu.option';
 import { heroResolver } from './features/super-heroes/routes/hero.resolver';
 import { heroIdMatcher } from './features/super-heroes/routes/hero-id.matcher';
+import { heroAPIResolver } from './features/super-heroes-api/routes/hero.resolver';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -93,7 +94,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/super-heroes-api/pages/edit-page'),
         resolve: {
           // superHero: () => import('./features/super-heroes-api/routes/hero-resolver').then((m) => m.heroResolver),
-          superHero: heroResolver,
+          superHero: heroAPIResolver,
         },
       },
       {
