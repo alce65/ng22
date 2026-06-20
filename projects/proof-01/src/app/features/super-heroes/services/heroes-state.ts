@@ -69,7 +69,7 @@ export class HeroesState {
     // se refleje en la lista de héroes renderizada como señal.
   }
 
-  findById(id: number): Hero | undefined {
+  findById(id: number): Hero {
     console.log(`findById(${id}) called`);
     return this.heroes.find((hero) => hero.id === id) || this.nullHero;
   }
