@@ -5,25 +5,19 @@ import { Hero } from '../../types/hero';
 import { PowerStatsChangeEvent } from '../../types/power-stats-change.event';
 import { Card } from '../../../../core/components/card/card';
 import { HeroesState } from '../../services/heroes-state';
-import { Observable } from 'rxjs';
-import { APIResponse } from '../../services/heroes-state-abstract';
-import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'alc-hero-list',
-  imports: [HeroItem, Card, AsyncPipe],
+  imports: [HeroItem, Card],
   template: `
-
-    @let heroes  = (heroes$  | async)?.heroes;
-
-    @if (!heroes ||heroes.length === 0) {
+    @if (heroes().length === 0) {
       <alc-card class="no-heroes">
         <p>Aún no hay super heroes</p>
       </alc-card>
     }
 
     <ul>
-      @for (hero of heroes; track hero.id) {
+      @for (hero of heroes(); track hero.id) {
         <li>
           <alc-hero-item
             [hero]="hero"
@@ -32,7 +26,6 @@ import { AsyncPipe } from '@angular/common';
         </li>
       }
     </ul>
-    <p>Heroes-List sin signals: Rx & AsyncPipe</p>
   `,
   styles: `
     ul {
@@ -51,15 +44,23 @@ import { AsyncPipe } from '@angular/common';
   `,
 })
 export class HeroList {
+  protected readonly heroes = signal<Hero[]>([]);
   readonly #heroService = inject(HeroesState);
+  readonly #destroyRef = inject(DestroyRef);
 
-  protected readonly heroes$: Observable<APIResponse>;
+  // readonly router = inject(Router);
+  // readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     // Antes era findAll() y devolvía un array de héroes,
     // ahora load() devuelve un observable de APIResponse
 
-    this.heroes$ = this.#heroService.load();
+    this.#heroService
+      .load()
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe((response) => {
+        this.heroes.set(response.heroes);
+      });
   }
 
   protected heroListChangeEvent(event: PowerStatsChangeEvent) {
