@@ -25,7 +25,7 @@ export default class NewPage {
 
   // Método en respuesta a un evento del formulario
   addHero(newHeroData: Hero) {
-    if (!newHeroData) {
+      if (!newHeroData || this.#heroService.isNullHero(newHeroData)) {
       this.router.navigate(['/super-heroes']);
       return;
     }

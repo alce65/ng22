@@ -61,7 +61,7 @@ export class HeroList {
     //       const newHero: Hero = history.state['hero'];
     //       console.log('Router event:', event);
     //       console.log('State', newHero);
-    //       //this.heroes.updatePowerStas(() => [...this.heroes(), newHero]);
+    //       //this.heroes.updatePowerStats(() => [...this.heroes(), newHero]);
     //       this.#heroService.add(newHero);
     //     }
     //   }
@@ -69,6 +69,6 @@ export class HeroList {
   }
 
   protected heroListChangeEvent(event: PowerStatsChangeEvent) {
-    this.#heroService.updatePowerStas(event.hero, event.powerStat, event.delta);
+    this.#heroService.updatePowerStats(event.hero, event.powerStat, event.delta);
   }
 }

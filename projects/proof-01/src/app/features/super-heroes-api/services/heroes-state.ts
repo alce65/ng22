@@ -22,7 +22,7 @@ const DEFAULT_HERO: Hero = {
 const NULL_HERO: Hero = {
   id: randomId(),
   name: 'Not Found',
-  image: './assets/img/hero-not-found.png',
+  image: 'hero-not-found.png',
   alignment: 'bad',
   powerStats: {
     intelligence: -1,
@@ -92,7 +92,7 @@ export class HeroesState {
     this.heroes = this.heroes.filter((h) => h.id !== hero.id);
   }
 
-  updatePowerStas(hero: Hero, powerStat: PowerStat, delta: number) {
+  updatePowerStats(hero: Hero, powerStat: PowerStat, delta: number) {
     console.log(`Updating hero: ${hero.name}`);
     hero.powerStats[powerStat] += delta;
 
