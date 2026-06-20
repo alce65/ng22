@@ -1,63 +1,53 @@
-import { Service } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Hero, PowerStat } from '../types/hero';
-import { HEROES } from '../data/heroes';
 
-const randomId = () => Math.floor(Math.random() * 10000) + 1000;
-
-const DEFAULT_HERO: Hero = {
-  id: randomId(),
-  name: 'Joker',
-  image: 'https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/images/md/370-joker.jpg',
-  alignment: 'bad',
-  powerStats: {
-    intelligence: 100,
-    strength: 10,
-    speed: 12,
-    durability: 60,
-    power: 43,
-    combat: 70,
-  },
-};
-
-const NULL_HERO: Hero = {
-  id: randomId(),
-  name: 'Not Found',
-  image: 'hero-not-found.png',
-  alignment: 'bad',
-  powerStats: {
-    intelligence: -1,
-    strength: -1,
-    speed: -1,
-    durability: -1,
-    power: -1,
-    combat: -1,
-  },
-};
+import { APIResponse, HeroesStateAbstract } from './heroes-state-abstract';
+import { HttpClient } from '@angular/common/http';
+import { catchError, map, Observable, of } from 'rxjs';
 
 // El estado no es una signal,
 // El componente lista incorpora los datos a una signal
 // y la renderiza
 
 @Service()
-export class HeroesState {
-  public heroes: Hero[] = HEROES;
+export class HeroesState extends HeroesStateAbstract {
+  readonly #http = inject(HttpClient);
 
-  readonly #defaultHero: Hero = DEFAULT_HERO;
-  readonly #nullHero: Hero = NULL_HERO;
+  // El objetivo será eliminar este array
+  // y convertir el servicio en un repo, en lugar de un store
+  public heroes: Hero[] = [];
 
   get defaultHero(): Hero {
-    return this.#defaultHero;
+    return this._defaultHero;
   }
 
   get nullHero(): Hero {
-    return this.#nullHero;
+    return this._nullHero;
   }
 
-  isDefaultHero(hero: Hero): boolean {
-    return hero.id === this.#defaultHero.id;
-  }
-  isNullHero(hero: Hero): boolean {
-    return hero.id === this.#nullHero.id;
+  load(): Observable<APIResponse> {
+    // Adaptamos nuestra API para que devuelva un observable de APIResponse,
+    // Como en el ejemplo seguido
+
+    return this.#http
+      .get<Hero[]>(this.HERO_API_URL)
+      .pipe(
+        map((heroes) => {
+          const response: APIResponse = {
+            heroes,
+            total: heroes.length,
+            error: '',
+          };
+          return response;
+        }),
+      )
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading heroes:', error);
+          const response: APIResponse = { heroes: [], total: 0, error: 'Error loading heroes' };
+          return of(response);
+        }),
+      );
   }
 
   findAll(): Hero[] {

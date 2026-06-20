@@ -1,5 +1,4 @@
 import { Component, computed, input, output } from '@angular/core';
-import { HEROES } from '../../data/heroes';
 import { Hero, PowerStat } from '../../types/hero';
 import { Card } from '../../../../core/components/card/card';
 import { PowerStatsChangeEvent } from '../../types/power-stats-change.event';
@@ -136,7 +135,7 @@ import { RouterLink } from '@angular/router';
   `,
 })
 export class HeroItem {
-  readonly hero = input<Hero>(HEROES[0]);
+  readonly hero = input.required<Hero>();
   protected readonly isHeroVillain = computed(() => this.hero().alignment === 'bad');
 
   protected readonly powerStatsChangeEvent = output<PowerStatsChangeEvent>();
