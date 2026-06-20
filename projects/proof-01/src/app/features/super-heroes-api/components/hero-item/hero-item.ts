@@ -57,7 +57,7 @@ import { RouterLink } from '@angular/router';
       <div class="buttons">
         <button [routerLink]="[hero().id]">Detalles</button>
         <button [routerLink]="['edit', hero().id]">Editar</button>
-        <button (click)="deleteHero()">Eliminar</button>
+        <button (click)="deleteHeroEmit()">Eliminar</button>
       </div>
     </alc-card>
   `,
@@ -139,6 +139,7 @@ export class HeroItem {
   protected readonly isHeroVillain = computed(() => this.hero().alignment === 'bad');
 
   protected readonly powerStatsChangeEvent = output<PowerStatsChangeEvent>();
+  protected readonly deleteHeroEvent = output<void>();
 
   changePowerStats(powerStat: PowerStat, delta = 1): void {
     const value = this.hero().powerStats[powerStat];
@@ -156,7 +157,8 @@ export class HeroItem {
     }
   }
 
-  deleteHero(): void {
+  deleteHeroEmit(): void {
     console.log(`Deleting hero: ${this.hero().name}`);
+    this.deleteHeroEvent.emit();
   }
 }

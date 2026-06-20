@@ -7,15 +7,15 @@ import { Observable } from 'rxjs';
 import { APIResponse } from '../../services/heroes-state-abstract';
 import { AsyncPipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Hero } from '../../types/hero';
 
 @Component({
   selector: 'alc-hero-list',
   imports: [HeroItem, Card, AsyncPipe],
   template: `
+    @let heroes = (heroes$ | async)?.heroes;
 
-    @let heroes  = (heroes$  | async)?.heroes;
-
-    @if (!heroes ||heroes.length === 0) {
+    @if (!heroes || heroes.length === 0) {
       <alc-card class="no-heroes">
         <p>Aún no hay super heroes</p>
       </alc-card>
@@ -27,6 +27,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
           <alc-hero-item
             [hero]="hero"
             (powerStatsChangeEvent)="heroListChangeEvent($event)"
+            (deleteHeroEvent)="heroDelete(hero)"
           ></alc-hero-item>
         </li>
       }
@@ -63,8 +64,16 @@ export class HeroList {
   }
 
   protected heroListChangeEvent(event: PowerStatsChangeEvent) {
-    this.#heroService.updatePowerStats(event.hero, event.powerStat, event.delta)
-    .pipe(takeUntilDestroyed(this.#destroyRef))
-    .subscribe();
+    this.#heroService
+      .updatePowerStats(event.hero, event.powerStat, event.delta)
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe();
+  }
+
+  protected heroDelete(hero: Hero) {
+    this.#heroService.delete(hero).subscribe(() => {
+      // Después de eliminar el héroe, recargamos la lista de héroes
+      // this.heroes$ = this.#heroService.load();
+    });
   }
 }

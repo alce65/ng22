@@ -64,6 +64,6 @@ export abstract class HeroesStateAbstract {
   abstract updatePowerStats(hero: Hero, powerStat: keyof Hero['powerStats'], delta: number): void;
   
   
-  abstract findAll(): Hero[];
-  abstract delete(hero: Hero): void;
+  abstract delete(hero: Hero): Observable<void>;
+  abstract findAll(pagination: { page: number, limit: number }): Observable<APIResponse>;
 }

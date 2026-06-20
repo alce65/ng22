@@ -50,13 +50,18 @@ export class HeroesState extends HeroesStateAbstract {
       );
   }
 
-  findAll(): Hero[] {
-    console.log('findAll() called');
-    return this.heroes;
-    // Expone la referencia al array de héroes,
-    // lo que permite que cualquier modificación
-    // realizada en el array realizada por otros métodos del servicio
-    // se refleje en la lista de héroes renderizada como señal.
+   findAll({ page, limit } = { page: 1, limit: 600 }): Observable<APIResponse> {
+    
+    const url = `${this.HERO_API_URL}?_page=${page}&_limit=${limit}`;
+    return this.#http.get<Hero[]>(
+      url
+    ).pipe(
+      map((heroes) => ({
+        heroes: heroes,
+        total: heroes.length,
+        error: '',
+      }))
+    );
   }
 
   findById(id: number): Observable<Hero> {
@@ -100,7 +105,17 @@ export class HeroesState extends HeroesStateAbstract {
 
   delete(hero: Hero) {
     console.log(`Deleting hero: ${hero.name}`);
-    this.heroes = this.heroes.filter((h) => h.id !== hero.id);
+    //this.heroes = this.heroes.filter((h) => h.id !== hero.id);
+    const url = `${this.HERO_API_URL}/${hero.id}`;
+    return this.#http.delete<void>(url)
+    .pipe(
+      catchError((error) => {
+        console.error('Error deleting hero:', error);
+        return of(undefined);
+      }),
+    ).pipe(
+      map(() => undefined)
+    );
   }
 
   updatePowerStats(hero: Hero, powerStat: PowerStat, delta: number) {
