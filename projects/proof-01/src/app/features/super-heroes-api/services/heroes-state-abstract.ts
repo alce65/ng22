@@ -52,10 +52,10 @@ export abstract class HeroesStateAbstract {
   }
 
   abstract load(): Observable<APIResponse>;
+  abstract add(hero: Hero): Observable<Hero>;
 
   abstract findAll(): Hero[];
   abstract findById(id: number): Hero;
-  abstract add(hero: Hero): void;
   abstract update(updatedHero: Hero): void;
   abstract delete(hero: Hero): void;
   abstract updatePowerStats(hero: Hero, powerStat: keyof Hero['powerStats'], delta: number): void;

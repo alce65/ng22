@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { HeroForm } from '../components/hero-form/hero-form';
 import { HeroesState } from '../services/heroes-state';
 import { Hero } from '../types/hero';
 import { Router } from '@angular/router';
 import { Card } from '../../../core/components/card/card';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'alc-new-page',
@@ -14,14 +15,14 @@ import { Card } from '../../../core/components/card/card';
         <h2>Añadir un Super Héroe</h2>
       </alc-card>
     </header>
-    <alc-hero-form
-    (addHeroEvent)="addHero($event)" />
+    <alc-hero-form (addHeroEvent)="addHero($event)" />
   `,
   styles: ``,
 })
 export default class NewPage {
   protected readonly router = inject(Router);
   readonly #heroService = inject(HeroesState);
+  readonly #destroyRef = inject(DestroyRef);
 
   // Método en respuesta a un evento del formulario
   addHero(newHeroData: Hero) {
@@ -30,7 +31,23 @@ export default class NewPage {
       return;
     }
     console.log('Creating new hero:', newHeroData);
-    this.#heroService.add(newHeroData);
+    this.#heroService
+      .add(newHeroData)
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe({
+        next: (createdHero) => {
+          console.log('Hero created successfully:', createdHero);
+          this.router.navigate(['/super-heroes-api']);
+        },
+        error: (error) => {
+          console.error('Error creating hero:', error);
+          // Handle the error, e.g., show a notification to the user
+        },
+      });
+
+    // AL navegar se carga de nuevo la lista de héroes,
+    // que invoca el método load() del servicio,
+    // que ahora incluirá el nuevo héroe.
     this.router.navigate(['/super-heroes-api']);
   }
 }

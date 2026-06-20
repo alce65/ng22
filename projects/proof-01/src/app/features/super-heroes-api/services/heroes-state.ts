@@ -66,7 +66,17 @@ export class HeroesState extends HeroesStateAbstract {
 
   add(hero: Hero) {
     console.log(`Adding hero: ${hero.name}`);
-    this.heroes.push(hero);
+    //this.heroes.push(hero);
+    return this.#http.post<Hero>(this.HERO_API_URL, hero).pipe(
+      // map((newHero) => {
+      //   this.heroes.push(newHero);
+      //   return newHero;
+      // }),
+      catchError((error) => {
+        console.error('Error adding hero:', error);
+        return of(this.nullHero);
+      }),
+    );
   }
 
   update(updatedHero: Hero) {
