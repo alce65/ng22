@@ -70,6 +70,44 @@ export const routes: Routes = [
       },
     ],
   },
+
+    {
+    path: 'super-heroes-api',
+    title: 'Super Heroes | Proof 01',
+    data: {
+      label: '(with API)',
+    },
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./features/super-heroes-api/super-heroes-api-page'),
+        // loadComponent: () =>
+        //   import('./features/super-heroes-api/components/hero-list/hero-list').then((m) => m.HeroList),
+      },
+      {
+        path: 'add',
+        loadComponent: () => import('./features/super-heroes-api/pages/new-page'),
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () => import('./features/super-heroes-api/pages/edit-page'),
+        resolve: {
+          // superHero: () => import('./features/super-heroes-api/routes/hero-resolver').then((m) => m.heroResolver),
+          superHero: heroResolver,
+        },
+      },
+      {
+        // path: ':id',
+        loadComponent: () => import('./features/super-heroes-api/pages/details-page'),
+        resolve: {
+          // superHero: () =>
+          //   import('./features/super-heroes-api/routes/hero-resolver').then((m) => m.heroResolver),
+          superHero: heroResolver,
+        },
+        matcher: heroIdMatcher,
+      },
+    ],
+  },
   {
     path: 'notes',
     title: 'Notes | Proof 01',
