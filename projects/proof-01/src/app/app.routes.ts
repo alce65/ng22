@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { MenuOption } from './core/types/menu.option';
-import { heroResolver } from './features/super-heroes/routes/hero-resolver';
+import { heroResolver } from './features/super-heroes/routes/hero.resolver';
+import { heroIdMatcher } from './features/super-heroes/routes/hero-id.matcher';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -58,13 +59,14 @@ export const routes: Routes = [
         },
       },
       {
-        path: ':id',
+        // path: ':id',
         loadComponent: () => import('./features/super-heroes/pages/details-page'),
         resolve: {
           // superHero: () =>
           //   import('./features/super-heroes/routes/hero-resolver').then((m) => m.heroResolver),
           superHero: heroResolver,
         },
+        matcher: heroIdMatcher,
       },
     ],
   },
