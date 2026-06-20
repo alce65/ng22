@@ -105,7 +105,16 @@ export class HeroesState extends HeroesStateAbstract {
 
   updatePowerStats(hero: Hero, powerStat: PowerStat, delta: number) {
     console.log(`Updating hero: ${hero.name}`);
-    hero.powerStats[powerStat] += delta;
+   
+    const updatedHero = {
+      ...hero,
+      powerStats: {
+        ...hero.powerStats,
+        [powerStat]: hero.powerStats[powerStat] + delta,
+      },
+    };
+
+    return this.update(updatedHero)
 
     // const heroIndex = this.heroes().findIndex((hero) => hero.id === event.hero.id);
     //   if (heroIndex !== -1) {

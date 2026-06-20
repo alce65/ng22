@@ -1,13 +1,12 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HeroItem } from '../hero-item/hero-item';
-import { Hero } from '../../types/hero';
 import { PowerStatsChangeEvent } from '../../types/power-stats-change.event';
 import { Card } from '../../../../core/components/card/card';
 import { HeroesState } from '../../services/heroes-state';
 import { Observable } from 'rxjs';
 import { APIResponse } from '../../services/heroes-state-abstract';
 import { AsyncPipe } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'alc-hero-list',
@@ -52,6 +51,7 @@ import { AsyncPipe } from '@angular/common';
 })
 export class HeroList {
   readonly #heroService = inject(HeroesState);
+  readonly #destroyRef = inject(DestroyRef);
 
   protected readonly heroes$: Observable<APIResponse>;
 
@@ -63,6 +63,8 @@ export class HeroList {
   }
 
   protected heroListChangeEvent(event: PowerStatsChangeEvent) {
-    this.#heroService.updatePowerStats(event.hero, event.powerStat, event.delta);
+    this.#heroService.updatePowerStats(event.hero, event.powerStat, event.delta)
+    .pipe(takeUntilDestroyed(this.#destroyRef))
+    .subscribe();
   }
 }
