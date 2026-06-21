@@ -1,19 +1,27 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CourseItem } from '../../../features/courses/components/course-item/course-item';
-import { CourseItemSignals } from "../../../features/courses/components/course-item-signals/course-item-signals";
+import { CourseItemSignals } from '../../../features/courses/components/course-item-signals/course-item-signals';
+import { Header } from '../header/header';
+import { Footer } from '../footer/footer';
 
 @Component({
   selector: 'alc-root',
-  imports: [RouterOutlet, CourseItem, CourseItemSignals],
+  imports: [RouterOutlet, CourseItem, Header, Footer, CourseItemSignals],
   template: `
-    <header>header</header>
+    <alc-header />
+
     <main class="container">
       <router-outlet />
+       <p>Páginas de la aplicación</p>
       <alc-course-item />
-      <alc-course-item-signals />
+      <details>
+        <summary>Sample of signals in async operations</summary>
+        <alc-course-item-signals />
+      </details>
+
     </main>
-    <footer>footer</footer>
+    <alc-footer />
   `,
   styles: `
     :host {
