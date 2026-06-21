@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { Separator } from '../separator/separator';
 import { LogoNg } from '../logo-angular/logo-ng';
+import { MenuMobile } from '../menu-mobile/menu-mobile';
 
 @Component({
   selector: 'alc-header',
-  imports: [Separator, LogoNg],
+  imports: [Separator, LogoNg, MenuMobile],
   template: `
     <header class="container">
       <div class="left-side">
@@ -18,7 +19,9 @@ import { LogoNg } from '../logo-angular/logo-ng';
       <div class="right-side">
         <div class="icons">
           Icons
-          <div class="mobile-only">Mobile Icons</div>
+          <div class="mobile-only">
+            <alc-menu-mobile />
+          </div>
         </div>
         Toggle
       </div>
@@ -27,7 +30,7 @@ import { LogoNg } from '../logo-angular/logo-ng';
         <div class="mobile-only">Search mobile only</div>
         <div class="desktop-only">
           <div>
-            Slot: Menu
+            <!-- Slot: Menu -->
             <ng-content select="[slot=menu]" />
           </div>
           <div>Search desktop only</div>

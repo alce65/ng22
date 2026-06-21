@@ -5,14 +5,16 @@ import { CourseItemSignals } from '../../../features/courses/components/course-i
 import { Header } from '../header/header';
 import { Footer } from '../footer/footer';
 import { Card } from '../card/card';
-import { LogoCoders } from "../logo-coders/logo-coders";
+import { LogoCoders } from '../logo-coders/logo-coders';
+import { Menu } from '../menu/menu';
 
 @Component({
   selector: 'alc-root',
-  imports: [RouterOutlet, CourseItem, Header, Footer, CourseItemSignals, Card, LogoCoders],
+  imports: [RouterOutlet, CourseItem, Header, Footer, CourseItemSignals, Card, LogoCoders, Menu],
   template: `
     <alc-header>
       <alc-logo-coders slot="logo" />
+      <alc-menu slot="menu" />
     </alc-header>
     <main class="container">
       <router-outlet />
