@@ -4,22 +4,28 @@ import { CourseItem } from '../../../features/courses/components/course-item/cou
 import { CourseItemSignals } from '../../../features/courses/components/course-item-signals/course-item-signals';
 import { Header } from '../header/header';
 import { Footer } from '../footer/footer';
+import { Card } from '../card/card';
 
 @Component({
   selector: 'alc-root',
-  imports: [RouterOutlet, CourseItem, Header, Footer, CourseItemSignals],
+  imports: [RouterOutlet, CourseItem, Header, Footer, CourseItemSignals, Card],
   template: `
     <alc-header />
 
     <main class="container">
       <router-outlet />
-       <p>Páginas de la aplicación</p>
-      <alc-course-item />
+      <alc-card>
+        <p>Páginas de la aplicación</p>
+      </alc-card>
+      <alc-card>
+        <alc-course-item />
+      </alc-card>
       <details>
         <summary>Sample of signals in async operations</summary>
-        <alc-course-item-signals />
+        <alc-card>
+          <alc-course-item-signals />
+        </alc-card>
       </details>
-
     </main>
     <alc-footer />
   `,
