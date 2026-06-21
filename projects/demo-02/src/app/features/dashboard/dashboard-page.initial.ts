@@ -1,13 +1,9 @@
 import { Component, signal } from '@angular/core';
-import { CountersList } from './components/counters-list/counters-list';
 
 @Component({
   selector: 'alc-dashboard-page',
-  imports: [CountersList],
-  template: `
-    <h2>{{ pageTitle() }}</h2>
-    <alc-counters-list />
-  `,
+  imports: [],
+  template: ` <h2>{{ pageTitle() }}</h2> `,
   styleUrls: ['../pages.css'],
   styles: `
     :host {

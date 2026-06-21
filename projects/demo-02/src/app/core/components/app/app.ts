@@ -38,7 +38,7 @@ import { MENU_OPTIONS } from '../../../app.routes';
       <alc-card>
         <alc-home-page id="home" />
       </alc-card>
-      <alc-card>
+      <alc-card class="wide">
         <alc-dashboard-page id="dashboard" />
       </alc-card>
       <alc-card>
