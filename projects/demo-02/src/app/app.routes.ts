@@ -5,7 +5,8 @@ export const routes: Routes = [];
 
 
 export const MENU_OPTIONS: MenuOption[]   = [
-  { label: 'Inicio', path: '/' },
-  { label: 'Tareas', path: '/tasks' },
-  { label: 'Angular', path: '/angular' },
+  { label: 'Inicio', path: '#home' },
+  { label: 'Dashboard ', path: '#dashboard' },
+  { label: 'Cursos', path: '#courses' },
+  { label: 'Angular (about)', path: '#about' },
 ];
