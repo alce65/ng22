@@ -1,5 +1,6 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { MenuOption } from '../../types/menu.option';
+import { MENU_OPTIONS } from '../../../app.routes';
 
 @Component({
   selector: 'alc-menu',
@@ -44,7 +45,7 @@ import { MenuOption } from '../../types/menu.option';
   `,
 })
 export class Menu {
-  readonly options = input.required<MenuOption[]>();
+  // readonly options = input.required<MenuOption[]>();
   // readonly isVertical = input(false);
-
+  protected readonly options = signal<MenuOption[]>(MENU_OPTIONS);
 }

@@ -1,16 +1,23 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { CourseItem } from '../../../features/courses/components/course-item/course-item';
-import { CourseItemSignals } from '../../../features/courses/components/course-item-signals/course-item-signals';
 import { Header } from '../header/header.no-inputs';
 import { Footer } from '../footer/footer';
 import { Card } from '../card/card';
 import { LogoCoders } from '../logo-coders/logo-coders';
 import { Menu } from '../menu/menu.initial';
+import HomePage from '../../../features/home/home-page';
+import AboutPage from '../../../features/about/about-page';
+import CoursesPage from '../../../features/courses/courses-page';
+import DashboardPage from '../../../features/dashboard/dashboard-page';
 
 @Component({
   selector: 'alc-root',
-  imports: [RouterOutlet, CourseItem, Header, Footer, CourseItemSignals, Card, LogoCoders, Menu],
+  imports: [RouterOutlet,  Header, Footer, Card, LogoCoders, Menu,
+    HomePage,
+    DashboardPage,
+    CoursesPage,
+    AboutPage
+  ],
   template: `
     <alc-header>
       <alc-logo-coders slot="logo" />
@@ -22,14 +29,17 @@ import { Menu } from '../menu/menu.initial';
         <p>Páginas de la aplicación</p>
       </alc-card>
       <alc-card>
-        <alc-course-item />
+        <alc-home-page id="home" />
       </alc-card>
-      <details>
-        <summary>Sample of signals in async operations</summary>
-        <alc-card>
-          <alc-course-item-signals />
-        </alc-card>
-      </details>
+      <alc-card>
+        <alc-dashboard-page id="dashboard" />
+      </alc-card>
+      <alc-card>
+        <alc-courses-page id="courses" />
+      </alc-card>
+      <alc-card class="wide">
+        <alc-about-page id="about" />
+      </alc-card>
     </main>
     <alc-footer />
   `,

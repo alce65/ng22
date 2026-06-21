@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Header } from '../header/header';
 import { Footer } from '../footer/footer';
@@ -9,19 +9,26 @@ import HomePage from '../../../features/home/home-page';
 import AboutPage from '../../../features/about/about-page';
 import CoursesPage from '../../../features/courses/courses-page';
 import DashboardPage from '../../../features/dashboard/dashboard-page';
+import { MenuOption } from '../../types/menu.option';
+import { MENU_OPTIONS } from '../../../app.routes';
 
 @Component({
   selector: 'alc-root',
-  imports: [RouterOutlet,  Header, Footer, Card, LogoCoders, Menu,
+  imports: [
+    RouterOutlet,
+    Header,
+    Footer,
+    Card,
+    LogoCoders,
+    Menu,
     HomePage,
     DashboardPage,
     CoursesPage,
-    AboutPage
+    AboutPage,
   ],
   template: `
-    <alc-header>
-      <alc-logo-coders slot="logo" />
-      <alc-menu slot="menu" />
+    <alc-header [title]="title()" [subtitle]="subtitle()">
+      <alc-menu slot="menu" [options]="menuOptions()" />
     </alc-header>
     <main class="container">
       <router-outlet />
@@ -71,4 +78,8 @@ import DashboardPage from '../../../features/dashboard/dashboard-page';
     }
   `,
 })
-export class App {}
+export class App {
+  protected readonly title = signal('Curso de Angular 22');
+  protected readonly subtitle = signal('Aprende a desarrollar aplicaciones con Angular');
+  protected readonly menuOptions = signal<MenuOption[]>(MENU_OPTIONS);
+}

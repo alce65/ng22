@@ -132,6 +132,6 @@ import { SearchRef } from '../search/search-ref';
   ],
 })
 export class Header {
-  readonly title = input.required<string>();;
-  readonly subtitle = input.required<string>();;
+  protected readonly title = signal('Curso de Angular 22');
+  protected readonly subtitle = signal('Aprende a desarrollar aplicaciones con Angular (Demo 02)');
 }
