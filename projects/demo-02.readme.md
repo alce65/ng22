@@ -7,28 +7,38 @@
     - [Reset de estilos](#reset-de-estilos)
   - [Scaffolding](#scaffolding)
     - [Reubicación de app](#reubicación-de-app)
-  - [Core: Componente sample: Course-Item](#core-componente-sample-course-item)
+  - [Core: Componente sample](#core-componente-sample)
+    - [Interface y datos de ejemplo (mock)](#interface-y-datos-de-ejemplo-mock)
+    - [Almacenamiento de imágenes en Angular](#almacenamiento-de-imágenes-en-angular)
+    - [Elementos de Angular en el componente inicial](#elementos-de-angular-en-el-componente-inicial)
+    - [`Course-Item` básico](#course-item-básico)
+    - [Importancia de las signals en Angular Moderno](#importancia-de-las-signals-en-angular-moderno)
+    - [`Course-Item` más completo](#course-item-más-completo)
+    - [Respuesta a eventos](#respuesta-a-eventos)
+    - [Resultados: Componente Course-Item](#resultados-componente-course-item)
   - [Core - Componentes del layout](#core---componentes-del-layout)
     - [Elementos de Angular en los componentes del layout](#elementos-de-angular-en-los-componentes-del-layout)
     - [1. `alc-app`](#1-alc-app)
     - [2. `alc-header`: contiene un grid con dos filas](#2-alc-header-contiene-un-grid-con-dos-filas)
     - [3. `alc-footer`](#3-alc-footer)
-    - [4. Otros componentes (Card y Menu)](#4-otros-componentes-card-y-menu)
     - [Resultados: Componentes del layout](#resultados-componentes-del-layout)
+  - [Core - Componentes visuales](#core---componentes-visuales)
+    - [Elementos de Angular en los componentes visuales](#elementos-de-angular-en-los-componentes-visuales)
+    - [1. `alc-card`](#1-alc-card)
+    - [2. `alc-logo-coders`](#2-alc-logo-coders)
+    - [Proyección de contenido en el componente Header](#proyección-de-contenido-en-el-componente-header)
+    - [3. `alc-separator`](#3-alc-separator)
+    - [4. `alc-logo-angular`](#4-alc-logo-angular)
+    - [Resultados: Componentes visuales](#resultados-componentes-visuales)
   - [Core - Componentes de navegación (Menu, Menu Mobile, Socials)](#core---componentes-de-navegación-menu-menu-mobile-socials)
     - [Elementos de Angular en los componentes de navegación](#elementos-de-angular-en-los-componentes-de-navegación)
     - [Tipos y datos para el menú](#tipos-y-datos-para-el-menú)
     - [1. `alc-menu`: muestra las opciones de navegación.](#1-alc-menu-muestra-las-opciones-de-navegación)
+    - [Iteración en el template](#iteración-en-el-template)
+    - [Incorporación del menú](#incorporación-del-menú)
     - [2. `alc-menu-mobile`](#2-alc-menu-mobile)
     - [3. `alc-socials`](#3-alc-socials)
     - [Resultados: Componentes de navegación](#resultados-componentes-de-navegación)
-  - [Core - Componentes gráficos](#core---componentes-gráficos)
-    - [Elementos de Angular en los componentes gráficos](#elementos-de-angular-en-los-componentes-gráficos)
-    - [1. `alc-separator`](#1-alc-separator)
-    - [2. `alc-logo-angular`](#2-alc-logo-angular)
-    - [3. `alc-logo-coders`](#3-alc-logo-coders)
-    - [4. `alc-card`](#4-alc-card)
-    - [Resultados: Componentes gráficos](#resultados-componentes-gráficos)
   - [Core - Componentes de funcionalidad (right-side del header)](#core---componentes-de-funcionalidad-right-side-del-header)
     - [Elementos de Angular en los componentes de funcionalidad](#elementos-de-angular-en-los-componentes-de-funcionalidad)
     - [1. `alc-search`](#1-alc-search)
@@ -67,7 +77,7 @@ Creamos el proyecto seleccionando las opciones
 - estilos inline (`-s`)  
 
 ```shell
-ng g app demo-01 --style css --ssr false -p alc -t -s 
+ng g app demo-02 --style css --ssr false -p alc -t -s 
 ```
 
 Copiamos desde demo-01:
@@ -75,20 +85,6 @@ Copiamos desde demo-01:
 - ficheros de configuración: `tsconfig.app.json`, `tsconfig.spec.json`
   Así Modificaciones de tsconfig: ` "rootDir": "'./src'"` 
 - ficheros de estilos globales: `styles.css` y `variables.css`
-
-
-Se asume el conocimiento de:
-
-- componentes: selector, template, estilos
-- content projection
-
-No se experimenta con ellos pero también se dan por conocidos:
-
-- view encapsulation
-- change detection
-- lifecycle hooks 
-
-Al final del proyecto se aborda la comunicación entre componentes, usando inputs y outputs.
 
 ## Estilos
 
@@ -341,23 +337,416 @@ Los estilos definen un grid de 3 filas, para el header, el main y el footer, y u
 
 Nota: el test se incluye ya ajustado, a partir de demo-01
 
-## Core: Componente sample: Course-Item
+## Core: Componente sample
+
+Para reaprovecharlo más adelante, crearemos los siguientes elementos en la `feature course`
+
+- interface `Course` y `CourseStats` 
+- datos de ejemplo (mock) para un curso
+- componente `CourseItem`
+
+### Interface y datos de ejemplo (mock)
+
+Definimos los elementos que representan un curso, con su interface que creamos en `features/course/types/course.ts`. Enn el caso de los interfaces, prescindimos del Angular CLI, que únicamente crea el fichero con el interface vacío y lo creamos directamente con el contenido, que incluye la interface `Course` y la interface `CourseStats` para los datos de estadísticas del curso.
+
+```ts
+export interface Course {
+  id: number;
+  title: string;
+  description: string;
+  duration: string;
+  level: "beginner" | "intermediate" | "advanced";
+  image: string;
+  courseStats: CourseStats;
+}
+
+export interface CourseStats {
+  difficulty: number;
+  actualization: number;
+  utility: number;
+  rating: number;
+}
+```
+Añadimos un array de datos de ejemplo (mock) para poder iterar sobre ellos en el template del componente. De momento es suficiente con un único curso.
+
+```ts
+import { Course } from '../types/course';
+
+export const COURSES: Course[] = [
+  {
+    id: 1,
+    title: 'Curso de Angular 22',
+    description: 'Este es un curso de Angular 22',
+    duration: '4 horas',
+    level: 'intermediate',
+    image: '/assets/course_angular.webp',
+    courseStats: {
+      utility: 7,
+      difficulty: 5,
+      actualization: 8,
+      rating: 9,
+    },
+  },
+];
+```
+
+### Almacenamiento de imágenes en Angular
+
+En el proyecto de Angular, las imágenes se almacenan en la carpeta `public`, al mismo nivel que `src` que es la carpeta por defecto de recursos estáticos de la aplicación, tal como viene definida en `angular.json`. 
+
+Esta carpeta se incluye automáticamente en el build de la aplicación y se puede acceder a sus archivos mediante rutas relativas desde el código de la aplicación.
+
+En nuestro caso añadimos la imagen `course_angular.webp` a la carpeta `public/assets`, y la referenciamos en el array de datos de ejemplo (mock) mediante la ruta relativa `/assets/course_angular.webp`. 
+
+En la carpeta podemos ver la diferencia de peso entre la imagen original en formato PNG y la imagen optimizada en formato WebP, que es un formato de imagen moderno que ofrece una mejor compresión y calidad de imagen que otros formatos como PNG o JPEG.
+
+### Elementos de Angular en el componente inicial
+
+En estos componentes vemos 
+
+- componentes: selector, template, estilos
+- estilos del componente y la pseudo-clase `:host` 
+- el **binding de expresiones JS** (interpolación de expresiones) en el template, usando `{{ }}` 
+- binding de propiedades `[prop]="value"`
+- uso de imágenes con rutas relativas a la carpeta public/assets
+
+- la definición del estado del componente mediante **signals**, para definir propiedades reactivas en los componentes, incluso cuando no este previsto que cambien, como el título y el subtítulo del header, y el año actual en el footer.
+
+### `Course-Item` básico
+
+```shell
+ng g c features/courses/components/course-item --project demo-02
+```
+
+Lo incluimos en app, sustituyendo el texto que teníamos previamente
+
+En el template del componente `CourseItem` se utiliza 
+
+- la interpolación de expresiones `{{ }}` para mostrar el título,
+- el binding de propiedades `[src]` para mostrar la imagen del curso
+
+```ts
+@Component({
+  selector: 'alc-course-item',
+  imports: [],
+  template: `
+    <img [src]="course().image" [alt]="course().title" />
+    <h3 [title]="'Curso ID: ' + course().id">{{ course().title }}</h3>
+  `,
+  styles: []
+})
+export class CourseItem {
+  protected readonly course = signal<Course>(COURSES[0]);
+}
+```
+
+Para definir el estado de la aplicación, se utiliza la nueva **API de signals** de Angular, en concreto su primitiva principal, `signal()`, que permite definir propiedades reactivas en los componentes. En este caso, se define una señal `course` que contiene el primer curso del array de datos de ejemplo (mock).
+
+Los estilos del componente se definen en el propio componente, utilizando la propiedad `styles` del decorador `@Component`. En este caso, se definen estilos para la pseudo-clase `:host`, que permite hacer referencia al elemento host (el propio componente) desde dentro de éste.
+
+```css
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+}
+```
+
+### Importancia de las signals en Angular Moderno
+
+En el contexto de Angular Moderno, incluyendo el modo **ZoneLess** y la detección de cambios **OnPush**,  las **signals** son una característica clave que permite definir propiedades reactivas en los componentes. 
+
+Esto significa que cuando el valor de una señal cambia, incluso si lo hace de forma **asíncrona**, Angular automáticamente actualiza la vista para reflejar ese cambio, sin necesidad de escribir código adicional para manejar la actualización de la interfaz de usuario.
+
+Vamos a utilizar una copia de nuestro componente que llamaremos `CourseItemSignals` para mostrar cómo se puede actualizar el valor de una señal de forma asíncrona y cómo Angular actualiza automáticamente la vista para reflejar ese cambio.
+
+```ts
+@Component({
+  selector: 'alc-course-item-signals',
+  imports: [],
+  template: `
+    <img [src]="course().image" [alt]="course().title" />
+    <h3 [title]="'Curso ID: ' + course().id">{{ course().title }}</h3>
+    <p>{{ plainMessage}}</p>
+  `,
+  styles: ``,
+})
+export class CourseItemSignals {
+  protected readonly course = signal<Course>(COURSES[0]);
+  protected  plainMessage = 'Bienvenido al curso';
+}
+```
+
+Tenemos
+- una señal `course` de la que obtenemos su propiedad `image` y `title` para mostrar la imagen y el título del curso
+- una propiedad `plainMessage` que contiene un mensaje de bienvenida al curso, que se muestra en un párrafo debajo del título del curso.
+
+En el constructor del componente, se utiliza `setTimeout()` para simular un cambio asíncrono en la señal `course`, y en el texto `plainMessage`. 
+
+```ts
+  constructor() {
+    setTimeout(() => {
+      this.plainMessage = 'Bienvenido al curso de ¡¡Angular Moderno!!';
+      console.log('Mensaje actualizado después de 2 segundos', this.plainMessage);
+    }, 2000);
+
+    setTimeout(() => {
+      this.course().title = 'Curso de Angular Moderno Actualizado';
+      console.log('Título actualizado después de 3 segundos', this.course().title);
+    }, 3000);
+
+    setTimeout(() => {
+      this.course.update((currentCourse) => ({
+        ...currentCourse,
+        title: 'Curso de Angular Moderno Actualizado con Signals',
+      }));
+      console.log('Título actualizado con signals después de 4 segundos', this.course().title);
+
+    }, 4000);
+  }
+```
+
+Los dos primeros cambios aparecen en consola, pero NO se reflejan en la vista, porque no se está utilizando la API de signals para actualizar el valor de la señal `course`.
+
+El tercer cambio, que utiliza el método `update()` de la señal `course`, sí se refleja en la vista, porque Angular detecta el cambio en la señal y actualiza automáticamente la interfaz de usuario.
+
+Además, el cambio en la señal dispara en Angular el ciclo de detección de cambios, que actualiza la vista para reflejar el nuevo valor de la señal, junto con los cambios que se habían producido en la propiedad `plainMessage`, que aunque no es una señal, se ve afectada y se actualiza en el mismo ciclo de detección de cambios.
+
+### `Course-Item` más completo
+
+Para completar nuestro componte vamos a utilizar un template externo, en un fichero independiente. Si se añade la referencia a `templateUrl` en el decorador `@Component`, Angular buscará el template en el fichero especificado, ignorando si existe el templete inline definido en la propiedad `template`. 
+
+```ts
+@Component({
+  selector: 'alc-course-item',
+  imports: [],
+  templateUrl: './course-item.html',
+  styles: []
+})  
+```
+
+El contenido del fichero es exactamente el misnm que podríamos incluir inline. Sólo se utiliza para der un ejemplo de cómo se puede separar el template del componente en un fichero independiente, lo que puede ser útil para componentes más complejos o para mantener el código organizado de la forma más tradicional en Angular.
+
+```html course-item.html
+<header>
+  <img [src]="course().image" [alt]="course().title" />
+  <h3 class="course-title" [title]="'Curso ID: ' + course().id">{{ course().title }}</h3>
+</header>
+
+<section class="details">
+  <p>{{ course().description }}</p>
+  <p>Duración: {{ course().duration }}</p>
+  <p>Nivel: {{ course().level }}</p>
+</section>
+
+<section class="stats">
+  <div class="course-power-stats" aria-label="Utilidad">
+    <span>Utilidad: {{ course().courseStats.utility }}</span>
+    <div class="course-courseStats-buttons">
+      <button
+        [disabled]="course().courseStats.utility === STAT_MIN"
+        (click)="changePowerStats('utility', -1)"
+      >
+        ➖
+      </button>
+      <button
+        [disabled]="course().courseStats.utility === STAT_MAX"
+        (click)="changePowerStats('utility')"
+      >
+        ➕
+      </button>
+      <button
+        [disabled]="course().courseStats.utility === 0"
+        (click)="changePowerStats('utility', 0)"
+        [title]="'Reset ' + ('utilidad') + ' a 0'"
+      >
+        🔄️
+      </button>
+    </div>
+  </div>
+  <div class="course-power-stats" aria-label="Dificultad">
+    <span>Dificultad: {{ course().courseStats.difficulty }}</span>
+    <div class="course-courseStats-buttons">
+      <button
+        [disabled]="course().courseStats.difficulty === STAT_MIN"
+        (click)="changePowerStats('difficulty', -1)"
+      >
+        ➖
+      </button>
+      <button
+        [disabled]="course().courseStats.difficulty === STAT_MAX"
+        (click)="changePowerStats('difficulty')"
+      >
+        ➕
+      </button>
+      <button
+        [disabled]="course().courseStats.difficulty === 0"
+        (click)="changePowerStats('difficulty', 0)"
+        [title]="'Reset ' + ('difficulty') + ' a 0'"
+      >
+        🔄
+      </button>
+    </div>
+  </div>
+  <div class="course-power-stats" aria-label="Actualidad">
+    <span>Actualidad: {{ course().courseStats.actualization }}</span>
+    <div class="course-courseStats-buttons">
+      <button
+        [disabled]="course().courseStats.actualization === STAT_MIN"
+        (click)="changePowerStats('actualization', -1)"
+      >
+        ➖
+      </button>
+      <button
+        [disabled]="course().courseStats.actualization === STAT_MAX"
+        (click)="changePowerStats('actualization')"
+      >
+        ➕
+      </button>
+      <button
+        [disabled]="course().courseStats.actualization === 0"
+        (click)="changePowerStats('actualization', 0)"
+        [title]="'Reset ' + ('actualidad') + ' a 0'"
+      >
+        🔄
+      </button>
+    </div>
+  </div>
+  <div class="course-power-stats" aria-label="Rating">
+    <span> Rating (Full): {{ course().courseStats.rating }}</span>
+    <div class="course-courseStats-buttons">
+      <button
+        [disabled]="course().courseStats.rating === 0"
+        (click)="changePowerStatsFull('rating', -1)"
+      >
+        ➖
+      </button>
+      <button
+        [disabled]="course().courseStats.rating === STAT_MAX"
+        (click)="changePowerStatsFull('rating')"
+      >
+        ➕
+      </button>
+      <button
+        [disabled]="course().courseStats.rating === 0"
+        (click)="changePowerStatsFull('rating', 0)"
+        [title]="'Reset ' + ('rating') + ' a 0'"
+      >
+        🔄
+      </button>
+    </div>
+  </div>
+
+</section>
+```
+
+Añadimos la información restante del curso, en la sección details, y añadimos la sección de estadísticas, con botones para incrementar o decrementar los valores de cada estadística.
+
+La propiedad disabled nos da otro ejemplo de binding de propiedades, en este caso para deshabilitar los botones cuando el valor de la estadística alcanza el valor mínimo o máximo permitido.
+
+Añadimos el **binding de eventos**, con el caos del `(click)` que permite vincular los eventos de html con el método del componente creado para manejar los clics en los botones y actualizar el valor de la estadística correspondiente.
+
+Los estilos también se definen en un fichero independiente, `course-item.css`, para mostrar un ejemplo de cómo mantener el código CSS separado del componente. En este caso, dada la estructura de cascada del CSS, se aplican todos los CSS indicados, en el orden en que se mencionan, con independencia de que estén en el mismo fichero o en ficheros separados.
+
+```css course-item.css
+.details {
+  text-align: center;
+}
+
+.course-title {
+  font-weight: bolder;
+  font-size: 1.4rem;
+  margin-block: 0.5rem;
+  text-align: center;
+}
+
+.course-power-stats {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+
+  .course-courseStats-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+/* clase de aplicación opcional */
+.course-advanced {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}
+``` 
+
+### Respuesta a eventos  
+
+Tenemos dos versiones del manejador de eventos del click de los botones
+
+En el primero modificamos directamente el valor de las propiedades del objeto referenciado en la signal, lo que puede hacerse precisamente por su carácter referenciado y la forma en que funciona. La razón de que se actualice la vista es que el evento click, al ser un evento de Angular, dispara el ciclo de detección de cambios, que actualiza la vista para reflejar el nuevo valor síncrono de la señal. 
+
+```ts
+protected changePowerStats(stat: keyof Course['courseStats'], delta: number = 1): void {
+  const value = this.course().courseStats[stat];
+
+  if (delta === 0) {
+    this.course().courseStats[stat] = 0;
+    return;
+  }
+
+  if ((delta === 1 && value < this.STAT_MAX) || (delta === -1 && value > this.STAT_MIN)) {
+    this.course().courseStats[stat] += delta;
+  }
+}
+```
+
+En el segundo caso utilizamos el método `update()` de la señal para actualizar el valor de la señal, lo que permite que Angular detecte el cambio y actualice automáticamente la vista, incluso si se trataran de cambios asíncronos. Este sería el método más seguro de gestionar una signal.
+
+```ts
+protected changePowerStatsFull(stat: keyof Course['courseStats'], delta: number = 1): void {
+  const value = this.course().courseStats[stat];
+  const newValue = delta === 0 ? 0 : value + delta;
+
+  if (
+    delta === 0 ||
+    (delta === 1 && value < this.STAT_MAX) ||
+    (delta === -1 && value > this.STAT_MIN)
+  ) {
+    this.course.update((course) => {
+      return {
+        ...course,
+        courseStats: {
+          ...course.courseStats,
+          [stat]: newValue,
+        },
+      };
+    });
+  }
+}
+```
+
+### Resultados: Componente Course-Item 
+!
+[Componente Course-Item](./assets/demo-02/first-sample.png)
 
 ## Core - Componentes del layout
 
 Creamos los componentes de layout que se utilizarán en toda la aplicación, como el header, el footer y el menú de navegación.
 
 ```shell
-ng g c core/components/header --project demo-01
-ng g c core/components/footer  --project demo-01
-ng g c core/components/menu  --project demo-01
+ng g c core/components/header --project demo-02
+ng g c core/components/footer  --project demo-02
 ```
 
 La relación entre estos componentes y el componente raíz `alc-app` se puede representar en un diagrama de árbol:
 
 - `alc-app`
   - `alc-header`
-    - `alc-menu`
   - `router-outlet` 
   - `alc-footer`
 
@@ -365,33 +754,36 @@ La relación entre estos componentes y el componente raíz `alc-app` se puede re
 
 En estos componentes vemos 
 
-- el **binding de expresiones JS** en el template, usando `{{ }}` para mostrar el título y el subtítulo del header, y para mostrar el año actual en el footer.
-- el uso de **signals** para definir propiedades reactivas en los componentes, incluso cuando no este previsto que cambien, como el título y el subtítulo del header, y el año actual en el footer.
-- el uso de la **proyección de contenido** (content projection) para proyectar el menú dentro del header
+- de nuevo el **binding de expresiones JS** en el template, usando `{{ }}` para mostrar el título y el subtítulo del header, y para mostrar el año actual en el footer.
+- igualmente el uso de **signals** para definir propiedades reactivas en los componentes, incluso cuando no este previsto que cambien, como el título y el subtítulo del header, y el año actual en el footer.
 - el uso de `router-outlet` que más adelante servirá para mostrar las páginas de la aplicación
 - los **estilos** de cada componente, usando displays de CSS (grid, flex) y media queries para adaptar el diseño a diferentes tamaños de pantalla.
 
 ### 1. `alc-app`
 
-Incluye en su template los componentes `alc-header` y `alc-footer`, junto con la etiqueta <main> envolviendo el `router-outlet`. El `alc-header` contiene el `alc-menu`, proyectándolo en el componente header mediante content projection. 
+Incluye en su template los componentes `alc-header` y `alc-footer`, junto con la etiqueta <main> envolviendo el `router-outlet`. El `alc-header` reserva espacio para el menú,  que se proyectará en el componente header mediante content projection. 
 
 ```ts app.ts
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Header } from '../header/header';
 import { Footer } from '../footer/footer';
-import { Menu } from '../menu/menu';
 
 @Component({
   selector: 'alc-root',
   imports: [RouterOutlet, Header, Footer, Menu],
   template: `
     <alc-header>
-      <alc-menu />
+    <!-- aquí irá <alc-menu /> -->
     </alc-header>
     <main class="container">
       <router-outlet />
       <p>Páginas de la aplicación</p>
+      <alc-course-item />
+      <details>
+        <summary>Sample of signals in async operations</summary>
+        <alc-course-item-signals />
+      </details>
     </main>
     <alc-footer />
   `,
@@ -431,19 +823,29 @@ import { Component, signal } from '@angular/core';
   selector: 'alc-header',
   imports: [],
   template: `
-    <header class="container">
-      <div class="left-side"></div>
+   <header class="container">
+      <div class="left-side">Slot: Logo GLobal</div>
       <hgroup>
+        Logo de Angular
         <h1>{{ title() }}</h1>
       </hgroup>
-      <div class="right-side"></div>
+      <div class="right-side">
+        <div class="icons">
+          Icons
+          <div class="mobile-only">Mobile Icons</div>
+        </div>
+        Toggle
+      </div>
       <div class="bottom-row">
         <p>{{ subtitle() }}</p>
+        <div class="mobile-only">Search mobile only</div>
         <div class="desktop-only">
-          <ng-content></ng-content>
+          <div>Slot: Menu</div>
+          <div>Search desktop only</div>
         </div>
       </div>
     </header>
+    <div>------Separador</div>
   `,
   styles: [
     `
@@ -511,7 +913,7 @@ import { Component, signal } from '@angular/core';
           max-width: none;
         }
 
-        alc-menu-mobile {
+        .mobile-only  {
           display: none;
         }
         .bottom-side {
@@ -527,18 +929,10 @@ import { Component, signal } from '@angular/core';
 export class Header {
   protected readonly title = signal('Curso de Angular 22');
   protected readonly subtitle = signal('Aprende a desarrollar aplicaciones con Angular');
-
-  // protected readonly isModalOpen = signal(false);
-  // readonly menuTemplate = input<TemplateRef<MenuTemplateContext>>();
-  // protected readonly desktopMenuContext: MenuTemplateContext = { isVertical: false };
-  // protected readonly mobileMenuContext: MenuTemplateContext = { isVertical: true };
-
-  // toggleModal(isOpen: boolean) {
-  //   console.log('Toggling modal:', isOpen);
-  //   this.isModalOpen.set(isOpen);
-  // }
 }
 ```
+
+En el html del template se indica donde irán los elementos de la cabecera, con un grid de dos filas y tres columnas, incluyéndose 'slots'para proyectar elementos externos.
 
 En los estilos vemos como se puede incorporar una media-query a nivel de componente usando la nueva sintaxis de media queries: `@media (width > 800px)`. Con ella hacemos que el menú móvil se oculte y el menú de escritorio se muestre a partir de un ancho de 800px. 
 
@@ -586,28 +980,305 @@ export class Footer {
 }
 ```
 
-### 4. Otros componentes (Card y Menu)
-
-1. `alc-menu`: contiene las opciones de navegación para la versión de escritorio.
-
-2. Añadir aquí el componente Card, mencionado más adelante
-
 ### Resultados: Componentes del layout
 
-![Primera versión para mobile](./assets/initial-mobile.png)
+![Primera versión para mobile](./assets/demo-02/initial-mobile.png)
 
-![Primera versión para desktop](./assets/initial-desktop.png)
+![Primera versión para desktop](./assets/demo-02/initial-desktop.png)
+
+## Core - Componentes visuales
+
+Creamos los componentes visuales que se utilizarán en toda la aplicación, como el separador, los logos de Angular y Coders y el componente de tarjeta.
+
+```shell
+ng g c core/components/separator --project demo-02
+ng g c core/components/logo-angular --project demo-02
+ng g c core/components/logo-coders --project demo-02
+ ng g c core/components/card --project demo-02
+```
+
+- `alc-card`
+- `alc-separator`
+- `alc-logo-angular`
+- `alc-logo-coders`
+
+
+El primero de los componentes, `alc-card`, muestra la **proyección de contenido** en Angular. Es un componente de utilidad para mostrar contenido en formato de tarjeta, con estilos predefinidos para el fondo, los bordes, las sombras y el padding. Este componente se utilizará más adelante para mostrar el contenido de las páginas de la aplicación.
+
+Los otros componentes de este bloque son componentes visuales que se utilizan en el header y la aplicación, para mostrar los logos de Angular y Coders, así como un separador entre el header y el contenido principal.
+
+### Elementos de Angular en los componentes visuales
+
+En estos componentes vemos
+
+- el uso de la **proyección de contenido** (content projection) para proyectar contenidos dentro de card o componentes dentro del header
+- **componentes de presentación** (presentational components) o componentes visuales mínimos, que no tienen lógica de negocio ni estado propio, y que se limitan a mostrar contenido  **encapsulando estilos CSS** apartando semántica y homogeneidad de los elementos de la aplicación, siendo todos componentes
+- uso de **ficheros svg como template**, con la posibilidad de aplicar en ellos todos los elementos de Angular, como binding de propiedades y eventos
+- componentes de **utilidad** (utility components) o del **sistema de diseño** (design system), como `alc-card`, que se pueden reutilizar en toda la aplicación para mostrar contenido en formato de tarjeta, con estilos predefinidos para el fondo, los bordes, las sombras y el padding.
+
+### 1. `alc-card`
+
+Es un componente de utilidad para mostrar contenido en formato de tarjeta, con estilos predefinidos para el fondo, los bordes, las sombras y el padding. Este componente se utilizará más adelante para mostrar el contenido de las páginas de la aplicación.
+
+```ts card.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'alc-card',
+  imports: [],
+  template: ` <ng-content></ng-content> `,
+  styles: `
+    :host {
+      display: block;
+      margin: 1rem 0;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+  `,
+})
+export class Card {}
+```
+
+En este componente tenemos un ejemplo muy sencillo de proyección de contenido: se utiliza ng-content para permitir que el contenido de la tarjeta sea dinámico y se pueda personalizar desde el componente padre. Los estilos predefinidos aseguran que todas las tarjetas tengan una apariencia consistente en toda la aplicación.
+
+Como ejemplo, podemos refactorizar los Course-Items y utilizar Card en el componente App para envolverlos. Igualmente podemos utilizar Card para envolver el mensaje que indica donde se mostrara el contenido principal de la aplicación, cuando existan las páginas.
+
+```ts app.ts
+  template: `
+    <alc-header />
+    <main class="container">
+      <router-outlet />
+      <alc-card>
+        <p>Páginas de la aplicación</p>
+      </alc-card>
+      <alc-card>
+        <alc-course-item />
+      </alc-card>
+      <details>
+        <summary>Sample of signals in async operations</summary>
+        <alc-card>
+          <alc-course-item-signals />
+        </alc-card>
+      </details>
+    </main>
+    <alc-footer />
+  `,
+```
+
+### 2. `alc-logo-coders`
+
+Es un componente que muestra el logo de "Coders" como logo de la aplicación, en formato SVG. Como en el caso anterior, el SVG es un fichero independiente que se vincula como template del componente.
+
+```svg logo-coders.svg
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ [attr.width]="size" [attr.height]="size" viewBox="0 0 1039.000000 1037.000000"
+ preserveAspectRatio="xMidYMid meet">
+
+<g transform="translate(0.000000,1037.000000) scale(0.100000,-0.100000)">
+
+<path id="upper" [attr.fill]="upperColor" (click)="handleClick('upper')" d="..."/>
+
+<path id="down" [attr.fill]="downColor" d="..."/>
+</g>
+</svg>
+```
+
+En el svg se utiliza attr para vincular los atributos de tamaño y color con las propiedades del componente, lo que permite personalizar el logo desde el componente padre.
+
+Además en cada uno de los paths se añade un evento de click para manejar la interacción con el logo, lo que permitiría más adelante definir alguna acción, como mostrar un modal con diferente información al hacer click en cada parte concreta del logo.
+
+```ts logo-coders.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'alc-logo-coders',
+  imports: [],
+  templateUrl: './logo-coders.svg',
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
+})
+export class LogoCoders {
+  size = '5.5rem';
+  upperColor = 'var(--color-primary)';
+  downColor = 'var(--color-secondary)';
+
+  handleClick(source: string) {
+    console.log('LogoCoders clicked from:', source);
+  }
+}
+```
+
+En el componente se definen las propiedades para el tamaño y los colores del logo, que se vinculan con los atributos del svg. Además se define un método para manejar el evento de click en el logo, que por ahora solo muestra un mensaje en la consola, pero que más adelante se utilizará para mostrar un modal con información sobre la aplicación.
+
+El componente `alc-logo-coders` se incorpora en el `alc-header`, en el div con la clase `left-side`, que asegura su posición a la izquierda.
+
+### Proyección de contenido en el componente Header
+
+El componente `alc-header` utiliza la proyección de contenido para permitir que el logo de Coders se proyecte en el div con la clase `left-side`, lo que permite mantener la estructura del header y la posición del logo sin necesidad de modificar el componente `alc-header`.
+
+```ts header.ts
+  template: `
+   <header class="container">
+      <div class="left-side">
+        <ng-content select="[slot='left']"></ng-content>
+      </div>
+      ...
+    </header>
+  `,
+```
+
+Para definir diferentes slots de proyección de contenido, se utiliza el atributo `select` en el ng-content, que permite seleccionar los elementos que se proyectarán en cada slot utilizando cualquier selector válido. En este caso, se utiliza el selector de atributo '[slot='left']' para proyectar el logo de Coders, marcado con ese atributo, en el div con la clase `left-side`.
+
+```ts app.ts
+  template: `
+    <alc-header>
+      <alc-logo-coders slot="left" />
+    </alc-header>
+    ...
+  `,
+```
+
+Esto permitirá, tener en el componente `alc-header` otros slots, con su correspondiente selector, o un slot por defecto, sin selector, para poder proyectar otros elementos. 
+
+En concreto, añadimos un slot en el div con la clase `desktop-only` de la segunda fila del grid, con el selector `[slot='menu']`, para proyectar
+el menú de navegación
+
+```ts
+  template: `
+   <header class="container">
+      ...
+      <div class="bottom-row">
+        <p>{{ subtitle() }}</p>
+        <div class="mobile-only">Search mobile only</div>
+        <div class="desktop-only">
+          <ng-content select="[slot='menu']" />
+          <div>Search desktop only</div>
+        </div>
+      </div>
+    </header>
+  `,
+```
+
+### 3. `alc-separator`
+
+Es un componente que muestra una línea horizontal de separación entre el header y el contenido principal. Se limita a aplicar en un div un gradiente definido en el css utilizando la paleta de colores de la aplicación.
+
+```ts separator.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'alc-separator',
+  imports: [],
+  template: ` <div role="separator" aria-label="Divider" class="divider"></div> `,
+  styles: `
+    .divider {
+      width: 100%;
+      height: 3px;
+      background: var(--red-to-pink-to-purple-horizontal-gradient);
+      margin-block: 0rem;
+    }
+  `,
+})
+export class Separator {}
+```
+
+El componente `alc-separator` se incorpora en el `alc-header`, justo debajo del <header>, para separar visualmente el header del contenido principal de la aplicación.
+
+### 4. `alc-logo-angular`
+
+Nota: Como en este caso el SVG procede de la aplicación ejemplo incluida en la instalación completa de Angular (workspace y project al tiempo), puede que no se implemente, dependiendo del desarrollo del curso.
+
+Es un componente que muestra el logo de Angular junto con el nombre del framework en formato SVG, tal como se incluye en la aplicación ejemplo incluida en la instalación completa de Angular (workspace y project al tiempo)
+
+Como el anterior, este SVGpuede utilizarse directamente com template, vinculándolo a la propiedad templateURL del decorador @Component, lo que permite mantener el código del componente más limpio y separado del código del SVG.
+
+```svg logo-ng.svg
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 982 239"
+  fill="none"
+  class="angular-logo"
+>
+  <g clip-path="url(#a)">
+    <path
+      fill="url(#b)"
+      d="M388.676 191.625h30.849L363.31 31.828h-35.758l-56.215 159.797h30.848l13.174-39.356h60.061l13.256 39.356Zm-65.461-62.675 21.602-64.311h1.227l21.602 64.311h-44.431Zm126.831-7.527v70.202h-28.23V71.839h27.002v20.374h1.392c2.782-6.71 7.2-12.028 13.255-15.956 6.056-3.927 13.584-5.89 22.503-5.89 8.264 0 15.465 1.8 21.684 5.318 6.137 3.518 10.964 8.673 14.319 15.382 3.437 6.71 5.074 14.81 4.992 24.383v76.175h-28.23v-71.92c0-8.019-2.046-14.237-6.219-18.819-4.173-4.5-9.819-6.791-17.102-6.791-4.91 0-9.328 1.063-13.174 3.272-3.846 2.128-6.792 5.237-9.001 9.328-2.046 4.009-3.191 8.918-3.191 14.728ZM589.233 239c-10.147 0-18.82-1.391-26.103-4.091-7.282-2.7-13.092-6.382-17.511-10.964-4.418-4.582-7.528-9.655-9.164-15.219l25.448-6.136c1.145 2.372 2.782 4.663 4.991 6.954 2.209 2.291 5.155 4.255 8.837 5.81 3.683 1.554 8.428 2.291 14.074 2.291 8.019 0 14.647-1.964 19.884-5.81 5.237-3.845 7.856-10.227 7.856-19.064v-22.665h-1.391c-1.473 2.946-3.601 5.892-6.383 9.001-2.782 3.109-6.464 5.645-10.965 7.691-4.582 2.046-10.228 3.109-17.101 3.109-9.165 0-17.511-2.209-25.039-6.545-7.446-4.337-13.42-10.883-17.757-19.474-4.418-8.673-6.628-19.473-6.628-32.565 0-13.091 2.21-24.301 6.628-33.383 4.419-9.082 10.311-15.955 17.839-20.7 7.528-4.746 15.874-7.037 25.039-7.037 7.037 0 12.846 1.145 17.347 3.518 4.582 2.373 8.182 5.236 10.883 8.51 2.7 3.272 4.746 6.382 6.137 9.327h1.554v-19.8h27.821v121.749c0 10.228-2.454 18.737-7.364 25.447-4.91 6.709-11.538 11.7-20.048 15.055-8.509 3.355-18.165 4.991-28.884 4.991Zm.245-71.266c5.974 0 11.047-1.473 15.302-4.337 4.173-2.945 7.446-7.118 9.573-12.519 2.21-5.482 3.274-12.027 3.274-19.637 0-7.609-1.064-14.155-3.274-19.8-2.127-5.646-5.318-10.064-9.491-13.255-4.174-3.11-9.329-4.746-15.384-4.746s-11.537 1.636-15.792 4.91c-4.173 3.272-7.365 7.772-9.492 13.418-2.128 5.727-3.191 12.191-3.191 19.392 0 7.2 1.063 13.745 3.273 19.228 2.127 5.482 5.318 9.736 9.573 12.764 4.174 3.027 9.41 4.582 15.629 4.582Zm141.56-26.51V71.839h28.23v119.786h-27.412v-21.273h-1.227c-2.7 6.709-7.119 12.191-13.338 16.446-6.137 4.255-13.747 6.382-22.748 6.382-7.855 0-14.81-1.718-20.783-5.237-5.974-3.518-10.72-8.591-14.075-15.382-3.355-6.709-5.073-14.891-5.073-24.464V71.839h28.312v71.921c0 7.609 2.046 13.664 6.219 18.083 4.173 4.5 9.655 6.709 16.365 6.709 4.173 0 8.183-.982 12.111-3.028 3.927-2.045 7.118-5.072 9.655-9.082 2.537-4.091 3.764-9.164 3.764-15.218Zm65.707-109.395v159.796h-28.23V31.828h28.23Zm44.841 162.169c-7.61 0-14.402-1.391-20.457-4.091-6.055-2.7-10.883-6.791-14.32-12.109-3.518-5.319-5.237-11.946-5.237-19.801 0-6.791 1.228-12.355 3.765-16.773 2.536-4.419 5.891-7.937 10.228-10.637 4.337-2.618 9.164-4.664 14.647-6.055 5.4-1.391 11.046-2.373 16.856-3.027 7.037-.737 12.683-1.391 17.102-1.964 4.337-.573 7.528-1.555 9.574-2.782 1.963-1.309 3.027-3.273 3.027-5.973v-.491c0-5.891-1.718-10.391-5.237-13.664-3.518-3.191-8.51-4.828-15.056-4.828-6.955 0-12.356 1.473-16.447 4.5-4.009 3.028-6.71 6.546-8.183 10.719l-26.348-3.764c2.046-7.282 5.483-13.336 10.31-18.328 4.746-4.909 10.638-8.59 17.511-11.045 6.955-2.455 14.565-3.682 22.912-3.682 5.809 0 11.537.654 17.265 2.045s10.965 3.6 15.711 6.71c4.746 3.109 8.51 7.282 11.455 12.6 2.864 5.318 4.337 11.946 4.337 19.883v80.184h-27.166v-16.446h-.9c-1.719 3.355-4.092 6.464-7.201 9.328-3.109 2.864-6.955 5.237-11.619 6.955-4.828 1.718-10.229 2.536-16.529 2.536Zm7.364-20.701c5.646 0 10.556-1.145 14.729-3.354 4.173-2.291 7.364-5.237 9.655-9.001 2.292-3.763 3.355-7.854 3.355-12.273v-14.155c-.9.737-2.373 1.391-4.5 2.046-2.128.654-4.419 1.145-7.037 1.636-2.619.491-5.155.9-7.692 1.227-2.537.328-4.746.655-6.628.901-4.173.572-8.019 1.472-11.292 2.781-3.355 1.31-5.973 3.11-7.855 5.401-1.964 2.291-2.864 5.318-2.864 8.918 0 5.237 1.882 9.164 5.728 11.782 3.682 2.782 8.51 4.091 14.401 4.091Zm64.643 18.328V71.839h27.412v19.965h1.227c2.21-6.955 5.974-12.274 11.292-16.038 5.319-3.763 11.456-5.645 18.329-5.645 1.555 0 3.355.082 5.237.163 1.964.164 3.601.328 4.91.573v25.938c-1.227-.41-3.109-.819-5.646-1.146a58.814 58.814 0 0 0-7.446-.49c-5.155 0-9.738 1.145-13.829 3.354-4.091 2.209-7.282 5.236-9.655 9.164-2.373 3.927-3.519 8.427-3.519 13.5v70.448h-28.312ZM222.077 39.192l-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+    />
+    <path
+      fill="url(#c)"
+      d="M388.676 191.625h30.849L363.31 31.828h-35.758l-56.215 159.797h30.848l13.174-39.356h60.061l13.256 39.356Zm-65.461-62.675 21.602-64.311h1.227l21.602 64.311h-44.431Zm126.831-7.527v70.202h-28.23V71.839h27.002v20.374h1.392c2.782-6.71 7.2-12.028 13.255-15.956 6.056-3.927 13.584-5.89 22.503-5.89 8.264 0 15.465 1.8 21.684 5.318 6.137 3.518 10.964 8.673 14.319 15.382 3.437 6.71 5.074 14.81 4.992 24.383v76.175h-28.23v-71.92c0-8.019-2.046-14.237-6.219-18.819-4.173-4.5-9.819-6.791-17.102-6.791-4.91 0-9.328 1.063-13.174 3.272-3.846 2.128-6.792 5.237-9.001 9.328-2.046 4.009-3.191 8.918-3.191 14.728ZM589.233 239c-10.147 0-18.82-1.391-26.103-4.091-7.282-2.7-13.092-6.382-17.511-10.964-4.418-4.582-7.528-9.655-9.164-15.219l25.448-6.136c1.145 2.372 2.782 4.663 4.991 6.954 2.209 2.291 5.155 4.255 8.837 5.81 3.683 1.554 8.428 2.291 14.074 2.291 8.019 0 14.647-1.964 19.884-5.81 5.237-3.845 7.856-10.227 7.856-19.064v-22.665h-1.391c-1.473 2.946-3.601 5.892-6.383 9.001-2.782 3.109-6.464 5.645-10.965 7.691-4.582 2.046-10.228 3.109-17.101 3.109-9.165 0-17.511-2.209-25.039-6.545-7.446-4.337-13.42-10.883-17.757-19.474-4.418-8.673-6.628-19.473-6.628-32.565 0-13.091 2.21-24.301 6.628-33.383 4.419-9.082 10.311-15.955 17.839-20.7 7.528-4.746 15.874-7.037 25.039-7.037 7.037 0 12.846 1.145 17.347 3.518 4.582 2.373 8.182 5.236 10.883 8.51 2.7 3.272 4.746 6.382 6.137 9.327h1.554v-19.8h27.821v121.749c0 10.228-2.454 18.737-7.364 25.447-4.91 6.709-11.538 11.7-20.048 15.055-8.509 3.355-18.165 4.991-28.884 4.991Zm.245-71.266c5.974 0 11.047-1.473 15.302-4.337 4.173-2.945 7.446-7.118 9.573-12.519 2.21-5.482 3.274-12.027 3.274-19.637 0-7.609-1.064-14.155-3.274-19.8-2.127-5.646-5.318-10.064-9.491-13.255-4.174-3.11-9.329-4.746-15.384-4.746s-11.537 1.636-15.792 4.91c-4.173 3.272-7.365 7.772-9.492 13.418-2.128 5.727-3.191 12.191-3.191 19.392 0 7.2 1.063 13.745 3.273 19.228 2.127 5.482 5.318 9.736 9.573 12.764 4.174 3.027 9.41 4.582 15.629 4.582Zm141.56-26.51V71.839h28.23v119.786h-27.412v-21.273h-1.227c-2.7 6.709-7.119 12.191-13.338 16.446-6.137 4.255-13.747 6.382-22.748 6.382-7.855 0-14.81-1.718-20.783-5.237-5.974-3.518-10.72-8.591-14.075-15.382-3.355-6.709-5.073-14.891-5.073-24.464V71.839h28.312v71.921c0 7.609 2.046 13.664 6.219 18.083 4.173 4.5 9.655 6.709 16.365 6.709 4.173 0 8.183-.982 12.111-3.028 3.927-2.045 7.118-5.072 9.655-9.082 2.537-4.091 3.764-9.164 3.764-15.218Zm65.707-109.395v159.796h-28.23V31.828h28.23Zm44.841 162.169c-7.61 0-14.402-1.391-20.457-4.091-6.055-2.7-10.883-6.791-14.32-12.109-3.518-5.319-5.237-11.946-5.237-19.801 0-6.791 1.228-12.355 3.765-16.773 2.536-4.419 5.891-7.937 10.228-10.637 4.337-2.618 9.164-4.664 14.647-6.055 5.4-1.391 11.046-2.373 16.856-3.027 7.037-.737 12.683-1.391 17.102-1.964 4.337-.573 7.528-1.555 9.574-2.782 1.963-1.309 3.027-3.273 3.027-5.973v-.491c0-5.891-1.718-10.391-5.237-13.664-3.518-3.191-8.51-4.828-15.056-4.828-6.955 0-12.356 1.473-16.447 4.5-4.009 3.028-6.71 6.546-8.183 10.719l-26.348-3.764c2.046-7.282 5.483-13.336 10.31-18.328 4.746-4.909 10.638-8.59 17.511-11.045 6.955-2.455 14.565-3.682 22.912-3.682 5.809 0 11.537.654 17.265 2.045s10.965 3.6 15.711 6.71c4.746 3.109 8.51 7.282 11.455 12.6 2.864 5.318 4.337 11.946 4.337 19.883v80.184h-27.166v-16.446h-.9c-1.719 3.355-4.092 6.464-7.201 9.328-3.109 2.864-6.955 5.237-11.619 6.955-4.828 1.718-10.229 2.536-16.529 2.536Zm7.364-20.701c5.646 0 10.556-1.145 14.729-3.354 4.173-2.291 7.364-5.237 9.655-9.001 2.292-3.763 3.355-7.854 3.355-12.273v-14.155c-.9.737-2.373 1.391-4.5 2.046-2.128.654-4.419 1.145-7.037 1.636-2.619.491-5.155.9-7.692 1.227-2.537.328-4.746.655-6.628.901-4.173.572-8.019 1.472-11.292 2.781-3.355 1.31-5.973 3.11-7.855 5.401-1.964 2.291-2.864 5.318-2.864 8.918 0 5.237 1.882 9.164 5.728 11.782 3.682 2.782 8.51 4.091 14.401 4.091Zm64.643 18.328V71.839h27.412v19.965h1.227c2.21-6.955 5.974-12.274 11.292-16.038 5.319-3.763 11.456-5.645 18.329-5.645 1.555 0 3.355.082 5.237.163 1.964.164 3.601.328 4.91.573v25.938c-1.227-.41-3.109-.819-5.646-1.146a58.814 58.814 0 0 0-7.446-.49c-5.155 0-9.738 1.145-13.829 3.354-4.091 2.209-7.282 5.236-9.655 9.164-2.373 3.927-3.519 8.427-3.519 13.5v70.448h-28.312ZM222.077 39.192l-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+    />
+  </g>
+  <defs>
+    <radialGradient
+      id="c"
+      cx="0"
+      cy="0"
+      r="1"
+      gradientTransform="rotate(118.122 171.182 60.81) scale(205.794)"
+      gradientUnits="userSpaceOnUse"
+    >
+      <stop stop-color="#FF41F8" />
+      <stop offset=".707" stop-color="#FF41F8" stop-opacity=".5" />
+      <stop offset="1" stop-color="#FF41F8" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="b" x1="0" x2="982" y1="192" y2="192" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F0060B" />
+      <stop offset="0" stop-color="#F0070C" />
+      <stop offset=".526" stop-color="#CC26D5" />
+      <stop offset="1" stop-color="#7702FF" />
+    </linearGradient>
+    <clipPath id="a"><path fill="#fff" d="M0 0h982v239H0z" /></clipPath>
+  </defs>
+</svg>
+```
+
+```ts logo-angular.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'alc-logo-ng',
+  imports: [],
+  templateUrl: './logo-ng.svg',
+  styles: `
+    :host {
+      display: block;
+      max-width: 9.2rem;
+      margin: 0 auto;
+    }
+  `,
+})
+export class LogoNg {}
+```
+
+El componente `alc-logo-ng` se incorpora en el `alc-header`, en el `hgroup`, para mostrar el logo de Angular junto con el nombre del framework integrado en el "título" de la app.
+
+### Resultados: Componentes visuales
+
+![Elementos visuales en la versión mobile](./assets/demo-02/logos-mobile.png)
+
+
+![Elementos visuales en la versión desktop](./assets/demo-02/logos-desktop.png)
 
 ## Core - Componentes de navegación (Menu, Menu Mobile, Socials)
 
 Creamos los componentes de navegación que se utilizarán en toda la aplicación, como el menú de navegación (ya creado), el menú móvil y los iconos de redes sociales.
 
 ```shell
-ng g c core/components/menu-mobile  --project demo-01
-ng g c core/components/socials  --project demo-01
+ng g c core/components/menu  --project demo-02
+ng g c core/components/menu-mobile  --project demo-02
+ng g c core/components/socials  --project demo-02
 ```
 
-- `alc-menu` (ya creado)
+- `alc-menu`
 - `alc-socials`
 - `alc-menu-mobile`
 
@@ -615,7 +1286,7 @@ ng g c core/components/socials  --project demo-01
 
 En estos componentes vemos
 
-- la creación de **interfaces** para definir **datos** útiles para la aplicación, como las opciones de menú y las opciones de redes sociales.
+- de nuevo, la creación de **interfaces** para definir **datos** útiles para la aplicación, como las opciones de menú y las opciones de redes sociales.
 - **iteración** sobre arrays de datos en el template, usando **`@for`** para mostrar cada opción como un enlace de navegación.
 - uso de **svg** dentro del template, personalizándolos con propiedades y atributos vinculados a propiedades del componente, como el color, el tamaño y el evento de click.
 - **vinculación (binding) de eventos** de click a métodos del componente, que más adelante se utilizará para abrir un modal con el menú de navegación en la versión móvil.
@@ -690,7 +1361,32 @@ export class Menu {
 }
 ```
 
+### Iteración en el template
+
+En el template del componente `alc-menu` se utiliza la directiva `@for` para iterar sobre el array de opciones de menú importado desde `app.routes.ts` y mostrar cada una como un enlace (\<a>) a la ruta correspondiente.
+
 De momento la etiquetas anchor (\<a>) utilizan `href` y referencias internas (`#`) para navegar dentro de una misma página haciendo scroll, pero más adelante se cambiará a `routerLink` para aprovechar el enrutamiento de Angular.
+
+### Incorporación del menú
+
+El componente `alc-menu` se incorpora en el `alc-app` con el atributo `slot="logo"`, y se proyecta en el `alc-header`, en el div con la clase `right-side`, y se muestra u oculta según el ancho de la pantalla, usando media queries en los estilos del componente `alc-header`.
+
+```html app.ts
+<alc-header>
+  <alc-logo-coders slot="logo" />
+  <alc-menu slot="menu" />
+</alc-header>
+```  
+
+```html header.ts
+<div class="desktop-only">
+  <div>
+    <!-- Slot: Menu -->
+    <ng-content select="[slot=menu]" />
+  </div>
+  <div>Search desktop only</div>
+</div>
+```        
 
 ### 2. `alc-menu-mobile` 
 
@@ -767,232 +1463,9 @@ Por otro lado obtenemos los iconos en formato SVG, en alguna de las fuentes ya c
 
 ### Resultados: Componentes de navegación
 
-![Navegación en la versión mobile](./assets/nav-mobile.png)
+![Navegación en la versión mobile](./assets/demo-02/nav-mobile.png)
 
-![Navegación en la versión desktop](./assets/nav-desktop.png)
-
-## Core - Componentes gráficos
-
-Creamos los componentes gráficos que se utilizarán en toda la aplicación, como el separador, los logos de Angular y Coders y el componente de tarjeta.
-
-```shell
-ng g c core/components/separator --project demo-01
-ng g c core/components/logo-angular --project demo-01
-ng g c core/components/logo-coders --project demo-01
-ng g c core/components/card --project demo-01
-```
-
-- `alc-separator`
-- `alc-logo-angular`
-- `alc-logo-coders`
-- `alc-card`
-
-Los primeros componentes de este bloque son componentes gráficos que se utilizan en el header y la aplicación, para mostrar los logos de Angular y Coders, así como un separador entre el header y el contenido principal.
-
-El último de ellos, `alc-card`, es un componente de utilidad para mostrar contenido en formato de tarjeta, con estilos predefinidos para el fondo, los bordes, las sombras y el padding. Este componente se utilizará más adelante para mostrar el contenido de las páginas de la aplicación.
-
-### Elementos de Angular en los componentes gráficos
-
-En estos componentes vemos
-
-- **componentes de presentación** (presentational components) o componentes gráficos mínimos, que no tienen lógica de negocio ni estado propio, y que se limitan a mostrar contenido  **encapsulando estilos CSS** apartando semántica y homogeneidad de los elementos de la aplicación, siendo todos componentes
-- uso de **ficheros svg como template**, con la posibilidad de aplicar en ellos todos los elementos de Angular, como binding de propiedades y eventos
-- componentes de **utilidad** (utility components) o del **sistema de diseño** (design system), como `alc-card`, que se pueden reutilizar en toda la aplicación para mostrar contenido en formato de tarjeta, con estilos predefinidos para el fondo, los bordes, las sombras y el padding.
-
-### 1. `alc-separator`
-
-Es un componente que muestra una línea horizontal de separación entre el header y el contenido principal. Se limita a aplicar en un div un gradiente definido en el css utilizando la paleta de colores de la aplicación.
-
-```ts separator.ts
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'alc-separator',
-  imports: [],
-  template: ` <div role="separator" aria-label="Divider" class="divider"></div> `,
-  styles: `
-    .divider {
-      width: 100%;
-      height: 3px;
-      background: var(--red-to-pink-to-purple-horizontal-gradient);
-      margin-block: 0rem;
-    }
-  `,
-})
-export class Separator {}
-```
-
-El componente `alc-separator` se incorpora en el `alc-header`, justo debajo del <header>, para separar visualmente el header del contenido principal de la aplicación.
-
-### 2. `alc-logo-angular`
-
-Es un componente que muestra el logo de Angular junto con el nombre del framework en formato SVG, tal como se incluye en la aplicación ejemplo incluida en la instalación completa de Angular (workspace y project al tiempo)
-
-Como en este caso no se modifica el SVG, este puede utilizarse directamente com template, vinculándolo a la propiedad templateURL del decorador @Component, lo que permite mantener el código del componente más limpio y separado del código del SVG.
-
-```svg logo-ng.svg
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 982 239"
-  fill="none"
-  class="angular-logo"
->
-  <g clip-path="url(#a)">
-    <path
-      fill="url(#b)"
-      d="M388.676 191.625h30.849L363.31 31.828h-35.758l-56.215 159.797h30.848l13.174-39.356h60.061l13.256 39.356Zm-65.461-62.675 21.602-64.311h1.227l21.602 64.311h-44.431Zm126.831-7.527v70.202h-28.23V71.839h27.002v20.374h1.392c2.782-6.71 7.2-12.028 13.255-15.956 6.056-3.927 13.584-5.89 22.503-5.89 8.264 0 15.465 1.8 21.684 5.318 6.137 3.518 10.964 8.673 14.319 15.382 3.437 6.71 5.074 14.81 4.992 24.383v76.175h-28.23v-71.92c0-8.019-2.046-14.237-6.219-18.819-4.173-4.5-9.819-6.791-17.102-6.791-4.91 0-9.328 1.063-13.174 3.272-3.846 2.128-6.792 5.237-9.001 9.328-2.046 4.009-3.191 8.918-3.191 14.728ZM589.233 239c-10.147 0-18.82-1.391-26.103-4.091-7.282-2.7-13.092-6.382-17.511-10.964-4.418-4.582-7.528-9.655-9.164-15.219l25.448-6.136c1.145 2.372 2.782 4.663 4.991 6.954 2.209 2.291 5.155 4.255 8.837 5.81 3.683 1.554 8.428 2.291 14.074 2.291 8.019 0 14.647-1.964 19.884-5.81 5.237-3.845 7.856-10.227 7.856-19.064v-22.665h-1.391c-1.473 2.946-3.601 5.892-6.383 9.001-2.782 3.109-6.464 5.645-10.965 7.691-4.582 2.046-10.228 3.109-17.101 3.109-9.165 0-17.511-2.209-25.039-6.545-7.446-4.337-13.42-10.883-17.757-19.474-4.418-8.673-6.628-19.473-6.628-32.565 0-13.091 2.21-24.301 6.628-33.383 4.419-9.082 10.311-15.955 17.839-20.7 7.528-4.746 15.874-7.037 25.039-7.037 7.037 0 12.846 1.145 17.347 3.518 4.582 2.373 8.182 5.236 10.883 8.51 2.7 3.272 4.746 6.382 6.137 9.327h1.554v-19.8h27.821v121.749c0 10.228-2.454 18.737-7.364 25.447-4.91 6.709-11.538 11.7-20.048 15.055-8.509 3.355-18.165 4.991-28.884 4.991Zm.245-71.266c5.974 0 11.047-1.473 15.302-4.337 4.173-2.945 7.446-7.118 9.573-12.519 2.21-5.482 3.274-12.027 3.274-19.637 0-7.609-1.064-14.155-3.274-19.8-2.127-5.646-5.318-10.064-9.491-13.255-4.174-3.11-9.329-4.746-15.384-4.746s-11.537 1.636-15.792 4.91c-4.173 3.272-7.365 7.772-9.492 13.418-2.128 5.727-3.191 12.191-3.191 19.392 0 7.2 1.063 13.745 3.273 19.228 2.127 5.482 5.318 9.736 9.573 12.764 4.174 3.027 9.41 4.582 15.629 4.582Zm141.56-26.51V71.839h28.23v119.786h-27.412v-21.273h-1.227c-2.7 6.709-7.119 12.191-13.338 16.446-6.137 4.255-13.747 6.382-22.748 6.382-7.855 0-14.81-1.718-20.783-5.237-5.974-3.518-10.72-8.591-14.075-15.382-3.355-6.709-5.073-14.891-5.073-24.464V71.839h28.312v71.921c0 7.609 2.046 13.664 6.219 18.083 4.173 4.5 9.655 6.709 16.365 6.709 4.173 0 8.183-.982 12.111-3.028 3.927-2.045 7.118-5.072 9.655-9.082 2.537-4.091 3.764-9.164 3.764-15.218Zm65.707-109.395v159.796h-28.23V31.828h28.23Zm44.841 162.169c-7.61 0-14.402-1.391-20.457-4.091-6.055-2.7-10.883-6.791-14.32-12.109-3.518-5.319-5.237-11.946-5.237-19.801 0-6.791 1.228-12.355 3.765-16.773 2.536-4.419 5.891-7.937 10.228-10.637 4.337-2.618 9.164-4.664 14.647-6.055 5.4-1.391 11.046-2.373 16.856-3.027 7.037-.737 12.683-1.391 17.102-1.964 4.337-.573 7.528-1.555 9.574-2.782 1.963-1.309 3.027-3.273 3.027-5.973v-.491c0-5.891-1.718-10.391-5.237-13.664-3.518-3.191-8.51-4.828-15.056-4.828-6.955 0-12.356 1.473-16.447 4.5-4.009 3.028-6.71 6.546-8.183 10.719l-26.348-3.764c2.046-7.282 5.483-13.336 10.31-18.328 4.746-4.909 10.638-8.59 17.511-11.045 6.955-2.455 14.565-3.682 22.912-3.682 5.809 0 11.537.654 17.265 2.045s10.965 3.6 15.711 6.71c4.746 3.109 8.51 7.282 11.455 12.6 2.864 5.318 4.337 11.946 4.337 19.883v80.184h-27.166v-16.446h-.9c-1.719 3.355-4.092 6.464-7.201 9.328-3.109 2.864-6.955 5.237-11.619 6.955-4.828 1.718-10.229 2.536-16.529 2.536Zm7.364-20.701c5.646 0 10.556-1.145 14.729-3.354 4.173-2.291 7.364-5.237 9.655-9.001 2.292-3.763 3.355-7.854 3.355-12.273v-14.155c-.9.737-2.373 1.391-4.5 2.046-2.128.654-4.419 1.145-7.037 1.636-2.619.491-5.155.9-7.692 1.227-2.537.328-4.746.655-6.628.901-4.173.572-8.019 1.472-11.292 2.781-3.355 1.31-5.973 3.11-7.855 5.401-1.964 2.291-2.864 5.318-2.864 8.918 0 5.237 1.882 9.164 5.728 11.782 3.682 2.782 8.51 4.091 14.401 4.091Zm64.643 18.328V71.839h27.412v19.965h1.227c2.21-6.955 5.974-12.274 11.292-16.038 5.319-3.763 11.456-5.645 18.329-5.645 1.555 0 3.355.082 5.237.163 1.964.164 3.601.328 4.91.573v25.938c-1.227-.41-3.109-.819-5.646-1.146a58.814 58.814 0 0 0-7.446-.49c-5.155 0-9.738 1.145-13.829 3.354-4.091 2.209-7.282 5.236-9.655 9.164-2.373 3.927-3.519 8.427-3.519 13.5v70.448h-28.312ZM222.077 39.192l-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
-    />
-    <path
-      fill="url(#c)"
-      d="M388.676 191.625h30.849L363.31 31.828h-35.758l-56.215 159.797h30.848l13.174-39.356h60.061l13.256 39.356Zm-65.461-62.675 21.602-64.311h1.227l21.602 64.311h-44.431Zm126.831-7.527v70.202h-28.23V71.839h27.002v20.374h1.392c2.782-6.71 7.2-12.028 13.255-15.956 6.056-3.927 13.584-5.89 22.503-5.89 8.264 0 15.465 1.8 21.684 5.318 6.137 3.518 10.964 8.673 14.319 15.382 3.437 6.71 5.074 14.81 4.992 24.383v76.175h-28.23v-71.92c0-8.019-2.046-14.237-6.219-18.819-4.173-4.5-9.819-6.791-17.102-6.791-4.91 0-9.328 1.063-13.174 3.272-3.846 2.128-6.792 5.237-9.001 9.328-2.046 4.009-3.191 8.918-3.191 14.728ZM589.233 239c-10.147 0-18.82-1.391-26.103-4.091-7.282-2.7-13.092-6.382-17.511-10.964-4.418-4.582-7.528-9.655-9.164-15.219l25.448-6.136c1.145 2.372 2.782 4.663 4.991 6.954 2.209 2.291 5.155 4.255 8.837 5.81 3.683 1.554 8.428 2.291 14.074 2.291 8.019 0 14.647-1.964 19.884-5.81 5.237-3.845 7.856-10.227 7.856-19.064v-22.665h-1.391c-1.473 2.946-3.601 5.892-6.383 9.001-2.782 3.109-6.464 5.645-10.965 7.691-4.582 2.046-10.228 3.109-17.101 3.109-9.165 0-17.511-2.209-25.039-6.545-7.446-4.337-13.42-10.883-17.757-19.474-4.418-8.673-6.628-19.473-6.628-32.565 0-13.091 2.21-24.301 6.628-33.383 4.419-9.082 10.311-15.955 17.839-20.7 7.528-4.746 15.874-7.037 25.039-7.037 7.037 0 12.846 1.145 17.347 3.518 4.582 2.373 8.182 5.236 10.883 8.51 2.7 3.272 4.746 6.382 6.137 9.327h1.554v-19.8h27.821v121.749c0 10.228-2.454 18.737-7.364 25.447-4.91 6.709-11.538 11.7-20.048 15.055-8.509 3.355-18.165 4.991-28.884 4.991Zm.245-71.266c5.974 0 11.047-1.473 15.302-4.337 4.173-2.945 7.446-7.118 9.573-12.519 2.21-5.482 3.274-12.027 3.274-19.637 0-7.609-1.064-14.155-3.274-19.8-2.127-5.646-5.318-10.064-9.491-13.255-4.174-3.11-9.329-4.746-15.384-4.746s-11.537 1.636-15.792 4.91c-4.173 3.272-7.365 7.772-9.492 13.418-2.128 5.727-3.191 12.191-3.191 19.392 0 7.2 1.063 13.745 3.273 19.228 2.127 5.482 5.318 9.736 9.573 12.764 4.174 3.027 9.41 4.582 15.629 4.582Zm141.56-26.51V71.839h28.23v119.786h-27.412v-21.273h-1.227c-2.7 6.709-7.119 12.191-13.338 16.446-6.137 4.255-13.747 6.382-22.748 6.382-7.855 0-14.81-1.718-20.783-5.237-5.974-3.518-10.72-8.591-14.075-15.382-3.355-6.709-5.073-14.891-5.073-24.464V71.839h28.312v71.921c0 7.609 2.046 13.664 6.219 18.083 4.173 4.5 9.655 6.709 16.365 6.709 4.173 0 8.183-.982 12.111-3.028 3.927-2.045 7.118-5.072 9.655-9.082 2.537-4.091 3.764-9.164 3.764-15.218Zm65.707-109.395v159.796h-28.23V31.828h28.23Zm44.841 162.169c-7.61 0-14.402-1.391-20.457-4.091-6.055-2.7-10.883-6.791-14.32-12.109-3.518-5.319-5.237-11.946-5.237-19.801 0-6.791 1.228-12.355 3.765-16.773 2.536-4.419 5.891-7.937 10.228-10.637 4.337-2.618 9.164-4.664 14.647-6.055 5.4-1.391 11.046-2.373 16.856-3.027 7.037-.737 12.683-1.391 17.102-1.964 4.337-.573 7.528-1.555 9.574-2.782 1.963-1.309 3.027-3.273 3.027-5.973v-.491c0-5.891-1.718-10.391-5.237-13.664-3.518-3.191-8.51-4.828-15.056-4.828-6.955 0-12.356 1.473-16.447 4.5-4.009 3.028-6.71 6.546-8.183 10.719l-26.348-3.764c2.046-7.282 5.483-13.336 10.31-18.328 4.746-4.909 10.638-8.59 17.511-11.045 6.955-2.455 14.565-3.682 22.912-3.682 5.809 0 11.537.654 17.265 2.045s10.965 3.6 15.711 6.71c4.746 3.109 8.51 7.282 11.455 12.6 2.864 5.318 4.337 11.946 4.337 19.883v80.184h-27.166v-16.446h-.9c-1.719 3.355-4.092 6.464-7.201 9.328-3.109 2.864-6.955 5.237-11.619 6.955-4.828 1.718-10.229 2.536-16.529 2.536Zm7.364-20.701c5.646 0 10.556-1.145 14.729-3.354 4.173-2.291 7.364-5.237 9.655-9.001 2.292-3.763 3.355-7.854 3.355-12.273v-14.155c-.9.737-2.373 1.391-4.5 2.046-2.128.654-4.419 1.145-7.037 1.636-2.619.491-5.155.9-7.692 1.227-2.537.328-4.746.655-6.628.901-4.173.572-8.019 1.472-11.292 2.781-3.355 1.31-5.973 3.11-7.855 5.401-1.964 2.291-2.864 5.318-2.864 8.918 0 5.237 1.882 9.164 5.728 11.782 3.682 2.782 8.51 4.091 14.401 4.091Zm64.643 18.328V71.839h27.412v19.965h1.227c2.21-6.955 5.974-12.274 11.292-16.038 5.319-3.763 11.456-5.645 18.329-5.645 1.555 0 3.355.082 5.237.163 1.964.164 3.601.328 4.91.573v25.938c-1.227-.41-3.109-.819-5.646-1.146a58.814 58.814 0 0 0-7.446-.49c-5.155 0-9.738 1.145-13.829 3.354-4.091 2.209-7.282 5.236-9.655 9.164-2.373 3.927-3.519 8.427-3.519 13.5v70.448h-28.312ZM222.077 39.192l-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
-    />
-  </g>
-  <defs>
-    <radialGradient
-      id="c"
-      cx="0"
-      cy="0"
-      r="1"
-      gradientTransform="rotate(118.122 171.182 60.81) scale(205.794)"
-      gradientUnits="userSpaceOnUse"
-    >
-      <stop stop-color="#FF41F8" />
-      <stop offset=".707" stop-color="#FF41F8" stop-opacity=".5" />
-      <stop offset="1" stop-color="#FF41F8" stop-opacity="0" />
-    </radialGradient>
-    <linearGradient id="b" x1="0" x2="982" y1="192" y2="192" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F0060B" />
-      <stop offset="0" stop-color="#F0070C" />
-      <stop offset=".526" stop-color="#CC26D5" />
-      <stop offset="1" stop-color="#7702FF" />
-    </linearGradient>
-    <clipPath id="a"><path fill="#fff" d="M0 0h982v239H0z" /></clipPath>
-  </defs>
-</svg>
-```
-
-```ts logo-angular.ts
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'alc-logo-ng',
-  imports: [],
-  templateUrl: './logo-ng.svg',
-  styles: `
-    :host {
-      display: block;
-      max-width: 9.2rem;
-      margin: 0 auto;
-    }
-  `,
-})
-export class LogoNg {}
-```
-
-El componente `alc-logo-ng` se incorpora en el `alc-header`, en el `hgroup`, para mostrar el logo de Angular junto con el nombre del framework integrado en el "título" de la app.
-
-### 3. `alc-logo-coders`
-
-Es un componente que muestra el logo de "Coders" como logo de la aplicación, en formato SVG. Como en el caso anterior, el SVG es un fichero independiente que se vincula como template del componente.
-
-```svg logo-coders.svg
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
- "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
- [attr.width]="size" [attr.height]="size" viewBox="0 0 1039.000000 1037.000000"
- preserveAspectRatio="xMidYMid meet">
-
-<g transform="translate(0.000000,1037.000000) scale(0.100000,-0.100000)">
-
-<path id="upper" [attr.fill]="upperColor" (click)="handleClick('upper')" d="..."/>
-
-<path id="down" [attr.fill]="downColor" d="..."/>
-</g>
-</svg>
-```
-
-En el svg se utiliza attr para vincular los atributos de tamaño y color con las propiedades del componente, lo que permite personalizar el logo desde el componente padre.
-
-Además en uno de los paths se añade un evento de click para manejar la interacción con el logo, lo que permitirá más adelante mostrar un modal con información sobre la aplicación al hacer click en una parte concreta del logo.
-
-```ts logo-coders.ts
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'alc-logo-coders',
-  imports: [],
-  templateUrl: './logo-coders.svg',
-  styles: `
-    :host {
-      display: block;
-    }
-  `,
-})
-export class LogoCoders {
-  size = '5.5rem';
-  upperColor = 'var(--color-primary)';
-  downColor = 'var(--color-secondary)';
-
-  handleClick(source: string) {
-    console.log('LogoCoders clicked from:', source);
-  }
-}
-```
-
-En el componente se definen las propiedades para el tamaño y los colores del logo, que se vinculan con los atributos del svg. Además se define un método para manejar el evento de click en el logo, que por ahora solo muestra un mensaje en la consola, pero que más adelante se utilizará para mostrar un modal con información sobre la aplicación.
-
-El componente `alc-logo-coders` se incorpora en el `alc-header`, en el div con la clase `left-side`, que asegura su posición a la izquierda.
-
-### 4. `alc-card`
-
-Es un componente de utilidad para mostrar contenido en formato de tarjeta, con estilos predefinidos para el fondo, los bordes, las sombras y el padding. Este componente se utilizará más adelante para mostrar el contenido de las páginas de la aplicación.
-
-```ts card.ts
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'alc-card',
-  imports: [],
-  template: ` <ng-content></ng-content> `,
-  styles: `
-    :host {
-      display: block;
-      margin: 1rem 0;
-      padding: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-  `,
-})
-export class Card {}
-```
-
-En este componente tenemos un ejemplo muy sencillo de proyección de contenido: se utiliza ng-content para permitir que el contenido de la tarjeta sea dinámico y se pueda personalizar desde el componente padre. Los estilos predefinidos aseguran que todas las tarjetas tengan una apariencia consistente en toda la aplicación.
-
-Como ejemplo, podemos utilizar Card en el componente App para envolver el mensaje que indica donde se mostrara el contenido principal de la aplicación, cuando existan las páginas.
-
-```ts app.ts
-  template: `
-    <alc-header>
-      <alc-menu />
-    </alc-header>
-    <main class="container">
-      <router-outlet />
-      <alc-card>
-        <p>Páginas de la aplicación</p>
-      </alc-card>
-    </main>
-    <alc-footer />
-  `,
-```
-
-### Resultados: Componentes gráficos
-
-![Elementos gráficos en la versión mobile](./assets/logos-mobile.png)
-
-![Elementos gráficos en la versión desktop](./assets/logos-desktop.png)
+![Navegación en la versión desktop](./assets/demo-02/nav-desktop.png)
 
 ## Core - Componentes de funcionalidad (right-side del header)
 
@@ -1001,9 +1474,9 @@ Como ejemplo, podemos utilizar Card en el componente App para envolver el mensaj
 - `alc-toggle`
 
 ```shell
-ng g c core/components/search --project demo-01
-ng g c core/components/user --project demo-01
-ng g c core/components/toggle --project demo-01
+ng g c core/components/search --project demo-02
+ng g c core/components/user --project demo-02
+ng g c core/components/toggle --project demo-02
 ```
 
 En la fila inferior del header se añade el componente `alc-search`, que incorpora un input de búsqueda y un botón para resetear el valor del input.
@@ -1376,11 +1849,11 @@ El componente se incorpora en el `alc-header`, en el div con la clase `right-sid
 
 ### Resultados: Componentes de funcionalidad
 
-![Modo claro en la versión Mobile](./assets/theme-ligth-mobile.png)
-![Modo oscuro en la versión Mobile](./assets/theme-dark-mobile.png)
+![Modo claro en la versión Mobile](./assets/demo-02/theme-ligth-mobile.png)
+![Modo oscuro en la versión Mobile](./assets/demo-02/theme-dark-mobile.png)
 
-![Modo claro en la versión Desktop](./assets/theme-light-desktop.png)
-![Modo oscuro en la versión Desktop](./assets/theme-dark-desktop.png)
+![Modo claro en la versión Desktop](./assets/demo-02/theme-light-desktop.png)
+![Modo oscuro en la versión Desktop](./assets/demo-02/theme-dark-desktop.png)
 
 ## Core - versión final  
 
@@ -2065,7 +2538,7 @@ export class Counter {
 Creamos el componente modal
 
 ```shell
-ng g c core/components/modal --project demo-01
+ng g c core/components/modal --project demo-02
 ```
 
 - `alc-modal`
