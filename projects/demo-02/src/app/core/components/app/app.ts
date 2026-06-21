@@ -1,16 +1,17 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CourseItem } from '../../../features/courses/components/course-item/course-item';
+import { CourseItemSignals } from "../../../features/courses/components/course-item-signals/course-item-signals";
 
 @Component({
   selector: 'alc-root',
-  imports: [RouterOutlet, CourseItem],
+  imports: [RouterOutlet, CourseItem, CourseItemSignals],
   template: `
     <header>header</header>
     <main class="container">
       <router-outlet />
-      <p>Este es un proyecto de demostración de Angular 22</p>
       <alc-course-item />
+      <alc-course-item-signals />
     </main>
     <footer>footer</footer>
   `,
