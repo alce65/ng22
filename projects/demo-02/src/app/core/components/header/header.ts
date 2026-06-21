@@ -2,7 +2,6 @@ import { Component, input, signal } from '@angular/core';
 import { MenuMobile } from '../menu-mobile/menu-mobile';
 import { Separator } from '../separator/separator';
 import { LogoNg } from '../logo-angular/logo-ng';
-import { LogoCoders } from '../logo-coders/logo-coders';
 import { User } from '../user/user';
 import { Toggle } from '../toggle/toggle';
 import { Search } from '../search/search';
@@ -11,11 +10,12 @@ import { Modal } from '../modal/modal';
 
 @Component({
   selector: 'alc-header',
-  imports: [MenuMobile, Separator, LogoNg, LogoCoders, User, Toggle, Search, SearchRef, Modal],
+  imports: [MenuMobile, Separator, LogoNg, User, Toggle, Search, SearchRef, Modal],
   template: `
     <header class="container">
       <div class="left-side">
-        <alc-logo-coders />
+        <!-- Slot: Logo Global -->
+        <ng-content select="[slot=logo]" />
       </div>
       <hgroup>
         <alc-logo-ng />
