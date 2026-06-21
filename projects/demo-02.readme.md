@@ -52,6 +52,7 @@
   - [Pages](#pages)
     - [Páginas iniciales](#páginas-iniciales)
     - [Página about (Angular)](#página-about-angular)
+    - [Página Courses](#página-courses)
     - [Resultados: Páginas iniciales (sin router)](#resultados-páginas-iniciales-sin-router)
   - [Comunicación entre componentes: inputs](#comunicación-entre-componentes-inputs)
   - [Dashboard: counters](#dashboard-counters)
@@ -1307,7 +1308,7 @@ En el fichero de rutas (`app.routes.ts`) se define un array de opciones de menú
 
 ```ts app.routes.ts 
 const MENU_OPTIONS: MenuOption[]   = [
-  { label: 'Inicio', path: '/' },
+  { label: 'Inicio', path: '/home' },
   { label: 'Tareas', path: '/tasks' },
   { label: 'Angular', path: '/angular' },
 ];
@@ -1897,9 +1898,10 @@ El componente se incorpora en el `alc-header`, en el div con la clase `right-sid
 Para  preparar el uso de fistintas features, ligadas a la navegación entre páginas, se crean las páginas de ejemplo, `home`, `dashboard`  y `about`, que se incorporan una tras otra en app.
 
 ```shell
-ng g c features/home/home-page --flat
-ng g c features/dashboard/dashboard-page --flat
-ng g c features/about/about-page --flat
+ng g c features/home/home-page --flat --project demo-02
+ng g c features/dashboard/dashboard-page --flat --project demo-02
+ng g c features/courses/courses-page --flat --project demo-02
+ng g c features/about/about-page --flat --project demo-02
 ```
 
 ### Páginas iniciales
@@ -1949,6 +1951,22 @@ export default class DashboardPage {
 }
 ```
 
+```ts courses-page.ts
+import { Component, signal } from '@angular/core';
+@Component({
+  selector: 'alc-courses-page',
+  imports: [],
+  template: `
+    <h2>{{ pageTitle() }}</h2>
+  `,
+  styleUrls: ['../pages.css'],
+  styles: ``,
+})
+export default class CoursesPage {
+  protected readonly pageTitle = signal('Cursos');
+}
+```
+
 ```ts about-page.ts
 import { Component, signal } from '@angular/core';
 @Component({
@@ -1980,10 +1998,16 @@ Por el momento, hasta disponer de un router, se incorporan las páginas en app, 
     <main class="container">
       <router-outlet />
       <alc-card>
+        <p>Páginas de la aplicación</p>
+      </alc-card>
+      <alc-card>
         <alc-home-page id="home" />
       </alc-card>
       <alc-card>
         <alc-dashboard-page id="dashboard" />
+      </alc-card>
+      <alc-card>
+        <alc-courses-page id="courses" />
       </alc-card>
       <alc-card class="wide">
         <alc-about-page id="about" />
@@ -2002,8 +2026,9 @@ Se modifican las opciones de menú definidas en `app.routes.ts` para que corresp
 ```ts
 export const MENU_OPTIONS: MenuOption[] = [
   { label: 'Inicio', path: '#home' },
-  { label: 'Dashboard', path: '#dashboard' },
-  { label: 'Angular', path: '#about' },
+  { label: 'Dashboard ', path: '#dashboard' },
+  { label: 'Cursos', path: '#courses' },
+  { label: 'Angular (about)', path: '#about' },
 ];
 ```
 
@@ -2163,10 +2188,43 @@ export class Pills {
 }
 ```
 
+### Página Courses
+
+En la página courses se incorporan los componentes que teníamos como ejmplo inicial y que habiamos rendericado directamente en la aplicación:
+
+- `alc-course-item`
+- `alc-course-item-signals`
+  
+```ts
+@Component({
+  selector: 'alc-courses-page',
+  imports: [CourseItem, CourseItemSignals, Card],
+  template: `
+    <h2>{{ pageTitle() }}</h2>
+    <alc-card>
+      <alc-course-item />
+    </alc-card>
+    <details>
+      <summary>Sample of signals in async operations</summary>
+      <alc-card>
+        <alc-course-item-signals />
+      </alc-card>
+    </details>
+  `,
+  styleUrls: ['../pages.css'],
+  styles: ``,
+})
+export default class CoursesPage {
+  protected readonly pageTitle = signal('Courses');
+}
+```
+
 ### Resultados: Páginas iniciales (sin router)
 
-![Páginas iniciales (sin router) versión mobile](./assets/pages-initial-mobile.png)
-![Páginas iniciales (sin router) versión desktop](./assets/pages-initial-desktop.png)
+![alt text](image.png)
+
+![Páginas iniciales (sin router) versión mobile](./assets/demo-02/pages-initial-mobile.png)
+![Páginas iniciales (sin router) versión desktop](./assets/demo-02/pages-initial-desktop.png)
 
 ## Comunicación entre componentes: inputs
 
