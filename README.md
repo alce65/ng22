@@ -11,8 +11,6 @@ Estructura del proyecto:
 - `features`: Funcionalidades específicas de la aplicación, como la gestión de tareas o la página de Angular.
 
 
-
-
 ## Core - Components
 
 - `alc-app`

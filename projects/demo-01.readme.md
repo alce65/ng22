@@ -10,7 +10,7 @@
     - [1. `alc-app`](#1-alc-app)
     - [2. `alc-header`: contiene un grid con dos filas](#2-alc-header-contiene-un-grid-con-dos-filas)
     - [3. `alc-footer`](#3-alc-footer)
-    - [4. Otros componentes](#4-otros-componentes)
+    - [4. Otros componentes (Card y Menu)](#4-otros-componentes-card-y-menu)
     - [Resultados: Componentes del layout](#resultados-componentes-del-layout)
   - [Core - Componentes de navegación (Menu, Menu Mobile, Socials)](#core---componentes-de-navegación-menu-menu-mobile-socials)
     - [Elementos de Angular en los componentes de navegación](#elementos-de-angular-en-los-componentes-de-navegación)
@@ -53,6 +53,13 @@
     - [Incorporación del menú vertical en el modal](#incorporación-del-menú-vertical-en-el-modal)
     - [Resultados: Despliegue del menu mobile](#resultados-despliegue-del-menu-mobile)
 
+Creamos el proyecto seleccionando las opciones
+
+- estilo CSS (`--style css`)
+- sin SSR (`--ssr false`)
+- prefijo de selector (`p alc`)
+- template inline (`-t`)
+- estilos inline (`-s`)  
 
 ```shell
 ng g app demo-01 --style css --ssr false -p alc -t -s 
@@ -89,16 +96,23 @@ Las variables CSS para los colores definen
 
 - una paleta de colores para el tema claro
 - una paleta de colores para el tema oscuro
-- una paleta final valida para ambos temas, usando la función light-dark(()
+- una paleta final valida para ambos temas, usando la función light-dark()
 
-Las variables CSS para tipografía definen las fuentes ba´sca y para los títulos.
+Las variables CSS para tipografía definen las fuentes ba´sca y para los título
 
-[ToDo]
+Se instalan las fuentes necesarias para la aplicación, en este caso las fuentes `Inter`
+y `Inter Tight`.
 
-Se instalan las fuentes necesarias para la aplicación, en este caso la fuente `Inter`, utilizando el comando:
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+```
+
+Alternativamente podrían instalarse las fuentes localmente mediante [Fontsource](https://fontsource.org/docs/getting-started/install), utilizando el comando:
 
 ```shell
-npm install @fontsource/inter
+npm install @fontsource/inter @fontsource/inter-tight
 ```
 
 ### Reset de estilos
@@ -507,7 +521,7 @@ export class Footer {
 }
 ```
 
-### 4. Otros componentes
+### 4. Otros componentes (Card y Menu)
 
 1. `alc-menu`: contiene las opciones de navegación para la versión de escritorio.
 
@@ -611,7 +625,7 @@ export class Menu {
 }
 ```
 
-De momento la etiquetas anchor (<a>) utilizan `href` y referencias internas (`#`) para navegar dentro de una misma página haciendo scroll, pero más adelante se cambiará a `routerLink` para aprovechar el enrutamiento de Angular.
+De momento la etiquetas anchor (\<a>) utilizan `href` y referencias internas (`#`) para navegar dentro de una misma página haciendo scroll, pero más adelante se cambiará a `routerLink` para aprovechar el enrutamiento de Angular.
 
 ### 2. `alc-menu-mobile` 
 
@@ -682,7 +696,7 @@ export interface SocialLink {
 }
 ```
 
-El componente `alc-socials` declara como signal un array de opciones de redes sociales y su template itera sobre el, mostrando cada una como un enlace (<a>) a la url correspondiente.
+El componente `alc-socials` declara como signal un array de opciones de redes sociales y su template itera sobre el, mostrando cada una como un enlace (\<a>) a la url correspondiente.
 
 Por otro lado obtenemos los iconos en formato SVG, en alguna de las fuentes ya citadas y se incorporan al template dentro de un @switch, mostrando el icono correspondiente a cada red social según su nombre. Para asignarle el color del contenedor, se utiliza el valor `currentColor` en el atributo `fill` del svg, lo que hace que herede el color del contenedor padre.
 
@@ -1140,7 +1154,7 @@ Una alternativa utilizar un `effect`, que se ejecuta automáticamente cuando cam
 
 Componente que muestra un icono de usuario, que se utilizará en el futuro para mostrar información sobre el inicio de sesión del usuario o para acceder a opciones relacionadas con la cuenta. 
 
-Incorpora nuevamente un icon svg, obtenido igual que los anteriores. En este case se añade al template, dentro de una etiqueta <a>, ya que en principio navegará a la página de gestión del usuario. Como en casos anteriores se vinculan atributos del svg con propiedades del componente para permitir su personalización desde el componente padre.
+Incorpora nuevamente un icon svg, obtenido igual que los anteriores. En este case se añade al template, dentro de una etiqueta \<a>, ya que en principio navegará a la página de gestión del usuario. Como en casos anteriores se vinculan atributos del svg con propiedades del componente para permitir su personalización desde el componente padre.
 
 ```ts user.ts
 import { Component, signal } from '@angular/core';
@@ -1993,7 +2007,7 @@ ng g c core/components/modal --project demo-01
   
 ### El componente modal 
 
-Es un wrapper de la etiqueta nativa de html <dialog> cuya función es permitir la creación de cuadros de  dialog y modales en la web.
+Es un wrapper de la etiqueta nativa de html \<dialog> cuya función es permitir la creación de cuadros de  dialog y modales en la web.
 
 Un cuadro de dialogo no bloquea las interacciones con la página, mientras que un modal si lo hace, obligando al usuario a interactuar con el modal antes de poder volver a la página.
 
@@ -2003,7 +2017,7 @@ Su comportamiento va a depender de las relaciones entre tres componentes
 - el componente hijo, `alc-modal`, que incluye el icono de cierre
 - el componente hijo `alc-menu-mobile`, que incluye el icono burger que abre el modal 
 
-[!Esquema de los componentes implicados en el modal del menu mobile](./assets/menu-mobile.svg)
+![Esquema de los componentes implicados en el modal del menu mobile](./assets/menu-mobile.svg)
 
 - mediante la **signal query** `viewChild()` acedemos al DOM para poder manipular el elemento <dialog> que proporciona com nativas las funciones showModal(), show() y close() 
 
