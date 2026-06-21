@@ -9,7 +9,7 @@ import { COURSES } from '../../data/courses';
     <img [src]="course().image" [alt]="course().title" />
     <h3 [title]="'Curso ID: ' + course().id">{{ course().title }}</h3>
   `,
-  // templateUrl: './course-item.html',
+  templateUrl: './course-item.html',
   styles: `
     :host {
       display: flex;
@@ -22,22 +22,44 @@ import { COURSES } from '../../data/courses';
       border-radius: 4px;
     }
   `,
-  // styleUrls: ['./course-item.css'],
+  styleUrls: ['./course-item.css'],
 })
 export class CourseItem {
-  protected readonly course = signal<Course>(COURSES[0]);
+  protected readonly course = signal<Course>({...COURSES[0]});
   protected readonly STAT_MIN = 0;
   protected readonly STAT_MAX = 10;
 
   protected changePowerStats(stat: keyof Course['courseStats'], delta: number = 1): void {
     const value = this.course().courseStats[stat];
 
-    if (
-      (delta === 1 && value < this.STAT_MAX) ||
-      (delta === -1 && value > this.STAT_MIN) ||
-      (delta === 0 && value !== this.STAT_MIN)
-    ) {
+    if (delta === 0) {
+      this.course().courseStats[stat] = 0;
+      return;
+    }
+
+    if ((delta === 1 && value < this.STAT_MAX) || (delta === -1 && value > this.STAT_MIN)) {
       this.course().courseStats[stat] += delta;
+    }
+  }
+
+  protected changePowerStatsFull(stat: keyof Course['courseStats'], delta: number = 1): void {
+    const value = this.course().courseStats[stat];
+    const newValue = delta === 0 ? 0 : value + delta;
+
+    if (
+      delta === 0 ||
+      (delta === 1 && value < this.STAT_MAX) ||
+      (delta === -1 && value > this.STAT_MIN)
+    ) {
+      this.course.update((course) => {
+        return {
+          ...course,
+          courseStats: {
+            ...course.courseStats,
+            [stat]: newValue,
+          },
+        };
+      });
     }
   }
 }

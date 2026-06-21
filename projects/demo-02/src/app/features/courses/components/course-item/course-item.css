@@ -1,0 +1,28 @@
+.details {
+  text-align: center;
+}
+
+.course-title {
+  font-weight: bolder;
+  font-size: 1.4rem;
+  margin-block: 0.5rem;
+  text-align: center;
+}
+
+.course-power-stats {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+
+  .course-courseStats-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+/* clase de aplicación opcional */
+.course-advanced {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}
