@@ -1,13 +1,18 @@
 import { Component, signal } from '@angular/core';
+import { Separator } from '../separator/separator';
+import { LogoNg } from '../logo-angular/logo-ng';
 
 @Component({
   selector: 'alc-header',
-  imports: [],
+  imports: [Separator, LogoNg],
   template: `
     <header class="container">
-      <div class="left-side">Slot: Logo Global</div>
+      <div class="left-side">
+        <!-- Slot: Logo Global -->
+         <ng-content select="[slot=logo]" />
+      </div>
       <hgroup>
-        Logo de Angular
+        <alc-logo-ng />
         <h1>{{ title() }}</h1>
       </hgroup>
       <div class="right-side">
@@ -21,12 +26,15 @@ import { Component, signal } from '@angular/core';
         <p>{{ subtitle() }}</p>
         <div class="mobile-only">Search mobile only</div>
         <div class="desktop-only">
-          <div>Slot: Menu</div>
+          <div>
+            Slot: Menu
+            <ng-content select="[slot=menu]" />
+          </div>
           <div>Search desktop only</div>
         </div>
       </div>
     </header>
-    <div>------Separador</div>
+    <alc-separator />
   `,
   styles: [
     `
