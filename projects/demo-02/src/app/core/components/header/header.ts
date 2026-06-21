@@ -2,15 +2,19 @@ import { Component, signal } from '@angular/core';
 import { Separator } from '../separator/separator';
 import { LogoNg } from '../logo-angular/logo-ng';
 import { MenuMobile } from '../menu-mobile/menu-mobile';
+import { Search } from '../search/search';
+import { Toggle } from '../toggle/toggle';
+import { User } from '../user/user';
+import { SearchRef } from '../search/search-ref';
 
 @Component({
   selector: 'alc-header',
-  imports: [Separator, LogoNg, MenuMobile],
+  imports: [Separator, LogoNg, MenuMobile, Search, SearchRef, Toggle, User],
   template: `
     <header class="container">
       <div class="left-side">
         <!-- Slot: Logo Global -->
-         <ng-content select="[slot=logo]" />
+        <ng-content select="[slot=logo]" />
       </div>
       <hgroup>
         <alc-logo-ng />
@@ -18,22 +22,22 @@ import { MenuMobile } from '../menu-mobile/menu-mobile';
       </hgroup>
       <div class="right-side">
         <div class="icons">
-          Icons
+          <alc-user />
           <div class="mobile-only">
             <alc-menu-mobile />
           </div>
         </div>
-        Toggle
+        <alc-toggle />
       </div>
       <div class="bottom-row">
         <p>{{ subtitle() }}</p>
-        <div class="mobile-only">Search mobile only</div>
+        <div class="mobile-only"><alc-search-ref /></div>
         <div class="desktop-only">
           <div>
             <!-- Slot: Menu -->
             <ng-content select="[slot=menu]" />
           </div>
-          <div>Search desktop only</div>
+          <alc-search />
         </div>
       </div>
     </header>
