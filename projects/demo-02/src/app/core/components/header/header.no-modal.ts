@@ -1,21 +1,20 @@
 import { Component, input, signal } from '@angular/core';
-import { MenuMobile } from '../menu-mobile/menu-mobile';
 import { Separator } from '../separator/separator';
 import { LogoNg } from '../logo-angular/logo-ng';
-import { LogoCoders } from '../logo-coders/logo-coders';
-import { User } from '../user/user';
-import { Toggle } from '../toggle/toggle';
+import { MenuMobile } from '../menu-mobile/menu-mobile';
 import { Search } from '../search/search';
+import { Toggle } from '../toggle/toggle';
+import { User } from '../user/user';
 import { SearchRef } from '../search/search-ref';
-import { Modal } from '../modal/modal';
 
 @Component({
   selector: 'alc-header',
-  imports: [MenuMobile, Separator, LogoNg, LogoCoders, User, Toggle, Search, SearchRef, Modal],
+  imports: [Separator, LogoNg, MenuMobile, Search, SearchRef, Toggle, User],
   template: `
     <header class="container">
       <div class="left-side">
-        <alc-logo-coders />
+        <!-- Slot: Logo Global -->
+        <ng-content select="[slot=logo]" />
       </div>
       <hgroup>
         <alc-logo-ng />
@@ -23,24 +22,26 @@ import { Modal } from '../modal/modal';
       </hgroup>
       <div class="right-side">
         <div class="icons">
-          <alc-menu-mobile (openEvent)="toggleModal(true)" />
           <alc-user />
+          <div class="mobile-only">
+            <alc-menu-mobile />
+          </div>
         </div>
         <alc-toggle />
       </div>
       <div class="bottom-row">
         <p>{{ subtitle() }}</p>
-        <alc-search class="mobile-only" />
+        <div class="mobile-only"><alc-search-ref /></div>
         <div class="desktop-only">
-          <ng-content></ng-content>
-          <alc-search-ref />
+          <div>
+            <!-- Slot: Menu -->
+            <ng-content select="[slot=menu]" />
+          </div>
+          <alc-search />
         </div>
       </div>
     </header>
     <alc-separator />
-    <alc-modal [isOpen]="isModalOpen()" (closeEvent)="toggleModal(false)">
-      <ng-content select="[isVertical]"></ng-content>
-    </alc-modal>
   `,
   styles: [
     `
@@ -112,7 +113,6 @@ import { Modal } from '../modal/modal';
           max-width: none;
         }
 
-        alc-menu-mobile,
         .mobile-only {
           display: none;
         }
@@ -132,16 +132,6 @@ import { Modal } from '../modal/modal';
   ],
 })
 export class Header {
-  readonly title = input.required<string>();
-  readonly subtitle = input.required<string>();
-
-  protected readonly isModalOpen = signal(false);
-  // readonly menuTemplate = input<TemplateRef<MenuTemplateContext>>();
-  // protected readonly desktopMenuContext: MenuTemplateContext = { isVertical: false };
-  // protected readonly mobileMenuContext: MenuTemplateContext = { isVertical: true };
-
-  toggleModal(isOpen: boolean) {
-    console.log('Toggling modal:', isOpen);
-    this.isModalOpen.set(isOpen);
-  }
+  readonly title = input.required<string>();;
+  readonly subtitle = input.required<string>();;
 }

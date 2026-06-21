@@ -6,8 +6,7 @@ import { MenuOption } from '../../types/menu.option';
   imports: [],
   template: `
     <nav>
-      <!-- <ul [class.vertical]="isVertical()"> -->
-      <ul>
+      <ul [class.vertical]="isVertical()">
         @for (option of options(); track option.path) {
           <li>
             <a href="{{ option.path }}">
@@ -45,6 +44,6 @@ import { MenuOption } from '../../types/menu.option';
 })
 export class Menu {
   readonly options = input.required<MenuOption[]>();
-  // readonly isVertical = input(false);
+  readonly isVertical = input(false);
 
 }

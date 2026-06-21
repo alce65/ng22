@@ -29,6 +29,7 @@ import { MENU_OPTIONS } from '../../../app.routes';
   template: `
     <alc-header [title]="title()" [subtitle]="subtitle()">
       <alc-menu slot="menu" [options]="menuOptions()" />
+      <alc-menu slot="menu-vertical" [isVertical]="true" [options]="menuOptions()" />
     </alc-header>
     <main class="container">
       <router-outlet />
