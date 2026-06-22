@@ -2,15 +2,10 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Header } from '../header/header';
 import { Footer } from '../footer/footer';
-import { Card } from '../card/card';
 import { LogoCoders } from '../logo-coders/logo-coders';
 import { Menu } from '../menu/menu';
-import HomePage from '../../../features/home/home-page';
-import AboutPage from '../../../features/about/about-page';
-import CoursesPage from '../../../features/courses/courses-page';
-import DashboardPage from '../../../features/dashboard/dashboard-page';
 import { MenuOption } from '../../types/menu.option';
-import { MENU_OPTIONS } from '../../../app.routes';
+import { getRoutes } from '../../../app.routes';
 
 @Component({
   selector: 'alc-root',
@@ -18,13 +13,8 @@ import { MENU_OPTIONS } from '../../../app.routes';
     RouterOutlet,
     Header,
     Footer,
-    Card,
     LogoCoders,
     Menu,
-    HomePage,
-    DashboardPage,
-    CoursesPage,
-    AboutPage,
   ],
   template: `
     <alc-header [title]="title()" [subtitle]="subtitle()">
@@ -34,21 +24,6 @@ import { MENU_OPTIONS } from '../../../app.routes';
     </alc-header>
     <main class="container">
       <router-outlet />
-      <alc-card>
-        <p>Páginas de la aplicación</p>
-      </alc-card>
-      <alc-card>
-        <alc-home-page id="home" />
-      </alc-card>
-      <alc-card class="wide">
-        <alc-dashboard-page id="dashboard" />
-      </alc-card>
-      <alc-card>
-        <alc-courses-page id="courses" />
-      </alc-card>
-      <alc-card class="wide">
-        <alc-about-page id="about" />
-      </alc-card>
     </main>
     <alc-footer />
   `,
@@ -83,5 +58,5 @@ import { MENU_OPTIONS } from '../../../app.routes';
 export class App {
   protected readonly title = signal('Curso de Angular 22');
   protected readonly subtitle = signal('Aprende a desarrollar aplicaciones con Angular');
-  protected readonly menuOptions = signal<MenuOption[]>(MENU_OPTIONS);
+  protected readonly menuOptions = signal<MenuOption[]>(getRoutes());
 }

@@ -15,5 +15,5 @@ import { Card } from '../../core/components/card/card';
   styles: ``,
 })
 export default class CoursesPage {
-  protected readonly pageTitle = signal('Courses');
+  protected readonly pageTitle = signal('Cursos');
 }
