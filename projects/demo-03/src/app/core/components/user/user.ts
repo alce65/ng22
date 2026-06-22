@@ -1,11 +1,12 @@
 import { Component, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'alc-user',
-  imports: [],
+  imports: [RouterLink],
   template: `
     <nav>
-      <a href="#" id="menu-icon" (click)="toggleUser()">
+        <a [routerLink]="['/auth', 'login']" id="menu-icon" >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 640 640"
@@ -26,7 +27,4 @@ import { Component, signal } from '@angular/core';
 export class User {
   protected readonly size = signal('3rem');
 
-  toggleUser() {
-    console.log('User Login');
-  }
 }

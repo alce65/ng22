@@ -49,30 +49,25 @@ export const routes: Routes = [
     ],
   },
 
-  // {
-  //   path: 'auth',
-  //   title: 'Auth | Demo 03',
-  //   loadComponent: () => import('./features/auth/auth-page'),
-  //   children: [
-  //     {
-  //       path: 'login',
-  //       title: 'Login | Demo 03',
-  //       data: {
-  //         label: 'Login',
-  //       },
-  //       loadComponent: () => import('./features/auth/components/login/login').then((m) => m.Login),
-  //     },
-  //     {
-  //       path: 'register',
-  //       title: 'Register | Demo 03',
-  //       data: {
-  //         label: 'Registro',
-  //       },
-  //       loadComponent: () =>
-  //         import('./features/auth/components/register/register').then((m) => m.Register),
-  //     },
-  //   ],
-  // },
+  {
+    path: 'auth',
+    // title: 'Auth | Demo 03',
+    // loadComponent: () => import('./features/auth/auth-page'),
+    children: [
+      {
+        path: 'login',
+        title: 'Login | Demo 03',
+
+        loadComponent: () => import('./features/auth/pages/login-page'),
+      },
+      {
+        path: 'register',
+        title: 'Register | Demo 03',
+
+        loadComponent: () => import('./features/auth/pages/register-page'),
+      },
+    ],
+  },
 
   {
     path: 'dashboard',
@@ -116,5 +111,3 @@ export const getRoutes = (): MenuOption[] => {
       })),
   ];
 };
-
-
