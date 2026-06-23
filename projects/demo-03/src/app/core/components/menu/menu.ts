@@ -1,10 +1,11 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ViewEncapsulation } from '@angular/core';
 import { MenuOption } from '../../types/menu.option';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'alc-menu',
   imports: [RouterLink, RouterLinkActive],
+  encapsulation: ViewEncapsulation.None,
   template: `
     <nav>
       <ul [class.vertical]="isVertical()">
@@ -30,9 +31,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 
       .vertical {
         flex-direction: column;
-        a {
-          font-size: 1.8rem;
-        }
+        gap: 1.5rem;
       }
 
       a {

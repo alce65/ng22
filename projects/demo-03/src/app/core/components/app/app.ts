@@ -9,18 +9,17 @@ import { getRoutes } from '../../../app.routes';
 
 @Component({
   selector: 'alc-root',
-  imports: [
-    RouterOutlet,
-    Header,
-    Footer,
-    LogoCoders,
-    Menu,
-  ],
+  imports: [RouterOutlet, Header, Footer, LogoCoders, Menu],
   template: `
     <alc-header [title]="title()" [subtitle]="subtitle()">
       <alc-logo-coders slot="logo" />
       <alc-menu slot="menu" [options]="menuOptions()" />
-      <alc-menu slot="menu-vertical" [isVertical]="true" [options]="menuOptions()" />
+      <alc-menu
+        slot="menu-vertical"
+        [isVertical]="true"
+        class="vertical-menu"
+        [options]="menuOptions()"
+      />
     </alc-header>
     <main class="container">
       <router-outlet />
@@ -46,6 +45,9 @@ import { getRoutes } from '../../../app.routes';
       align-items: center;
       padding: 1rem;
       position: relative;
+    }
+    .vertical-menu {
+      font-size: 1.8rem;
     }
     @media (width > 600px) {
       .wide {

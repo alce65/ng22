@@ -6,10 +6,12 @@ import { RegisterForm } from '../components/register-form/register-form';
   selector: 'alc-register-page',
   imports: [Card, RegisterForm],
   template: `
+    <h2>Registro</h2>
     <alc-card>
       <alc-register-form />
     </alc-card>
   `,
   styles: ``,
+  styleUrls: ['../../pages.css'],
 })
 export default class RegisterPage {}
