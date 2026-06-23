@@ -1,17 +1,19 @@
 import { Component, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { LoginForm } from '../components/login-form/login-form';
 import { Card } from '../../../core/components/card/card';
 import { SideBar } from '../../../core/components/side-bar/side-bar';
 import { MenuOption } from '../../../core/types/menu.option';
 import { Menu } from '../../../core/components/menu/menu';
+import { LoginFormTdf } from '../components/login-form-tdf/login-form-tdf';
+import { LoginFormMdfRx } from '../components/login-form-mdf-rx/login-form-mdf-rx';
+import { LoginFormSignals } from '../components/login-form-signals/login-form-signals';
 
 type FormType = 'tdf' | 'mdf-rx' | 'signals';
 
 @Component({
   selector: 'alc-login-page',
-  imports: [RouterLink, LoginForm, Card, SideBar, Menu],
+  imports: [RouterLink, LoginFormTdf, LoginFormMdfRx, LoginFormSignals, Card, SideBar, Menu],
   template: `
     <alc-side-bar [isInitialOpen]="false" >
       <alc-menu class="side-bar-menu"[isVertical]="true" [options]="menuOptions()" />
@@ -21,19 +23,17 @@ type FormType = 'tdf' | 'mdf-rx' | 'signals';
     @if (!formType() ||formType() === 'tdf') {
       <p>Ejemplo de Template Driven Form</p> 
       <alc-card>
-        <alc-login-form />
+        <alc-login-form-tdf />
       </alc-card>
     } @else if (formType() === 'mdf-rx') {
       <p>Ejemplo de Model Driven Form (RxJs)</p>
       <alc-card>
-        <!-- <alc-login-form /> -->
-        <p>Model Driven Form (RxJs) is not implemented yet.</p>
+        <alc-login-form-mdf-rx />
       </alc-card>
     } @else if (formType() === 'signals') {
       <p>Ejemplo de Signals Form</p>
       <alc-card>
-        <!-- <alc-login-form /> -->
-        <p>Signals Form is not implemented yet.</p>
+        <alc-login-form-signals />
       </alc-card>
     }
     <p>Si no tienes cuenta, <a [routerLink]="['/auth', 'register']">regístrate aquí</a>.</p>
