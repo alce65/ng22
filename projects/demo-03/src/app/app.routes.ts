@@ -60,6 +60,11 @@ export const routes: Routes = [
 
         loadComponent: () => import('./features/auth/pages/login-page'),
       },
+        {
+        path: 'login/:formType',
+        title: 'Login | Demo 03',
+        loadComponent: () => import('./features/auth/pages/login-page'),
+      },
       {
         path: 'register',
         title: 'Register | Demo 03',
