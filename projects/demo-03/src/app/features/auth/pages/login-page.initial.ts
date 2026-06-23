@@ -1,5 +1,8 @@
-import { Component, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+// import { DestroyRef } from '@angular/core';
+// import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AsyncPipe } from '@angular/common';
 
 import { LoginForm } from '../components/login-form/login-form';
 import { Card } from '../../../core/components/card/card';
@@ -7,30 +10,29 @@ import { SideBar } from '../../../core/components/side-bar/side-bar';
 import { MenuOption } from '../../../core/types/menu.option';
 import { Menu } from '../../../core/components/menu/menu';
 
-type FormType = 'tdf' | 'mdf-rx' | 'signals';
+// type FormType = 'tdf' | 'mdf-rx' | 'signals';
 
 @Component({
   selector: 'alc-login-page',
-  imports: [RouterLink, LoginForm, Card, SideBar, Menu],
+  imports: [RouterLink, LoginForm, Card, SideBar, Menu, AsyncPipe],
   template: `
-    <alc-side-bar [isInitialOpen]="false" >
-      <alc-menu class="side-bar-menu"[isVertical]="true" [options]="menuOptions()" />
+    <alc-side-bar>
+      <alc-menu class="side-bar-menu" [isVertical]="true" [options]="menuOptions()" />
     </alc-side-bar>
     <h2>Login</h2>
 
-    @if (!formType() ||formType() === 'tdf') {
-      <p>Ejemplo de Template Driven Form</p> 
+    @let formType = (activatedRouter.params | async)?.['formType'] || 'tdf';
+
+    @if (formType === 'tdf') {
       <alc-card>
         <alc-login-form />
       </alc-card>
-    } @else if (formType() === 'mdf-rx') {
-      <p>Ejemplo de Model Driven Form (RxJs)</p>
+    } @else if (formType === 'mdf-rx') {
       <alc-card>
         <!-- <alc-login-form /> -->
         <p>Model Driven Form (RxJs) is not implemented yet.</p>
       </alc-card>
-    } @else if (formType() === 'signals') {
-      <p>Ejemplo de Signals Form</p>
+    } @else if (formType === 'signals') {
       <alc-card>
         <!-- <alc-login-form /> -->
         <p>Signals Form is not implemented yet.</p>
@@ -57,7 +59,9 @@ type FormType = 'tdf' | 'mdf-rx' | 'signals';
   styleUrls: ['../../pages.css'],
 })
 export default class LoginPage {
-  protected readonly formType = input<FormType>();
+  protected readonly activatedRouter = inject(ActivatedRoute);
+  // readonly destroyRef = inject(DestroyRef);
+  // protected readonly formType = signal<FormType>('tdf');
 
   protected readonly menuOptions = signal<MenuOption[]>([
     {
@@ -73,4 +77,10 @@ export default class LoginPage {
       path: '/auth/login/signals',
     },
   ]);
+
+  // constructor() {
+  //   this.#activatedRouter.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+  //     this.formType.set(params['formType'] || 'tdf');
+  //   });
+  // }
 }
