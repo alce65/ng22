@@ -1,5 +1,7 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, DestroyRef, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationStart, Router } from '@angular/router';
 
 import { Card } from '../../../core/components/card/card';
 import { SideBar } from '../../../core/components/side-bar/side-bar';
@@ -15,13 +17,13 @@ type FormType = 'tdf' | 'mdf-rx' | 'signals';
   selector: 'alc-login-page',
   imports: [RouterLink, LoginFormTdf, LoginFormMdfRx, LoginFormSignals, Card, SideBar, Menu],
   template: `
-    <alc-side-bar [isInitialOpen]="false" >
-      <alc-menu class="side-bar-menu"[isVertical]="true" [options]="menuOptions()" />
+    <alc-side-bar [isOpenFromParent]="isOpenSideBar">
+      <alc-menu class="side-bar-menu" [isVertical]="true" [options]="menuOptions()" />
     </alc-side-bar>
     <h2>Login</h2>
 
-    @if (!formType() ||formType() === 'tdf') {
-      <p>Ejemplo de Template Driven Form</p> 
+    @if (!formType() || formType() === 'tdf') {
+      <p>Ejemplo de Template Driven Form</p>
       <alc-card>
         <alc-login-form-tdf />
       </alc-card>
@@ -57,8 +59,11 @@ type FormType = 'tdf' | 'mdf-rx' | 'signals';
   styleUrls: ['../../pages.css'],
 })
 export default class LoginPage {
+  readonly destroyRef = inject(DestroyRef);
+  readonly #router = inject(Router);
   protected readonly formType = input<FormType>();
 
+  protected readonly isOpenSideBar = signal(false);
   protected readonly menuOptions = signal<MenuOption[]>([
     {
       label: 'Template Driven Form',
@@ -73,4 +78,15 @@ export default class LoginPage {
       path: '/auth/login/signals',
     },
   ]);
+
+  constructor() {
+    this.#router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        this.isOpenSideBar.set(false);
+        console.log('NavigationStart event detected, closing sidebar',
+          'isOpenSideBar', this.isOpenSideBar()
+        );
+      }
+    });
+  }
 }
