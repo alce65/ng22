@@ -1,15 +1,24 @@
-import { Component } from '@angular/core';
+import { JsonPipe } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+
+interface LoginForm {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
 
 @Component({
   selector: 'alc-login-form-mdf-rx',
-  imports: [],
+  imports: [ReactiveFormsModule, JsonPipe],
   template: `
-    <form (ngSubmit)="formSubmit()">
+    <form [formGroup]="loginForm" (ngSubmit)="formSubmit()">
       <label class="form-control" for="email">
         <span> Email </span>
-        <input type="email" id="email" name="email" class="form-control" required />
+        <input type="email" id="email" formControlName="email" />
       </label>
-      <!-- @if (loginForm.controls['email']?.invalid && loginForm.controls['email']?.touched) {
+      @if (loginForm.controls['email']?.invalid && loginForm.controls['email']?.touched) {
         <div class="error">
           @if (loginForm.controls['email']?.hasError('required')) {
             <p>El correo electrónico es obligatorio.</p>
@@ -18,19 +27,12 @@ import { Component } from '@angular/core';
             <p>Por favor, introduce una dirección de correo electrónico válida.</p>
           }
         </div>
-      } -->
+      }
       <label class="form-control" for="password">
         <span>Password</span>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          class="form-control"
-          required
-          minlength="6"
-        />
+        <input type="password" id="password" formControlName="password" />
       </label>
-      <!-- @if (loginForm.controls['password']?.invalid && loginForm.controls['password']?.touched) {
+      @if (loginForm.controls['password']?.invalid && loginForm.controls['password']?.touched) {
         <div class="error">
           @if (loginForm.controls['password']?.hasError('required')) {
             <p>La contraseña es obligatoria.</p>
@@ -39,16 +41,16 @@ import { Component } from '@angular/core';
             <p>La contraseña debe tener al menos 6 caracteres.</p>
           }
         </div>
-      } -->
+      }
       <label class="form-control checkbox" for="rememberMe">
-        <input type="checkbox" id="rememberMe" name="rememberMe" />
+        <input type="checkbox" id="rememberMe" formControlName="rememberMe" />
         <span>Remember me</span>
       </label>
       <div class="form-control">
-        <button type="submit" class="btn btn-primary" [disabled]="">Login</button>
+        <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Login</button>
       </div>
     </form>
-    <!-- <pre>{{ loginForm.value | json }}</pre> -->
+    <pre>{{ loginForm.value | json }}</pre>
   `,
   styles: `
     form {
@@ -108,7 +110,25 @@ import { Component } from '@angular/core';
   `,
 })
 export class LoginFormMdfRx {
+  readonly #fb = inject(FormBuilder);
+  readonly #router = inject(Router);
+
+  readonly loginForm: FormGroup = this.#fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    rememberMe: [false],
+  });
+
   protected formSubmit() {
-    console.log('Form submitted');
+    if (this.loginForm.valid) {
+      console.log('loginForm', this.loginForm);
+      // Navigate to the home page after successful login
+      const formData: LoginForm = this.loginForm.value;
+      console.log('Form submitted:', formData);
+      this.loginForm.reset(); // Reset the form after submission
+      this.#router.navigate(['/']);
+    } else {
+      console.log('Form is invalid');
+    }
   }
 }

@@ -9,8 +9,8 @@ import { Router } from '@angular/router';
   template: `
     <form #loginForm="ngForm" (ngSubmit)="formSubmit(loginForm)">
       <label class="form-control" for="email">
-        <span> Email </span>
-        <input type="email" id="email" name="email" class="form-control" ngModel required />
+        <span>Email</span>
+        <input type="email" id="email" name="email" ngModel email required />
       </label>
       @if (loginForm.controls['email']?.invalid && loginForm.controls['email']?.touched) {
         <div class="error">
@@ -28,7 +28,6 @@ import { Router } from '@angular/router';
           type="password"
           id="password"
           name="password"
-          class="form-control"
           ngModel
           required minlength="6"
         />
