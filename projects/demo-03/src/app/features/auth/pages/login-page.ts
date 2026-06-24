@@ -61,6 +61,9 @@ type FormType = 'tdf' | 'mdf-rx' | 'signals';
 export default class LoginPage {
   readonly destroyRef = inject(DestroyRef);
   readonly #router = inject(Router);
+
+  // Utiliza signals para obtener el valor del parámetro de la ruta
+  // y mostrar el formulario correspondiente.
   protected readonly formType = input<FormType>();
 
   protected readonly isOpenSideBar = signal(false);

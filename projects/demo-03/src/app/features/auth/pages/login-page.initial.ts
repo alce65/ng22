@@ -3,18 +3,24 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 // import { DestroyRef } from '@angular/core';
 // import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
-
-import { LoginForm } from '../components/login-form/login-form';
 import { Card } from '../../../core/components/card/card';
 import { SideBar } from '../../../core/components/side-bar/side-bar';
 import { MenuOption } from '../../../core/types/menu.option';
 import { Menu } from '../../../core/components/menu/menu';
+import { LoginFormTdf } from '../components/login-form-tdf/login-form-tdf';
+
+
+// Versión de prueba de LoginPage:
+// 1. Utiliza el ActivatedRoute para obtener el parámetro de la ruta 'formType'
+// y mostrar el formulario correspondiente. (Código comentado)
+// 2. Utiliza el AsyncPipe para suscribirse al observable de parámetros de la ruta
+// y obtener el valor de 'formType'. (Código final)
 
 // type FormType = 'tdf' | 'mdf-rx' | 'signals';
 
 @Component({
   selector: 'alc-login-page',
-  imports: [RouterLink, LoginForm, Card, SideBar, Menu, AsyncPipe],
+  imports: [RouterLink, LoginFormTdf, Card, SideBar, Menu, AsyncPipe],
   template: `
     <alc-side-bar>
       <alc-menu class="side-bar-menu" [isVertical]="true" [options]="menuOptions()" />
@@ -25,7 +31,7 @@ import { Menu } from '../../../core/components/menu/menu';
 
     @if (formType === 'tdf') {
       <alc-card>
-        <alc-login-form />
+        <alc-login-form-tdf />
       </alc-card>
     } @else if (formType === 'mdf-rx') {
       <alc-card>
