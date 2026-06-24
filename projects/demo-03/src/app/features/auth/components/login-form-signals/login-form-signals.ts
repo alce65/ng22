@@ -1,114 +1,78 @@
-import { Component } from '@angular/core';
+import { JsonPipe } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { email, form, FormField, FormRoot, minLength, required } from '@angular/forms/signals';
+import { Router } from '@angular/router';
+
+interface LoginForm {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
 
 @Component({
   selector: 'alc-login-form-signals',
-  imports: [],
- template: `
-    <form (ngSubmit)="formSubmit()">
+  imports: [FormRoot, FormField, JsonPipe],
+  template: `
+    <form [formRoot]="loginForm" (submit)="submitForm()">
       <label class="form-control" for="email">
         <span> Email </span>
-        <input type="email" id="email" name="email" class="form-control" required />
+        <input type="email" id="email" [formField]="loginForm.email" />
       </label>
-      <!-- @if (loginForm.controls['email']?.invalid && loginForm.controls['email']?.touched) {
-        <div class="error">
-          @if (loginForm.controls['email']?.hasError('required')) {
-            <p>El correo electrónico es obligatorio.</p>
-          }
-          @if (loginForm.controls['email']?.hasError('email')) {
-            <p>Por favor, introduce una dirección de correo electrónico válida.</p>
-          }
-        </div>
-      } -->
+      @if (loginForm.email()?.invalid() && loginForm.email()?.touched()) {
+        <!-- @if (loginForm.email().errors() && loginForm.email()?.touched()) { -->
+        <p class="error">{{ loginForm.email().errors()[0].message }}</p>
+      }
       <label class="form-control" for="password">
         <span>Password</span>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          class="form-control"
-          required
-          minlength="6"
-        />
+        <input type="password" id="password" [formField]="loginForm.password" />
       </label>
-      <!-- @if (loginForm.controls['password']?.invalid && loginForm.controls['password']?.touched) {
-        <div class="error">
-          @if (loginForm.controls['password']?.hasError('required')) {
-            <p>La contraseña es obligatoria.</p>
-          }
-          @if (loginForm.controls['password']?.hasError('minlength')) {
-            <p>La contraseña debe tener al menos 6 caracteres.</p>
-          }
-        </div>
-      } -->
+      @if (loginForm.password()?.invalid() && loginForm.password()?.touched()) {
+        <p class="error">{{ loginForm.password().errors()[0].message }}</p>
+      }
       <label class="form-control checkbox" for="rememberMe">
-        <input type="checkbox" id="rememberMe" name="rememberMe" />
+        <input type="checkbox" id="rememberMe" [formField]="loginForm.rememberMe" />
         <span>Remember me</span>
       </label>
       <div class="form-control">
-        <button type="submit" class="btn btn-primary" [disabled]="">Login</button>
+        <button type="submit" class="btn btn-primary" [disabled]="loginForm().invalid()">Login</button>
       </div>
     </form>
-    <!-- <pre>{{ loginForm.value | json }}</pre> -->
+    <pre>{{ loginForm().value() | json }}</pre>
   `,
-  styles: `
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      width: 80vw;
-      max-width: 400px;
-
-      .form-control {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-
-        &.checkbox {
-          flex-direction: row;
-          align-items: center;
-        }
-      }
-    }
-
-    input,
-    textarea {
-      padding: 0.5rem;
-      font-size: 1rem;
-      color: var(--color-primary-hot);
-      background-color: var(--color-background-primary);
-      border: none;
-      border-block-end: 2px solid var(--color-primary);
-      border-radius: 4px;
-
-      &:focus-visible {
-        outline: var(--color-primary) auto 1px;
-        background-color: var(--color-background);
-      }
-    }
-
-    button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      color: var(--color-background);
-      background-color: var(--color-primary);
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-
-      &:disabled {
-        background-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
-        cursor: not-allowed;
-      }
-    }
-
-    .error {
-      color: var(--color-tertiary);
-      font-size: 0.8rem;
-    }
-  `,
+  styleUrls: ['../forms.css'],
+  styles: ``,
 })
 export class LoginFormSignals {
-   protected formSubmit() {
+  readonly #router = inject(Router);
+  readonly #loginFormInitialState: LoginForm = {
+    email: '',
+    password: '',
+    rememberMe: false,
+  };
+
+  // Signal representing the form state
+  readonly #loginFormState = signal<LoginForm>(this.#loginFormInitialState);
+  // Sin valifdaciones
+  // protected readonly loginForm = form(this.#loginFormState)
+  // Añadiendo validaciones
+  protected readonly loginForm = form(this.#loginFormState, (path) => {
+    required(path.email, { message: 'El email es obligatorio' });
+    email(path.email, { message: 'El email debe ser una dirección de correo válida' });
+    required(path.password, { message: 'La contraseña es obligatoria' });
+    minLength(path.password, 6, { message: 'La contraseña debe tener al menos 6 caracteres' });
+  });
+
+  protected submitForm() {
     console.log('Form submitted');
+    if (this.loginForm().valid()) {
+      console.log('Form submitted');
+      const formData = this.loginForm().value();
+      console.log('Form submitted:', formData);
+      this.loginForm().reset(); // Reset the form after submission
+      // Navigate to the home page after successful login
+      this.#router.navigate(['/']);
+    } else {
+      console.log('Form is invalid');
+    }
   }
 }
