@@ -30,7 +30,7 @@ interface RegisterModel {
 }
 
 @Component({
-  selector: 'alc-register-form',
+  selector: 'alc-register-form-customs',
   imports: [FormRoot, JsonPipe, CheckBox, RadioButtons, Select, Input],
   template: `
     <form [formRoot]="registerForm" (submit)="submitForm()">
@@ -110,8 +110,18 @@ interface RegisterModel {
         <button type="submit" [disabled]="registerForm().invalid()">Register</button>
       </div>
     </form>
-    <pre>{{ registerForm().value() | json }}</pre>
-    <pre>{{ registerForm().errorSummary() | json }}</pre>
+    <div aria-label="Form Value" class="form-value">
+      <p>Valor del formulario</p>
+      <pre>{{ registerForm().value() | json }}</pre>
+      <p>Valor de errores activos del formulario</p>
+      <pre>{{ registerForm().errorSummary() | json }}</pre>
+      <p>Errores activos del formulario</p>
+      <ul class="error">
+        @for (error of registerForm().errorSummary(); track $index) {
+          <li>{{ error.message }}</li>
+        }
+      </ul>
+    </div>
   `,
   styleUrls: ['../forms.css'],
   styles: `
@@ -137,7 +147,7 @@ interface RegisterModel {
     }
   `,
 })
-export class RegisterForm {
+export class RegisterFormCustoms {
   readonly #router = inject(Router);
   readonly #initialValues: RegisterModel = {
     email: '',

@@ -60,7 +60,7 @@ export const routes: Routes = [
 
         loadComponent: () => import('./features/auth/pages/login-page'),
       },
-        {
+      {
         path: 'login/:formType',
         title: 'Login | Demo 03',
         loadComponent: () => import('./features/auth/pages/login-page'),
@@ -71,9 +71,13 @@ export const routes: Routes = [
 
         loadComponent: () => import('./features/auth/pages/register-page'),
       },
+      {
+        path: 'register/:formType',
+        title: 'Register | Demo 03',
+        loadComponent: () => import('./features/auth/pages/register-page'),
+      },
     ],
   },
-
   {
     path: 'dashboard',
     title: 'Dashboard | Demo 03',
