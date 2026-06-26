@@ -6,7 +6,7 @@ import { MenuOption } from '../../../core/types/menu.option';
 import { SideBar } from '../../../core/components/side-bar/side-bar';
 import { Menu } from '../../../core/components/menu/menu';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RegisterFormCustoms } from "../components/register-form-customs/register-form-customs";
+import { RegisterFormCustoms } from '../components/register-form-customs/register-form-customs';
 
 type FormType = 'monolithic' | 'custom-components';
 @Component({
@@ -16,7 +16,6 @@ type FormType = 'monolithic' | 'custom-components';
     <alc-side-bar [isOpenFromParent]="isOpenSideBar">
       <alc-menu class="side-bar-menu" [isVertical]="true" [options]="menuOptions()" />
     </alc-side-bar>
-
     <h2>Registro</h2>
 
     @if (!formType() || formType() === 'monolithic') {
