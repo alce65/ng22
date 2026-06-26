@@ -1,12 +1,15 @@
 import { Component, input } from '@angular/core';
 import { FieldState, FormField } from '@angular/forms/signals';
+import { NativeAttrRecord, NativeAttrs } from '../../../directives/native-attrs';
 
 @Component({
   selector: 'alc-input',
-  imports: [FormField],
+  imports: [FormField, NativeAttrs],
   template: `
     <label for="{{ id() }}" class="form-control">
-      <input type="{{ type() }}" id="{{ id() }}" [formField]="fieldState" placeholder=" " />
+      <input type="{{ type() }}" id="{{ id() }}" [formField]="fieldState" placeholder=" " 
+       [alcNativeAttrs]="nativeAttrs()"
+      />
       <!-- <input type="{{ type() }}" id="{{ id() }}" [formField]="fieldTree()" /> -->
       <span>{{ label() }}</span>
     </label>
@@ -65,4 +68,5 @@ export class Input {
   readonly id = input<string>(`input-${Math.random().toString(36).slice(2, 9)}`);
   // readonly fieldTree = input.required<FieldTree<string>>();
   readonly fieldState = input.required<FieldState<string>>();
+  readonly nativeAttrs = input<NativeAttrRecord>({});
 }

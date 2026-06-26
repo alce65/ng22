@@ -38,6 +38,7 @@ interface RegisterModel {
         [label]="'Email'"
         type="email"
         [fieldState]="registerForm.email()"
+        [nativeAttrs]="{ 'aria-describedby': 'email-error' }"
       />
       <alc-input
         aria-label="Password"
