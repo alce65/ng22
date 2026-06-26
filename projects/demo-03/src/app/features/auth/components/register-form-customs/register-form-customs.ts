@@ -7,16 +7,15 @@ import {
   FormRoot,
   minLength,
   required,
-  schema,
   SchemaPathTree,
-  validate,
 } from '@angular/forms/signals';
-import { CheckBox } from '../UI/check-box/check-box';
-import { RadioButtons } from '../UI/radio-buttons/radio-buttons';
-import { Select } from '../UI/select/select';
-import { Input } from '../UI/input/input';
+import { CheckBoxFree } from '../../../../core/components/UI/check-box-free/check-box-free';
+import { RadioButtons } from '../../../../core/components/UI/radio-buttons/radio-buttons';
+import { Select } from '../../../../core/components/UI/select/select';
+import { Input } from '../../../../core/components/UI/input/input';
 import { Gender, Course, GENDERS, COURSES } from '../../types/register-controls';
 import { Router } from '@angular/router';
+import { CheckBox } from '../../../../core/components/UI/check-box/check-box';
 
 interface RegisterModel {
   email: string;
@@ -31,7 +30,7 @@ interface RegisterModel {
 
 @Component({
   selector: 'alc-register-form-customs',
-  imports: [FormRoot, JsonPipe, CheckBox, RadioButtons, Select, Input],
+  imports: [FormRoot, JsonPipe, CheckBox, CheckBoxFree, RadioButtons, Select, Input],
   template: `
     <form [formRoot]="registerForm" (submit)="submitForm()">
       <alc-input
@@ -50,29 +49,20 @@ interface RegisterModel {
         aria-label="Gender"
         [legend]="'Gender'"
         [options]="genders()"
-        [selected]="registerForm.gender().value()"
-        (selectedChange)="updateGender($event)"
+        [fieldState]="registerForm.gender()"
       />
-      <div aria-label="Terms">
-        <alc-check-box
-          [label]="'Accept Terms ...'"
-          [checked]="registerForm.isOk().value()"
-          (checkedChange)="updateIsOk($event)"
-        />
-        @if (registerForm.isOk()?.invalid() && registerForm.isOk()?.touched()) {
-          <p class="error">
-            {{ registerForm.isOk()?.errors()?.[0]?.message }}
-          </p>
-        }
-      </div>
+      <alc-check-box
+        [label]="'Acepto los  términos ...'"
+        [fieldState]="registerForm.isOk()"
+        aria-disabled="Terms"
+      />
       <div aria-label="Has Course">
-        <alc-check-box
+        <alc-check-box-free
           [label]="'Haz echo algún curso con nosotros'"
           [checked]="registerForm.hasCourse().value()"
           (checkedChange)="updateHasCourse($event)"
         />
       </div>
-
       @if (registerForm.hasCourse().value()) {
         <alc-input
           aria-label="First Name"
@@ -86,30 +76,18 @@ interface RegisterModel {
           type="text"
           [fieldState]="registerForm.surname()"
         />
-        <div aria-label="Course">
-          <alc-select
-            [label]="'Selecciona un curso'"
-            [options]="courses()"
-            [selected]="registerForm.course().value()"
-            (selectedChange)="registerForm.course().value.set($event)"
-          />
-
-          @if (
-            registerForm.hasCourse().value() &&
-            registerForm.course()?.invalid() &&
-            registerForm.course()?.touched()
-          ) {
-            <div aria-label="Course Error" class="error">
-              {{ registerForm.course()?.errors()?.[0]?.message }}
-            </div>
-          }
-        </div>
+        <alc-select
+          aria-label="Course"
+          [label]="'Selecciona un curso'"
+          [options]="courses()"
+          [fieldState]="registerForm.course()"
+        />
       }
-
       <div aria-label="Buttons" class="form-control">
         <button type="submit" [disabled]="registerForm().invalid()">Register</button>
       </div>
     </form>
+
     <div aria-label="Form Value" class="form-value">
       <p>Valor del formulario</p>
       <pre>{{ registerForm().value() | json }}</pre>
@@ -176,6 +154,7 @@ export class RegisterFormCustoms {
     email(path.email, { message: 'El email no es válido' });
     required(path.password, { message: 'La contraseña es obligatoria' });
     minLength(path.password, 6, { message: 'La contraseña debe tener al menos 6 caracteres' });
+    required(path.gender.value, { message: 'Indicar el género es obligatorio' });
     required(path.isOk, { message: 'Debes aceptar los términos y condiciones' });
   };
 
