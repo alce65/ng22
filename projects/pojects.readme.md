@@ -37,7 +37,7 @@
 - Dashboard: 🧿Counter ([class], @if); 🧿Counter-list (output())
 - [RWD: Modal y menu-mobile] / no incluido en este punto
 
-## Consideraciones sobre demo-01.v2
+## Consideraciones sobre demo-02
 
 - Estilos
 - Scaffolding y reubicación de App
@@ -52,11 +52,18 @@
 - Proyección de contenido: Card: uso con Course-Item
 - Navegación: Menu, Socials (dejar Menu-mobile para RWD)
 
-## Demo 02
+## Demo 03
 
 Incorporar routing y navegación entre páginas
 
+Añadir Login/Register como ejemplo sencillo de rutas anidadas o rutas hijas, opcionalmente con un contenedor de páginas y componentes presentadores login y register
+Mas adelante estos componentes nos servirán de ejemplo de distintos tipos de formularios
+
 Probar inicialmente en proof-01: feature course
+
+
+## Demo 04
+
 
 - Course-Item básico, como componente sample al inicio del curso
 - Entity
@@ -88,5 +95,19 @@ Componentes: Course-List, Course-Item, Course-Form (add/edit)
   - Course-Edit: edición de un curso
   - Course-Add: añadir un nuevo curso
 
+## Pendiente de Añadir
 
-## Demo 03. Services
+¿Al final de demo-02?. Ya se han contado inputs/outputs como elementos de la  comunicación entre componentes, pero no rutas.
+
+- Pipes
+- Directivas
+  - Directivas de atributo personalizadas
+  - Directivas estructurales personalizadas
+
+- De las últimas se desprenden conceptos relativos a templates y views
+
+¿Al final de demo-03?. Ya se han contado rutas y formularios. Los pipes ya se han usado.
+
+
+
+## Demo 05. Services
