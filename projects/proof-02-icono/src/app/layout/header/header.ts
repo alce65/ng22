@@ -1,18 +1,24 @@
 import { Component, signal } from '@angular/core';
-import { Menu } from '../../core';
+import { Menu, Separator } from '../../core';
+import { LogoCoders } from '../../core';
+import { User } from '../../core';
 
 
 @Component({
   selector: 'alc-header',
-  imports: [Menu],
+  imports: [Menu, LogoCoders, Separator, User],
   template: `
     <header class="container">
-      <div class="left-side"></div>
+      <div class="left-side">
+        <alc-logo-coders />
+      </div>
       <hgroup>
         <h1>{{ title() }}</h1>
         <p>{{ subtitle() }}</p>
       </hgroup>
-      <div class="right-side"></div>
+      <div class="right-side">
+        <alc-user />
+      </div>
       <div class="bottom-row">
         <div class="sub-title">
         </div>
@@ -22,6 +28,7 @@ import { Menu } from '../../core';
         </div>
       </div>
     </header>
+    <alc-separator />
   `,
   styles: `
     :host {
@@ -44,7 +51,6 @@ import { Menu } from '../../core';
     }
 
     hgroup {
-      /* max-width: 15rem; */
       max-width: none;
       h1 {
         color: var(--color-primary);

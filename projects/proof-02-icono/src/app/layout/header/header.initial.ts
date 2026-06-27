@@ -8,10 +8,11 @@ import { Component, signal } from '@angular/core';
       <div class="left-side"></div>
       <hgroup>
         <h1>{{ title() }}</h1>
+        <p>{{ subtitle() }}</p>
       </hgroup>
       <div class="right-side"></div>
       <div class="bottom-row">
-        <p>{{ subtitle() }}</p>
+        <div class="sub-title"></div>
         <div class="desktop-only">
           <!-- <ng-content></ng-content> -->
         </div>
@@ -40,7 +41,6 @@ import { Component, signal } from '@angular/core';
     }
 
     hgroup {
-      /* max-width: 15rem */
       max-width: none;
       h1 {
         color: var(--color-primary);
@@ -50,6 +50,11 @@ import { Component, signal } from '@angular/core';
         line-height: 100%;
         letter-spacing: -0.125rem;
         margin: 0;
+      }
+      p {
+        position: absolute;
+        position-anchor: --bottom-row;
+        position-area: center center;
       }
     }
 
@@ -69,7 +74,13 @@ import { Component, signal } from '@angular/core';
     .bottom-row {
       grid-column: span 3;
       margin-top: 0.6rem;
+      width: 100%;
 
+      .sub-title {
+        height: 1.125rem;
+        anchor-name: --bottom-row;
+      }
+      
       .desktop-only {
         /* display: none; */
         display: block;
