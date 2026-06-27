@@ -302,6 +302,82 @@
           }
         }
       }
+    },
+    "proof-02-icono": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "inlineTemplate": true,
+          "inlineStyle": true
+        }
+      },
+      "root": "projects/proof-02-icono",
+      "sourceRoot": "projects/proof-02-icono/src",
+      "prefix": "alc",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/proof-02-icono/src/main.ts",
+            "tsConfig": "projects/proof-02-icono/tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/proof-02-icono/public"
+              }
+            ],
+            "styles": ["projects/proof-02-icono/src/styles.css"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "proof-02-icono:build:production"
+            },
+            "development": {
+              "buildTarget": "proof-02-icono:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/proof-02-icono/**/*.ts",
+              "projects/proof-02-icono/**/*.html"
+            ],
+            "eslintConfig": "projects/proof-02-icono/eslint.config.js"
+          }
+        }
+      }
     }
   }
 }

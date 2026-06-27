@@ -19,7 +19,7 @@
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true,
+    "strictTemplates": true
   },
   "files": [],
   "references": [
@@ -46,6 +46,12 @@
     },
     {
       "path": "./projects/demo-03/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/proof-02-icono/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/proof-02-icono/tsconfig.spec.json"
     }
   ]
 }
