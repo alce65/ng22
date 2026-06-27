@@ -13,7 +13,7 @@ import { Component, signal } from '@angular/core';
       <div class="bottom-row">
         <p>{{ subtitle() }}</p>
         <div class="desktop-only">
-          <ng-content></ng-content>
+          <!-- <ng-content></ng-content> -->
         </div>
       </div>
     </header>
@@ -40,7 +40,7 @@ import { Component, signal } from '@angular/core';
     }
 
     hgroup {
-      // max-width: 15rem;
+      /* max-width: 15rem */
       max-width: none;
       h1 {
         color: var(--color-primary);
@@ -71,7 +71,7 @@ import { Component, signal } from '@angular/core';
       margin-top: 0.6rem;
 
       .desktop-only {
-        // display: none;
+        /* display: none; */
         display: block;
         margin-top: 1rem;
       }

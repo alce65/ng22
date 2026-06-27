@@ -1,8 +1,10 @@
 import { Component, signal } from '@angular/core';
+import { Menu } from '../../core';
+
 
 @Component({
   selector: 'alc-header',
-  imports: [],
+  imports: [Menu],
   template: `
     <header class="container">
       <div class="left-side"></div>
@@ -12,8 +14,11 @@ import { Component, signal } from '@angular/core';
       </hgroup>
       <div class="right-side"></div>
       <div class="bottom-row">
+        <div class="sub-title">
+        </div>
         <div class="desktop-only">
-          <ng-content></ng-content>
+          <!-- <ng-content></ng-content> -->
+           <alc-menu />
         </div>
       </div>
     </header>
@@ -76,11 +81,15 @@ import { Component, signal } from '@angular/core';
       margin-top: 0.6rem;
       width: 100%;
 
+      .sub-title {
+        height: 1.125rem;
+        anchor-name: --bottom-row;
+      }
+
       .desktop-only {
         /* display: none; */
         display: block;
         padding-block: 1rem;
-        anchor-name: --bottom-row;
       }
     }
   `,
