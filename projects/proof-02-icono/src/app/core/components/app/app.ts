@@ -1,14 +1,14 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Footer, Header } from '../../../layout';
+import { Footer, Header} from '../../../layout';
 
 @Component({
   selector: 'alc-root',
   imports: [RouterOutlet, Header, Footer],
   template: `
     <alc-header />
-    <div class="container-fluid">
-      <main class="p-2">
+    <div class="container">
+      <main>
         <router-outlet />
       </main>
     </div>
@@ -23,7 +23,7 @@ import { Footer, Header } from '../../../layout';
       margin: 0;
       padding: 0;
     }
-    main.container {
+    .container {
       padding: 1rem 2rem;
       width: 100%;
       min-height: 90%;
@@ -41,5 +41,4 @@ import { Footer, Header } from '../../../layout';
     `,
 })
 export class App {
-  protected readonly title = signal('proof-02-icono');
 }
